@@ -47,6 +47,8 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		int extra_annotations=0; //Annotations that do not map to one of the CUI-less diseases
 		int help_cui_count=0; //Annotated with un-parsable CUIs, need to be looked at
 		String unannotated_summary="";
+		String help_summary="";
+		String extra_summary="";
 
 		/**
 		 * Parse our configuration file
@@ -164,7 +166,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				//Retrieve Entity
 				DiscontinousBratAnnotation annotated = uimaKeyDict.get(span_fields[1]);
 				if(annotated==null) {
-					System.out.println("Unmatched/extra annotation "+key+" to "+span_fields[1]);
+					extra_summary+="EXTRA-"+span_fields[1];
 					extra_annotations++;
 					continue;
 				}
@@ -173,7 +175,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				assert(cuis.length>0);
 				if(!(cuis[0].startsWith("C") && cuis.length<6)){
 					help_cui_count++;
-					System.out.println("Help CUI:"+bratKeyDict.get(key)+uimaKeyDict.get(key));
+					help_summary+="HELP-"+(bratKeyDict.get(key))+uimaKeyDict.get(key);
 					continue;
 				}
 				FSArray ontarray = new FSArray(annView,cuis.length);
@@ -199,19 +201,24 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 			for(String s : uimaKeyDict.keySet()) {
 				unannotated_summary += s+":"+bratKeyDict.get(s).split("\t")[1]+"\t";
 			}
+			if(unannotated_count>=brat_cuiless_count) unannotated_summary = "NOT_ANNOTATED";
+			if(unannotated_count>=semeval_cuiless_count) unannotated_summary = "NOT_ANNOTATED";
 		}
 		printTableLine(semeval_cuiless_count, brat_cuiless_count,
 				brat_annotated_count, unannotated_count, extra_annotations,
-				help_cui_count, docname, annotator_name, unannotated_summary);
+				help_cui_count, docname, annotator_name, unannotated_summary,
+				extra_summary,help_summary);
 	}
 
 	private void printTableLine(int semeval_cuiless_count,
 			int brat_cuiless_count, int brat_annotated_count,
 			int unannotated_count, int extra_annotations, int help_cui_count,
-			String docname, String annotator_name, String unannotated_summary) {
+			String docname, String annotator_name, String unannotated_summary,
+			String extra_summary, String help_summary) {
 		String tableline = (annotator_name+"\t"+semeval_cuiless_count+"\t"+
 				brat_cuiless_count+"\t"+brat_annotated_count+"\t"+unannotated_count+
-				"\t"+extra_annotations+"\t"+help_cui_count+"\t"+docname+"\t"+unannotated_summary);
+				"\t"+extra_annotations+"\t"+help_cui_count+"\t"+docname+
+				"\t"+unannotated_summary+"\t"+extra_summary+"\t"+help_summary);
 		System.out.println(tableline);
 	}
 

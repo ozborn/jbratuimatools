@@ -8,7 +8,6 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.google.common.collect.HashMultiset;
-import com.google.common.collect.Multiset;
 
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.uima.jcas.cas.FSArray;

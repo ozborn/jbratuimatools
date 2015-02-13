@@ -33,7 +33,8 @@ public class CheckMissingPipelineClient {
 	protected static String resourceDirPath = "/Users/ozborn/code/repo/cuilessdata/";
 	protected static String brat_annotation_root = resourceDirPath + "training_clean/";
 	protected static String semeval2015_updated_train_root = 
-			//"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/train";
+			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/train";
+	protected static String semeval2015_old_train_root = 
 			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
 	public static final String[] bratExtensions = {
 			BratConstants.BRAT_CONFIG_FILE_EXTENSION,BratConstants.BRAT_TEXT_FILE_EXTENSION};
@@ -45,7 +46,7 @@ public class CheckMissingPipelineClient {
 		System.out.println(brat_annotation_root); System.out.flush();
 		Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
 				bratExtensions, true);
-		Collection<File> semFiles = FileUtils.listFiles(new File(semeval2015_updated_train_root),
+		Collection<File> semFiles = FileUtils.listFiles(new File(semeval2015_old_train_root),
 				semevalExtensions, true);
 		//System.out.println("Got "+inputFiles.size()+" input files for check missing pipeline...");
 		System.out.println("Got "+semFiles.size()+" semeval input files for check missing pipeline...");
@@ -80,13 +81,12 @@ public class CheckMissingPipelineClient {
         );
 		ConfigurationData config_data2 = ConfigurationParameterFactory.createConfigurationData(
 				SemEval2015BratCompareCollectionReader.PARAM_SEMEVAL_PATH,
-				semeval2015_updated_train_root
+				semeval2015_old_train_root
         );
         */
     
 		CollectionReaderDescription crd = CollectionReaderFactory.createReaderDescription(
 				SemEval2015BratCompareCollectionReader.class,
-		//config_data1,config_data2);
 					BRATCollectionReader.PARAM_FILES,
 					files,
 					SemEval2015BratCompareCollectionReader.PARAM_SEMEVAL_FILES,
@@ -94,7 +94,7 @@ public class CheckMissingPipelineClient {
 			);
 
 		AggregateBuilder builder = new AggregateBuilder();
-		builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(semeval2015_updated_train_root));
+		builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(semeval2015_old_train_root));
 		builder.add(BratParserAnnotator.getDescription());
 		/*
 		builder.add(AnalysisEngineFactory.createPrimitiveDescription(SemEval2015TaskCGoldAnnotator.class,
@@ -103,12 +103,6 @@ public class CheckMissingPipelineClient {
 				SemEval2015TaskCGoldAnnotator.PARAM_CUI_MAP,
 				TrainTestPipeline.cuiMapFile));
 				*/
-		/*
-		builder.add(SemEval2015ViewCreatorAnnotator.getDescription(),
-				SemEval2015ViewCreatorAnnotator.PARAM_TRAINING_PATH,
-				semeval2015_updated_traint_root
-				);
-		*/
 
 		/*Fails to pass Collection<Files? parameter
 		builder.add(AnalysisEngineFactory.createPrimitiveDescription(SemEval2015ViewCreatorAnnotator.class,
@@ -121,12 +115,12 @@ public class CheckMissingPipelineClient {
 		for (JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))
 		{
 			JCas annView = jcas.getView(BratConstants.ANN_VIEW);
-			String[] pathbits = (ViewUriUtil.getURI(annView)).toString().split(File.separator);
 			Collection<DiscontinousBratAnnotation> brats = JCasUtil.select(annView, DiscontinousBratAnnotation.class);
+			//String[] pathbits = (ViewUriUtil.getURI(annView)).toString().split(File.separator);
 			//System.out.println("Got "+brats.size()+" brat annotations for "+pathbits[pathbits.length-1]);
 			annotatorstats.add(brats);
 		}
-		annotatorstats.print();
+		//annotatorstats.print();
 		
 		
 		//SimplePipeline.runPipeline(reader, builder.createAggregate());

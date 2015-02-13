@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
+	<name>DiseaseDisorderAttribute</name>
+	<description/>
+	<version/>
+	<vendor/>
+	<imports>
+		<import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
+	</imports>
+	<types>
+		<typeDescription>
+			<name>brat.type.DiscontinousBratAnnotation</name>
+			<description/>
+			<supertypeName>org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation</supertypeName>
+			<features>
+				<featureDescription>
+					<name>spans</name>
+					<description>List of Annotations(spans) associated with this DiscontinousBratAnnotation</description>
+					<rangeTypeName>uima.cas.FSArray</rangeTypeName>
+				</featureDescription>
+			
+			<featureDescription>
+          <name>DocName</name>
+          <description>Name of the document that this annotation occured in, used when they are pooled together.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>AnnotatorName</name>
+          <description>Annotator who created this annotation.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>DiscontinousText</name>
+          <description>Concatenated covered  text of all the annotations that make up this discontinous annotation.</description>
+          <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      </features>
+		</typeDescription>
+	</types>
+</typeSystemDescription>

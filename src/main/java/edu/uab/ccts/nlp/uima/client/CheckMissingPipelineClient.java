@@ -2,6 +2,7 @@ package edu.uab.ccts.nlp.uima.client;
 
 import java.io.File;
 import java.util.Collection;
+import java.util.Hashtable;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.UIMAException;
@@ -18,6 +19,8 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.cleartk.util.ViewUriUtil;
 import org.uimafit.factory.AggregateBuilder;
 import org.uimafit.factory.AnalysisEngineFactory;
+
+import com.google.common.collect.HashMultiset;
 
 import brat.type.DiscontinousBratAnnotation;
 import edu.uab.ccts.nlp.brat.AnnotatorStatistics;
@@ -40,6 +43,8 @@ public class CheckMissingPipelineClient {
 			BratConstants.BRAT_CONFIG_FILE_EXTENSION,BratConstants.BRAT_TEXT_FILE_EXTENSION};
 	public static final String[] semevalExtensions = {
 			SemEval2015Constants.SEMEVAL_TEXT_FILE_EXTENSION};
+	static Hashtable<String,Hashtable<String,HashMultiset<String>>> annotation_results = 
+	new Hashtable<String,Hashtable<String,HashMultiset<String>>>();
 
 	public static void main(String... args)
 	{
@@ -120,7 +125,6 @@ public class CheckMissingPipelineClient {
 			//System.out.println("Got "+brats.size()+" brat annotations for "+pathbits[pathbits.length-1]);
 			annotatorstats.add(brats);
 		}
-		//annotatorstats.print();
 		
 		
 		//SimplePipeline.runPipeline(reader, builder.createAggregate());

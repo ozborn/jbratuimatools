@@ -31,6 +31,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 	//These are re-initialized each time in process method
 	Hashtable<String,String> bratKeyDict = null;
 	Hashtable<String,DiscontinousBratAnnotation> uimaKeyDict  = null;
+	boolean verbose = false;
 
 	//public void initialize(UimaContext context) throws ResourceInitializationException{ }
 
@@ -69,7 +70,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		//Computer annotator and document name from URI
 		String[] pathbits = (ViewUriUtil.getURI(jcas)).toString().split(File.separator);
 		String docname = pathbits[pathbits.length-1];
-		String annotator_name = pathbits[pathbits.length-2];
+		String annotator_name = pathbits[pathbits.length-2].split("_")[0];
 
 		if(semevalPipeView.getDocumentText()==null){
 			System.out.println("Could not find original semeval input file");
@@ -218,8 +219,8 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		String tableline = (annotator_name+"\t"+semeval_cuiless_count+"\t"+
 				brat_cuiless_count+"\t"+brat_annotated_count+"\t"+unannotated_count+
 				"\t"+extra_annotations+"\t"+help_cui_count+"\t"+docname+
-				"\t"+unannotated_summary+"\t"+extra_summary+"\t"+help_summary);
-		System.out.println(tableline);
+				"\t"+unannotated_summary+"\t"+extra_summary+"\t"+help_summary+"\n");
+		if(verbose)System.out.print(tableline);
 	}
 
 	public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {

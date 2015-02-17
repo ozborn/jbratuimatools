@@ -11,5 +11,7 @@ public class BratConstants {
 	public static final String BRAT_ANN_FILE_EXTENSION = "ann";
 	public static final String BRAT_TEXT_FILE_EXTENSION = "txt";
 	public static final String BRAT_CONFIG_FILE_EXTENSION = "conf";
+	
+	public static final String UMLS_DB_CONNECT_STRING = "jdbc:oracle:thin:umls/umls@genome-bmidb.ad.uab.edu:1521:ccts2";
 
 }

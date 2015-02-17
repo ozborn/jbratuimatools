@@ -1,12 +1,16 @@
-package edu.uab.ccts.nlp.brat;
+package edu.uab.ccts.nlp.uima.annotator.cuiless;
 
 import java.io.Serializable;
+import java.sql.Connection;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Set;
 import java.util.TreeSet;
 
 import com.google.common.collect.HashMultiset;
+
+import edu.uab.ccts.nlp.brat.BratConstants;
+import edu.uab.ccts.nlp.umls.tools.UMLSTools;
 
 import org.apache.uima.jcas.cas.FSArray;
 
@@ -64,7 +68,6 @@ public class AnnotatorStatistics implements Serializable {
 			dtexthash = new Hashtable<String,HashMultiset<String>>();
 			bighash.put(annotator_name, dtexthash);
 		}
-		//System.out.println("Words in dtexthash are:"+dtexthash.size());
 		
 		HashMultiset<String> dcuiset = dtexthash.get(text_key);
 		if(dcuiset==null) {
@@ -107,15 +110,15 @@ public class AnnotatorStatistics implements Serializable {
 
 	
 	public void print(Hashtable<String,Hashtable<String,HashMultiset<String>>> ghash){
-		System.out.println(ghash);
-		System.out.println(ghash.get(ALL_ANNOTATORS));
-		printDiscrepancies(ghash);
+		//System.out.println(ghash);
+		//System.out.println(ghash.get(ALL_ANNOTATORS));
 		printMappingTypeCounts(ghash);
 	}
 	
 	public void print(){
 		print(anno_results);
 	}
+	
 	
 	
 	
@@ -155,15 +158,14 @@ public class AnnotatorStatistics implements Serializable {
 		}
 		System.out.println("Single:"+single_map+" Double:"+double_map+
 		" Triple:"+triple_map+" Quad:"+quad_map);
-
-		
 	}
-
 	
 	
-	public void printDiscrepancies(Hashtable<String,Hashtable<String,HashMultiset<String>>> ghash){
+	public String getDiscrepancies(Hashtable<String,Hashtable<String,HashMultiset<String>>> ghash) throws Exception{
 		if(ghash==null) ghash = anno_results;
-		System.out.println("Discrepancies");
+		StringBuffer discrepancies = new StringBuffer();
+		discrepancies.append("");
+		int dcount = 0, agree_count=0, unique_count=0;
 		Hashtable<String,HashMultiset<String>> alls = ghash.get(ALL_ANNOTATORS);
 		Set<String> texts = alls.keySet();
 		for(String text : texts) {
@@ -171,14 +173,25 @@ public class AnnotatorStatistics implements Serializable {
 			if(test.size()>1) {
 				String any = test.iterator().next();
 				if(test.count(any)!=test.size()){
-					System.out.println(text+"("+test.size()+") :: "+test);
-				}
-			}
+					discrepancies.append(text+"\t"+test.size());
+					for (String s : test.elementSet()) {
+						String bname = null;
+						bname = UMLSTools.fetchBestConceptName(s, BratConstants.UMLS_DB_CONNECT_STRING);
+						discrepancies.append("\t"+bname);
+						discrepancies.append("\t"+s);
+						discrepancies.append("\t"+test.count(s));
+					}
+					discrepancies.append("\n");
+					dcount++;
+				} else { agree_count++; }
+			} else { unique_count++; }
 		}
+		System.out.println(agree_count+" agreements, "+dcount+" discrepancies, "+unique_count+" untestable");
+		return discrepancies.toString();
 	}
 	
-	
-	
-	
+	public String getDiscrepancies() throws Exception { 
+		return getDiscrepancies(anno_results) ; 
+	}
 
 }

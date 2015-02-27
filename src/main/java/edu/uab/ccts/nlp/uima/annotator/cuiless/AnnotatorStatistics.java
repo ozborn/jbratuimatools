@@ -25,7 +25,7 @@ public class AnnotatorStatistics implements Serializable {
 	public static final String ALL_ANNOTATORS = "ALL_ANNOTATORS";
 	private static final long serialVersionUID = 1L;
 	private static Hashtable<String,Hashtable<String,HashMultiset<String>>> anno_results = null;
-	private static Hashtable<String,String> map_type_hash = null; //Key docname+T+id, value = CUIs string
+	private static Hashtable<String,String> map_type_hash = null; //Key docname+T+id, value = CUIs string (comma separated)
 
 	public Hashtable<String, Hashtable<String, HashMultiset<String>>> getAnnotatorStats() {
 		return anno_results;
@@ -92,6 +92,12 @@ public class AnnotatorStatistics implements Serializable {
 	}
 
 
+	
+	/**
+	 * Returns comma separated CUI string
+	 * @param dba
+	 * @return
+	 */
 	private String getCUIs(DiscontinousBratAnnotation dba) {
 		if(dba.getOntologyConceptArr()==null) { assert(false); }
 		int size = dba.getOntologyConceptArr().size();
@@ -169,10 +175,12 @@ public class AnnotatorStatistics implements Serializable {
 		Hashtable<String,HashMultiset<String>> dist = new Hashtable<String,HashMultiset<String>>();
 		Hashtable<String,String> cuistypehash = new Hashtable<String,String>(); //Key CUI, Value , seperated semantic types
 		HashMultiset<String> stdist = HashMultiset.create();
-		int bad_count=0, bad_form_count=0;
+		HashMultiset<String> doublestdist = HashMultiset.create();
+		int bad_count=0, bad_form_count=0, total_cui_count=0;
 		try {
 			for(String cuis : map_type_hash.values()) {
 				String[] cs = cuis.split(",");
+				if(BratParserAnnotator.isWellFormedCUI(cs[0])) { doublestdist.add(cuis); }
 				//Iterate through all the cuis for this mapping
 				for(int i=0;i<cs.length;i++){
 					String cui = cs[i].trim();
@@ -181,16 +189,17 @@ public class AnnotatorStatistics implements Serializable {
 						bad_form_count++;
 						continue;
 					}
+					total_cui_count++;
 					HashMultiset<String> exist = dist.get(cui);
 					if(exist==null){
 						exist = HashMultiset.create();
 						String[] cuiinfo = UMLSTools.fetchCUIInfo(cui, BratConstants.UMLS_DB_CONNECT_STRING);
 						cuistypehash.put(cui,cuiinfo[2]);
-						HashMultiset<String> clean = cleanSemanticTypes(cuiinfo[2],stdist);
 						if(cuiinfo[3].indexOf("SNOMEDCT")==-1) {
 							System.out.println("Bad SAB for "+cui+" in "+cuiinfo[3]);
 							bad_count++;
 						}
+						HashMultiset<String> clean = cleanSemanticTypes(cuiinfo[2],stdist);
 						exist.addAll(clean);
 					} 
 					else {
@@ -202,7 +211,6 @@ public class AnnotatorStatistics implements Serializable {
 				}
 			}
 		} catch (Exception e) { e.printStackTrace(); }
-		/*
 		for(String cui : dist.keySet()){
 			Set<String> stypes = dist.get(cui).elementSet();
 			String values = "";
@@ -211,12 +219,15 @@ public class AnnotatorStatistics implements Serializable {
 			}
 			System.out.println(cui+"-"+values);
 		}
-		*/
 		for (String type : Multisets.copyHighestCountFirst(stdist).elementSet()) {
 		    System.out.println(type + ": " + stdist.count(type));
 		}
+		for (String type : Multisets.copyHighestCountFirst(doublestdist).elementSet()) {
+		    System.out.println(type + ": " + doublestdist.count(type));
+		}
 		System.out.println("Bad vocabulary count was:"+bad_count);
 		System.out.println("Total Unique CUI count was:"+dist.keySet().size());
+		System.out.println("Total CUI count was:"+total_cui_count);
 		System.out.println("Badly formed CUI count was:"+bad_form_count);
 	}
 	

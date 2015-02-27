@@ -125,6 +125,8 @@ public class CheckMissingPipelineClient {
 			//System.out.println("Got "+brats.size()+" brat annotations for "+pathbits[pathbits.length-1]);
 			annotatorstats.add(brats);
 		}
+		annotatorstats.print();
+		annotatorstats.printSemanticTypeDistribution();
 		
 		
 		//SimplePipeline.runPipeline(reader, builder.createAggregate());

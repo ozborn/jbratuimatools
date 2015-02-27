@@ -31,7 +31,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 	//These are re-initialized each time in process method
 	Hashtable<String,String> bratKeyDict = null;
 	Hashtable<String,DiscontinousBratAnnotation> uimaKeyDict  = null;
-	boolean verbose = false;
+	boolean verbose = true;
 
 	//public void initialize(UimaContext context) throws ResourceInitializationException{ }
 
@@ -70,6 +70,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		//Computer annotator and document name from URI
 		String[] pathbits = (ViewUriUtil.getURI(jcas)).toString().split(File.separator);
 		String docname = pathbits[pathbits.length-1];
+		String datasetname = pathbits[pathbits.length-2];
 		String annotator_name = pathbits[pathbits.length-2].split("_")[0];
 
 		if(semevalPipeView.getDocumentText()==null){
@@ -97,6 +98,10 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 			String[] lines = annView.getDocumentText().split(System.getProperty("line.separator"));
 			for(String line : lines){
 				String[] fields = line.split("\t");
+				if(fields.length<2) {
+					System.out.println(line+" has no tabs!");
+					System.out.flush();
+				}
 				String key = fields[0].trim();
 				String value = fields[1].trim();
 				if(fields.length>2) {
@@ -117,6 +122,8 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				DiscontinousBratAnnotation dba = new DiscontinousBratAnnotation(annView);
 				dba.setAnnotatorName(annotator_name);
 				dba.setDocName(docname);
+				//System.out.println("KEY"+key); System.out.flush();
+				dba.setId(Integer.parseInt(key.substring(1, key.length())));
 				String text = tabfields[1];
 				String[] entfields = tabfields[0].split(" ");
 				BratEntity bratent = bratconfig.getEntityByName(entfields[0].trim());
@@ -208,23 +215,32 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		printTableLine(semeval_cuiless_count, brat_cuiless_count,
 				brat_annotated_count, unannotated_count, extra_annotations,
 				help_cui_count, docname, annotator_name, unannotated_summary,
-				extra_summary,help_summary);
+				extra_summary,help_summary,datasetname);
 	}
 
 	private void printTableLine(int semeval_cuiless_count,
 			int brat_cuiless_count, int brat_annotated_count,
 			int unannotated_count, int extra_annotations, int help_cui_count,
 			String docname, String annotator_name, String unannotated_summary,
-			String extra_summary, String help_summary) {
+			String extra_summary, String help_summary, String datasetname) {
 		String tableline = (annotator_name+"\t"+semeval_cuiless_count+"\t"+
 				brat_cuiless_count+"\t"+brat_annotated_count+"\t"+unannotated_count+
-				"\t"+extra_annotations+"\t"+help_cui_count+"\t"+docname+
+				"\t"+extra_annotations+"\t"+help_cui_count+"\t"+datasetname+"\t"+docname+
 				"\t"+unannotated_summary+"\t"+extra_summary+"\t"+help_summary+"\n");
-		if(verbose)System.out.print(tableline);
+		if(verbose) {
+			if( (unannotated_count>0) || extra_annotations>0) {
+				System.out.print(tableline);
+			}
+		}
 	}
 
 	public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {
 		return AnalysisEngineFactory.createEngineDescription(BratParserAnnotator.class);
+	}
+	
+	public static boolean isWellFormedCUI(String cui) {
+		if(cui.startsWith("C") && cui.length()==8) return true;
+		return false;
 	}
 
 }

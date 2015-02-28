@@ -1,10 +1,9 @@
 package edu.uab.ccts.nlp.uima.annotator.cuiless;
 
 import java.io.Serializable;
-import java.sql.Connection;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Hashtable;
-import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -26,6 +25,7 @@ public class AnnotatorStatistics implements Serializable {
 	private static final long serialVersionUID = 1L;
 	private static Hashtable<String,Hashtable<String,HashMultiset<String>>> anno_results = null;
 	private static Hashtable<String,String> map_type_hash = null; //Key docname+T+id, value = CUIs string (comma separated)
+	private static HashSet<String> wrong_vocabulary_cuis = null;
 
 	public Hashtable<String, Hashtable<String, HashMultiset<String>>> getAnnotatorStats() {
 		return anno_results;
@@ -39,7 +39,7 @@ public class AnnotatorStatistics implements Serializable {
 		map_type_hash = new Hashtable<String,String>();
 		Hashtable<String,HashMultiset<String>> all = new Hashtable<String,HashMultiset<String>>();
 		anno_results.put(ALL_ANNOTATORS, all);
-
+		wrong_vocabulary_cuis = new HashSet<String>();
 	}
 
 
@@ -197,6 +197,7 @@ public class AnnotatorStatistics implements Serializable {
 						cuistypehash.put(cui,cuiinfo[2]);
 						if(cuiinfo[3].indexOf("SNOMEDCT")==-1) {
 							System.out.println("Bad SAB for "+cui+" in "+cuiinfo[3]);
+							wrong_vocabulary_cuis.add(cui);
 							bad_count++;
 						}
 						HashMultiset<String> clean = cleanSemanticTypes(cuiinfo[2],stdist);
@@ -225,10 +226,11 @@ public class AnnotatorStatistics implements Serializable {
 		for (String type : Multisets.copyHighestCountFirst(doublestdist).elementSet()) {
 		    System.out.println(type + ": " + doublestdist.count(type));
 		}
-		System.out.println("Bad vocabulary count was:"+bad_count);
 		System.out.println("Total Unique CUI count was:"+dist.keySet().size());
 		System.out.println("Total CUI count was:"+total_cui_count);
 		System.out.println("Badly formed CUI count was:"+bad_form_count);
+		System.out.println("Total wrong vocabulary CUI count was:"+bad_count);
+		System.out.println("Total unique wrong vocabulary CUI count was:"+wrong_vocabulary_cuis.size());
 	}
 	
 	

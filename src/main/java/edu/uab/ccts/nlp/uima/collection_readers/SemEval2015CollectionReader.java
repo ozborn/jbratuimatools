@@ -31,13 +31,21 @@ public class SemEval2015CollectionReader extends JCasCollectionReader_ImplBase
 	public static final String TEXT_SUFFIX = "text";
 	public static final String PIPED_VIEW = "PIPE_VIEW";
 	public static final String PARAM_FILES = "files";
+	public static final String PARAM_DIR = "inputdir";
+
 	@ConfigurationParameter(
-			name = PARAM_FILES,
-			description = "points to a semeval-2014-task-7 data directory")
+			name = PARAM_DIR,
+			description = "points to a semeval-2015-task-14 data dir",
+			defaultValue="/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/train")
+	//Can not get this working with files as a input parameter
+	String inputdir;
+
 	protected Collection<File> files;
 	protected List<File> pipedFiles = new ArrayList<>();
 	protected List<File> textFiles = new ArrayList<>();
 	protected int totalFiles = 0;
+	
+	
 	public static void collectFiles(File directory, Collection<File> files) throws IOException
 	{
 		File[] dirFiles = directory.listFiles((FileFilter) HiddenFileFilter.VISIBLE);
@@ -54,6 +62,10 @@ public class SemEval2015CollectionReader extends JCasCollectionReader_ImplBase
 	}
 	public void initialize(UimaContext context) throws ResourceInitializationException
 	{
+		String[] pipeExtension = {
+					SemEval2015CollectionReader.PIPE_SUFFIX};
+		Collection<File> files = FileUtils.listFiles(new File(inputdir),
+			pipeExtension, true);
 		for (File f : files)
 		{
 			String path = f.getPath().replace(PIPE_SUFFIX, TEXT_SUFFIX);

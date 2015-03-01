@@ -8,22 +8,13 @@ import org.apache.uima.UIMAException;
 import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
-import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.uimafit.factory.AggregateBuilder;
 
-import brat.type.DiscontinousBratAnnotation;
-import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
-import edu.uab.ccts.nlp.uima.annotator.cuiless.AnnotatorStatistics;
 import edu.uab.ccts.nlp.uima.annotator.cuiless.Semeval2CUIlessBRATAnnotator;
-import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
-import edu.uab.ccts.nlp.uima.collection_readers.SemEval2015BratCompareCollectionReader;
 import edu.uab.ccts.nlp.uima.collection_readers.SemEval2015CollectionReader;
-import edu.uab.ccts.nlp.uima.shared_task.SemEval2015Constants;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ParserAnnotator;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotator;
 
 
 /**
@@ -39,7 +30,7 @@ public class SemevalCUIless2BratClient {
 	protected static String semeval2015_updated_train_root = 
 			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/train";
 	protected static String semeval2015_updated_devel_root = 
-			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/devel";
+			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/devel/discharge";
 	public static final String[] pipeExtension = {
 			SemEval2015CollectionReader.PIPE_SUFFIX};
 
@@ -54,19 +45,22 @@ public class SemevalCUIless2BratClient {
 		Collection<File> semFiles = FileUtils.listFiles(new File(semeval2015_updated_devel_root),
 				pipeExtension, true);
 		System.out.println("Got "+semFiles.size()+" semeval input files for check missing pipeline...");
+		//apply(semeval2015_updated_devel_root,semeval2015_updated_devel_root);
 		apply(semeval2015_updated_devel_root,semFiles);
 
 	}
 
 	
 	public static void apply(String outputdir, Collection<File> files) 
+	//public static void apply(String outputdir, String inputdir) 
 	{
 		try {
     
 		CollectionReaderDescription crd = CollectionReaderFactory.createReaderDescription(
-				SemEval2015BratCompareCollectionReader.class,
-					BRATCollectionReader.PARAM_FILES,
-					files
+				SemEval2015CollectionReader.class
+				/*SemEval2015CollectionReader.class,
+					SemEval2015CollectionReader.PARAM_FILES,
+					files */
 			);
 
 		AggregateBuilder builder = new AggregateBuilder();

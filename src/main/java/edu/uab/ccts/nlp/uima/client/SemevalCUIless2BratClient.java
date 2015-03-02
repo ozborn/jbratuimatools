@@ -26,7 +26,7 @@ import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ParserAnnotator;
 public class SemevalCUIless2BratClient {
 	protected static String resourceDirPath = "/Users/ozborn/code/repo/cuilessdata/";
 	protected static String brat_annotation_root = resourceDirPath + "training_clean/";
-	protected static String brat_devel_output_root = resourceDirPath + "devel_updated/";
+	public final static String brat_devel_output_root = resourceDirPath + "input/devel_updated";
 	protected static String semeval2015_updated_train_root = 
 			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/train";
 	protected static String semeval2015_updated_devel_root = 

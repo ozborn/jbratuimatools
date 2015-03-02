@@ -28,7 +28,7 @@ import org.cleartk.semeval2015.type.DisorderSpan;
 import org.cleartk.util.ViewUriUtil;
 
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
+import edu.uab.ccts.nlp.uima.client.SemevalCUIless2BratClient;
 
 
 
@@ -40,6 +40,7 @@ import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
  */
 public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 	static final String BRAT_FILE_PATH = "BratOutputDirectory";
+	static final String NOTE_TYPE="DISCHARGE_SUMMARY";
 	private String _dirInputpath, _bratOutputPath;
 	boolean _removeNonOverlapping=false;
 	private String _edited_doc_text = null;
@@ -70,12 +71,21 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		String uri = ViewUriUtil.getURI(jcas).toString();
+		/*
+		String nofile = uri.substring(
+				0,
+				uri.lastIndexOf(File.separator)).toUpperCase();
+		String type = nofile.substring(nofile.lastIndexOf(File.separator)+1);
+		System.out.println("TYPE:"+type);
+		*/
 		String txtfilename = _bratOutputPath+File.separator+
-				uri.substring(uri.lastIndexOf(File.separator),uri.lastIndexOf(".")+1)+"txt";
+				uri.substring(uri.lastIndexOf(File.separator)+1,uri.lastIndexOf("."))
+				+".txt";
 		_edited_doc_text = jcas.getDocumentText();
-		StringBuffer sb = shareClef20142Brat(jcas);
+		StringBuffer sb = dd20142Brat(jcas);
 		String annfilename = _bratOutputPath+File.separator+
-				uri.substring(uri.lastIndexOf(File.separator),uri.lastIndexOf(".")+1)+"ann";
+				uri.substring(uri.lastIndexOf(File.separator)+1,uri.lastIndexOf("."))
+				+".ann";
 		try {
 			writeBratFile(annfilename,sb);
 			writeBratFile(txtfilename,new StringBuffer(_edited_doc_text));
@@ -89,7 +99,7 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 		try {
 			if(f.exists() && f.canWrite()){
 				FileWriter fw = new FileWriter(name);
-				this.getContext().getLogger().log(Level.INFO,"Writing file named "+f);
+				this.getContext().getLogger().log(Level.FINE,"Writing file named "+name);
 				fw.write(sb.toString().trim());
 				fw.close();
 			} else {
@@ -101,7 +111,7 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 
 
 
-	private StringBuffer shareClef20142Brat(JCas jcas) {
+	private StringBuffer dd20142Brat(JCas jcas) {
 		StringBuffer brat_annotation=null;
 		int identifier = 1, prev_identifier=0;
 		try {
@@ -109,6 +119,10 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 			if( (JCasUtil.select(jcas, DiseaseDisorder.class)).size()==0){
 				this.getContext().getLogger().log(Level.WARNING,
 						"Could not find DiseaseDisorder with JCasUtil in view "+jcas.getViewName());
+			} else {
+				String uri = ViewUriUtil.getURI(jcas).toString();
+				System.out.println("Found "+(JCasUtil.select(jcas, 
+				DiseaseDisorder.class)).size()+" Disease Disorders in "+uri);
 			}
 			FSIndex<Annotation> dIndex = jcas.getAnnotationIndex(DiseaseDisorder.type);
 			Iterator<Annotation> dIter = dIndex.iterator();
@@ -120,18 +134,19 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 			//diseaseNoteMap = new Hashtable<String,String>();
 			while(dIter.hasNext()) {
 				DiseaseDisorder sd = (DiseaseDisorder) dIter.next();
-				boolean all_cuiless = true;
+				boolean is_cuiless = false;
 				String discontinous_offset = "";
 				int[] forbrat = new int[sd.getSpans().size()*2];
 				for (int i=0 ;i < sd.getSpans().size();i++){
 					DisorderSpan ds = (DisorderSpan) sd.getSpans(i);
 					forbrat[i*2] = ds.getBegin();
 					forbrat[(i*2)+1] = ds.getEnd();
-					discontinous_offset += discontinous_offset+ds.getBegin()+" "+ds.getEnd();
+					discontinous_offset = discontinous_offset+ds.getBegin()+" "+ds.getEnd();
 					if(!((i+1)==sd.getSpans().size())) discontinous_offset = discontinous_offset+";";
-					if(!ds.getCui().equalsIgnoreCase("CUIless")) { all_cuiless = false; break; }
+					if(ds.getCui().equalsIgnoreCase("CUI-less")) { is_cuiless = true; }
 				}
-				if(!all_cuiless) continue;
+				if(!is_cuiless) continue;
+				//System.out.println(ViewUriUtil.getURI(jcas).toString()+" looking at:"+sd.getBegin()+","+sd.getEnd());
 
 				String diseaseid = null;
 				diseaseid = "T"+identifier;
@@ -333,6 +348,7 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 	*/
 	
 	public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {
-		return AnalysisEngineFactory.createEngineDescription(Semeval2CUIlessBRATAnnotator.class);
+		return AnalysisEngineFactory.createEngineDescription(Semeval2CUIlessBRATAnnotator.class,
+				Semeval2CUIlessBRATAnnotator.BRAT_FILE_PATH,SemevalCUIless2BratClient.brat_devel_output_root);
 	}
 }

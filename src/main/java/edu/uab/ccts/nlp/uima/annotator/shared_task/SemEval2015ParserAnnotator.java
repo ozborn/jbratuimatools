@@ -140,6 +140,7 @@ public class SemEval2015ParserAnnotator extends JCasAnnotator_ImplBase
 			}
 			docId = fields[dd_doc];
 			String cui = fields[dd_cui];
+			//if(cui.equalsIgnoreCase("cui-less")) System.out.println("Found cuiless in:"+fields[0]);
 			String[] ddSpans = fields[dd_spans].split(",");
 			ArrayList<DisorderSpan> spans = new ArrayList<>();
 			String text = "";
@@ -181,17 +182,18 @@ public class SemEval2015ParserAnnotator extends JCasAnnotator_ImplBase
 				}
 				//Determine if we have seen this disease before
 				//Required to handle situation where next line is NOT a new disease but an additional anatomical mapping
+				boolean seen_before = true;
+				for(int i=0;i<spans.size();i++){
+					DisorderSpan cur = spans.get(i);
+					if(prevSpans==null || !spanSeenBefore(cur,prevSpans)){
+						seen_before = false;
+						break;
+					}
+				}
+				if(seen_before) {
+					System.out.println(docId+" seen before!"+line); System.out.flush();
+				}
 				/*
-	boolean seen_before = true;
-	for(int i=0;i<spans.size();i++){
-	DisorderSpan cur = spans.get(i);
-	if(prevSpans==null || !spanSeenBefore(cur,prevSpans)){
-	seen_before = false;
-	break;
-	}
-	}
-	if(seen_before) {
-	System.out.println(docId+" seen before!"+line); System.out.flush();
 	List<DiseaseDisorderAttribute> temp = new ArrayList<DiseaseDisorderAttribute>();
 	DiseaseDisorderAttribute prevbody = null;
 	DiseaseDisorderAttribute prevcourse = null;
@@ -397,9 +399,9 @@ public class SemEval2015ParserAnnotator extends JCasAnnotator_ImplBase
 		}
 		return false;
 	}
-	
 
-	
+
+
 	public static void createAttributeRelation(
 			JCas jCas,
 			DiseaseDisorderAttribute arg1,
@@ -429,7 +431,7 @@ public class SemEval2015ParserAnnotator extends JCasAnnotator_ImplBase
 
 		relation.addToIndexes();
 	}
-	
+
 
 
 
@@ -453,7 +455,7 @@ public class SemEval2015ParserAnnotator extends JCasAnnotator_ImplBase
 		relation.setCategory(predictedCategory);
 		relation.addToIndexes();
 	}
-	
+
 	public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {
 		return AnalysisEngineFactory.createEngineDescription(SemEval2015ParserAnnotator.class);
 	}

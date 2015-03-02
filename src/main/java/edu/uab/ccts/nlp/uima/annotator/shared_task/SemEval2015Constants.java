@@ -14,16 +14,16 @@ public class SemEval2015Constants
         public static final String OUTPUT_SEPERATOR = "|";
         public static final int TOTAL_FIELDS = 19; //22 in previous version
 
-        public static final String NEGATION_RELATION = "negationIndicator";
-        public static final String SUBJECT_RELATION = "subjectClass";
-        public static final String UNCERTAINITY_RELATION = "uncertaintyIndicator";
-        public static final String COURSE_RELATION = "courseClass";
-        public static final String SEVERITY_RELATION = "severityClass";
-        public static final String CONDITIONAL_RELATION = "conditionalClass";
-        public static final String GENERIC_RELATION = "genericClass";
-        public static final String BODY_RELATION = "bodyLocation";
-        public static final String DOCTIME_RELATION = "doctimeClass";
-        public static final String TEMPORAL_RELATION = "temporalClass";
+        public static final String NEGATION_RELATION = "Negation";
+        public static final String SUBJECT_RELATION = "Subject";
+        public static final String UNCERTAINITY_RELATION = "Uncertainty";
+        public static final String COURSE_RELATION = "Course";
+        public static final String SEVERITY_RELATION = "Severity";
+        public static final String CONDITIONAL_RELATION = "Conditional";
+        public static final String GENERIC_RELATION = "Generic";
+        public static final String BODY_RELATION = "BodyLocation";
+        public static final String DOCTIME_RELATION = "Doctime";
+        public static final String TEMPORAL_RELATION = "Temporal";
 
         public static final Hashtable<String,String> defaultNorms = new Hashtable<String,String>();
 

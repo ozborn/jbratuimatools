@@ -36,7 +36,7 @@ public class SemEval2015CollectionReader extends JCasCollectionReader_ImplBase
 	@ConfigurationParameter(
 			name = PARAM_DIR,
 			description = "points to a semeval-2015-task-14 data dir",
-			defaultValue="/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/train")
+			defaultValue="/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/devel")
 	//Can not get this working with files as a input parameter
 	String inputdir;
 

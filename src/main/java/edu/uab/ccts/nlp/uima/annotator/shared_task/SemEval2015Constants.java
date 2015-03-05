@@ -28,7 +28,8 @@ public class SemEval2015Constants
 
         public static final String NEGATION_RELATION = "Negation";
         public static final String SUBJECT_RELATION = "Subject";
-        public static final String UNCERTAINITY_RELATION = "Uncertainty";
+        public static final String UNCERTAINITY_RELATION = "Uncertainity";
+        //public static final String UNCERTAINITY_RELATION = "Uncertainty"; //Correct spelling
         public static final String COURSE_RELATION = "Course";
         public static final String SEVERITY_RELATION = "Severity";
         public static final String CONDITIONAL_RELATION = "Conditional";

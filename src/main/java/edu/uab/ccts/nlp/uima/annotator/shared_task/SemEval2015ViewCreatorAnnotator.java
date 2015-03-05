@@ -14,8 +14,11 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.uimafit.descriptor.ConfigurationParameter;
 
-import edu.uab.ccts.nlp.uima.shared_task.SemEval2015Constants;
-
+/**
+ * This file reads in SemEval files into the SEMEVAL_PIPED_VIEW and the SEMEVAL_TEXT_VIEW
+ * @author ozborn
+ *
+ */
 public class SemEval2015ViewCreatorAnnotator extends JCasAnnotator_ImplBase {
 
 	static final String defaultTrainingPath = "/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
@@ -34,8 +37,8 @@ public class SemEval2015ViewCreatorAnnotator extends JCasAnnotator_ImplBase {
 		JCas pipedView = null, semevalTextView = null;
 		try
 		{
-			pipedView = jcas.createView(SemEval2015Constants.SEMEVAL_PIPED_VIEW);
-			semevalTextView = jcas.createView(SemEval2015Constants.SEMEVAL_TEXT_VIEW);
+			pipedView = jcas.createView(SemEval2015Constants.PIPED_VIEW);
+			semevalTextView = jcas.createView(SemEval2015Constants.GOLD_VIEW);
 		} catch (CASException e)
 		{
 			e.printStackTrace();

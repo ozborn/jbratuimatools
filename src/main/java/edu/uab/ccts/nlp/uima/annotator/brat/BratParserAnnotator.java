@@ -6,22 +6,25 @@ import java.util.Hashtable;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.cas.CASRuntimeException;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.util.Level;
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.relation.RelationArgument;
+import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import org.cleartk.util.ViewUriUtil;
 
 import edu.uab.ccts.nlp.brat.BratConfiguration;
 import edu.uab.ccts.nlp.brat.BratConfigurationImpl;
 import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.brat.BratEntity;
-import edu.uab.ccts.nlp.uima.shared_task.SemEval2015Constants;
+import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015Constants;
 import brat.type.DiscontinousBratAnnotation;
 
 public class BratParserAnnotator extends JCasAnnotator_ImplBase {
@@ -33,10 +36,11 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 	Hashtable<String,DiscontinousBratAnnotation> uimaKeyDict  = null;
 	boolean verbose = true;
 
-	//public void initialize(UimaContext context) throws ResourceInitializationException{ }
-
 
 	@Override
+	/**
+	 * All annotations should go into BratConstants.TEXT_VIEW
+	 */
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 
 		uimaKeyDict = new Hashtable<String,DiscontinousBratAnnotation>();
@@ -54,15 +58,12 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		/**
 		 * Parse our configuration file
 		 */
-		JCas configView = null, annView = null, textView = null, semevalPipeView = null;
+		JCas configView = null, anView = null, textView = null, semevalPipeView = null;
 		BratConfiguration bratconfig = null;
 		try {
-			annView = jcas.getView(BratConstants.ANN_VIEW);
-			//System.out.println("Got annView of size"+annView.getDocumentText().length());
+			anView = jcas.getView(BratConstants.ANN_VIEW);
 			textView = jcas.getView(BratConstants.TEXT_VIEW);
 			configView = jcas.getView(BratConstants.CONFIG_VIEW);
-			semevalPipeView = jcas.getView(SemEval2015Constants.SEMEVAL_PIPED_VIEW);
-			//System.out.println("Got semevalpipe of size"+semevalPipeView.getDocumentText().length());
 			bratconfig = new BratConfigurationImpl(configView.getDocumentText());
 		} catch (CASException e) { e.printStackTrace();
 		} catch (ResourceInitializationException e) { e.printStackTrace(); throw new AnalysisEngineProcessException(e);}
@@ -70,32 +71,19 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		//Computer annotator and document name from URI
 		String[] pathbits = (ViewUriUtil.getURI(jcas)).toString().split(File.separator);
 		String docname = pathbits[pathbits.length-1];
+		DocumentID id = new DocumentID(anView);
+		id.setDocumentID(docname);
+		id.addToIndexes(); id.addToIndexes(textView);
 		String datasetname = pathbits[pathbits.length-2];
 		String annotator_name = pathbits[pathbits.length-2].split("_")[0];
 
-		if(semevalPipeView.getDocumentText()==null){
-			System.out.println("Could not find original semeval input file");
-			semeval_cuiless_count=-1;
-		} else {
-			String[] pipelines = semevalPipeView.getDocumentText().split(System.getProperty("line.separator"));
-			String[] prev_chunks = null;
-			for(String line : pipelines) {
-				String[] chunks = line.split("\\|");
-				if(chunks[2].equals("CUI-less")){
-					if(prev_chunks!=null && (
-							(!prev_chunks[2].equals("CUI-less")) &&
-							(!prev_chunks[1].equals(chunks[1])))) {
-					}
-					semeval_cuiless_count++;
-				}
-				prev_chunks = chunks;
-			}
-		}
+		semeval_cuiless_count = getSemEvalCUIlessCount(jcas,
+				semeval_cuiless_count, semevalPipeView);
 
-
-		if(annView.getDocumentText().length()!=0) {
+		//Populate bratKeyDict
+		if(anView.getDocumentText().length()!=0) {
 			//Create hashed version of annotation file
-			String[] lines = annView.getDocumentText().split(System.getProperty("line.separator"));
+			String[] lines = anView.getDocumentText().split(System.getProperty("line.separator"));
 			for(String line : lines){
 				String[] fields = line.split("\t");
 				if(fields.length<2) {
@@ -119,7 +107,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 			if(key.trim().startsWith("T")) {
 				String[] tabfields = bratKeyDict.get(key).split("\t");
 				if(!tabfields[0].startsWith("Disease")) continue;
-				DiscontinousBratAnnotation dba = new DiscontinousBratAnnotation(annView);
+				DiscontinousBratAnnotation dba = new DiscontinousBratAnnotation(textView);
 				dba.setAnnotatorName(annotator_name);
 				dba.setDocName(docname);
 				//System.out.println("KEY"+key); System.out.flush();
@@ -133,9 +121,9 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					dba.setEnd(Integer.parseInt(entfields[2].trim()));
 				} else {
 					String[] span_fields = tabfields[0].split(" |;");
-					FSArray thespans = new FSArray(annView,span_fields.length-1);
+					FSArray thespans = new FSArray(textView,span_fields.length-1);
 					for(int i=1;i<span_fields.length;i=i+2){
-						Annotation span = new Annotation(annView);
+						Annotation span = new Annotation(textView);
 						if(i==1) dba.setBegin(Integer.parseInt(span_fields[i]));
 						span.setBegin(Integer.parseInt(span_fields[i]));
 						int end = Integer.parseInt(span_fields[i+1]);
@@ -154,19 +142,19 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 
 		for(String key : bratKeyDict.keySet()){
 			if(key.startsWith("R")){
-				BinaryTextRelation btr = new BinaryTextRelation(annView);
+				BinaryTextRelation btr = new BinaryTextRelation(textView);
 				String[] tabfields = bratKeyDict.get(key).split("\t");
 				String[] span_fields = tabfields[0].split(" |:");
 				String reltype = span_fields[0];
 				btr.setCategory(reltype);
 				//if(reltype.indexOf(BratConstants.NER_TYPE.BODYLOCATION.getName())!=-1) {
-				RelationArgument one = new RelationArgument(annView);
+				RelationArgument one = new RelationArgument(textView);
 				one.setArgument(uimaKeyDict.get(span_fields[2]));
 				btr.setArg1(one);
-				RelationArgument two = new RelationArgument(annView);
+				RelationArgument two = new RelationArgument(textView);
 				two.setArgument(uimaKeyDict.get(span_fields[4]));
 				btr.setArg2(two);
-				btr.addToIndexes(annView);
+				btr.addToIndexes(textView);
 			} else if(key.trim().startsWith("T")) { continue;
 			} else if(key.startsWith("#")) {
 				String[] tabfields = bratKeyDict.get(key).split("\t");
@@ -186,20 +174,20 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					help_summary+="HELP-"+(bratKeyDict.get(key))+uimaKeyDict.get(key);
 					continue;
 				}
-				FSArray ontarray = new FSArray(annView,cuis.length);
+				FSArray ontarray = new FSArray(textView,cuis.length);
 				int k=0;
 				if(cuis.length==0) { cuis = new String[1]; cuis[0]="MISSED_CUI"; }
 				for(String cui : cuis) {
 					//System.out.println("Dealing with cui "+cui+" at k:"+k);
-					OntologyConcept oc = new OntologyConcept(annView);
+					OntologyConcept oc = new OntologyConcept(textView);
 					oc.setCode(cui);
 					ontarray.set(k, oc);
-					oc.addToIndexes(annView);
+					oc.addToIndexes(textView);
 					k++;
 				}
-				ontarray.addToIndexes(annView);
+				ontarray.addToIndexes(textView);
 				if(ontarray!=null) annotated.setOntologyConceptArr(ontarray);
-				annotated.addToIndexes(annView);
+				annotated.addToIndexes(textView);
 				uimaKeyDict.remove(span_fields[1]);
 				brat_annotated_count++;
 			}
@@ -216,6 +204,34 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				brat_annotated_count, unannotated_count, extra_annotations,
 				help_cui_count, docname, annotator_name, unannotated_summary,
 				extra_summary,help_summary,datasetname);
+	}
+
+	private int getSemEvalCUIlessCount(JCas jcas, int semeval_cuiless_count,
+			JCas semevalPipeView) {
+		try {
+			semeval_cuiless_count=-1;
+			semevalPipeView = jcas.getView(SemEval2015Constants.PIPED_VIEW);
+			String[] pipelines = semevalPipeView.getDocumentText().split(System.getProperty("line.separator"));
+			String[] prev_chunks = null;
+			for(String line : pipelines) {
+				String[] chunks = line.split("\\|");
+				if(chunks[2].equals("CUI-less")){
+					if(prev_chunks!=null && (
+							(!prev_chunks[2].equals("CUI-less")) &&
+							(!prev_chunks[1].equals(chunks[1])))) {
+					}
+					semeval_cuiless_count++;
+				}
+				prev_chunks = chunks;
+			}
+		} catch (CASRuntimeException e) { 
+			this.getContext().getLogger().log(Level.INFO,"No PIPE_VIEW found");
+		} catch (Exception e) { 
+			if(semevalPipeView.getDocumentText()==null){
+				System.out.println("Could not find original semeval input file");
+			} 
+		}
+		return semeval_cuiless_count;
 	}
 
 	private void printTableLine(int semeval_cuiless_count,

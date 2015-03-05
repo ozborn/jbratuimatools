@@ -45,7 +45,6 @@ public class SemevalCUIless2BratClient {
 		Collection<File> semFiles = FileUtils.listFiles(new File(semeval2015_updated_devel_root),
 				pipeExtension, true);
 		System.out.println("Got "+semFiles.size()+" semeval input files for check missing pipeline...");
-		//apply(semeval2015_updated_devel_root,semeval2015_updated_devel_root);
 		apply(semeval2015_updated_devel_root,semFiles);
 
 	}

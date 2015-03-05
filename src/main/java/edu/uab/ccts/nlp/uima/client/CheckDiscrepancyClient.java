@@ -23,7 +23,7 @@ import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
 import edu.uab.ccts.nlp.uima.annotator.cuiless.AnnotatorStatistics;
 import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
 import edu.uab.ccts.nlp.uima.collection_readers.SemEval2015BratCompareCollectionReader;
-import edu.uab.ccts.nlp.uima.shared_task.SemEval2015Constants;
+import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015Constants;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotator;
 
 
@@ -71,11 +71,12 @@ public class CheckDiscrepancyClient {
 		AnnotatorStatistics annotatorstats = new AnnotatorStatistics();
 		for (JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))
 		{
-			JCas annView = jcas.getView(BratConstants.ANN_VIEW);
+			JCas annView = jcas.getView(BratConstants.TEXT_VIEW);
 			Collection<DiscontinousBratAnnotation> brats = JCasUtil.select(annView, DiscontinousBratAnnotation.class);
 			annotatorstats.add(brats);
 		}
 		annotatorstats.print(annotatorstats.getAnnotatorStats());
+		System.out.println("Annotator stats:"+annotatorstats.getAnnotatorStats());
 		System.out.println(annotatorstats.getDiscrepancies());
 		
 		

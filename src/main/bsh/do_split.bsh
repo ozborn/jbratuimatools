@@ -1,5 +1,5 @@
-python split_bratfiles.py /Users/ozborn/code/repo/cuilessdata/input/devel_updated 8 mdanila
-python split_bratfiles.py /Users/ozborn/code/repo/cuilessdata/input/devel_updated 8 neumb
+python split_bratfiles.py /Users/ozborn/code/repo/cuilessdata/input/devel_updated 10 mdanila
+python split_bratfiles.py /Users/ozborn/code/repo/cuilessdata/input/devel_updated 10 neumb
 #python split_bratfiles.py ../data/training/v4 20 enpierce
 #python split_bratfiles.py ../data/training/v4 20 sahinef
 #python split_bratfiles.py ../data/training/v4 20 spatel87

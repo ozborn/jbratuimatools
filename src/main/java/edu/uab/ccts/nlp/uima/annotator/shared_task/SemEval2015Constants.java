@@ -7,9 +7,21 @@ import org.apache.uima.cas.CAS;
 public class SemEval2015Constants
 {
 
-        public static final String APP_VIEW = "APPLICATION_VIEW";
+        public static final String APP_VIEW = "APPLICATION_VIEW"; //Has input un-annotated text
         public static final String PIPED_VIEW = "PIPE_VIEW";
-        public static final String GOLD_VIEW = CAS.NAME_DEFAULT_SOFA;
+        public static final String GOLD_VIEW = CAS.NAME_DEFAULT_SOFA; //Has input gold text
+        
+        
+        public static final String SEMEVAL_PIPED_EXTENSION = "pipe";
+        public static final String SEMEVAL_TEXT_FILE_EXTENSION = "text";
+	
+        /*
+        public static final String SEMEVAL_TEXT_VIEW = "SEMEVAL_TEXT_VIEW";
+        public static final String SEMEVAL_PIPED_VIEW = "PIPE_VIEW"; //To be compatible with ClearTK CollectionReader
+        public static final String PIPED_VIEW = "PIPED_VIEW"; //SemEval 2015 output data format for annotations
+        */
+
+        
 
         public static final String OUTPUT_SEPERATOR = "|";
         public static final int TOTAL_FIELDS = 19; //22 in previous version

@@ -185,7 +185,8 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 		for (DiscontinousBratAnnotation brat: JCasUtil.select(bratview, DiscontinousBratAnnotation.class)) {
 			if(brat.getEnd()==dd.getEnd() &&
 					brat.getBegin()==dd.getBegin()) {
-				matched = true;
+				if(brat.getIsNovelEntity()==false) { matched = true; }
+				else { this.getContext().getLogger().log(Level.WARNING, "Matched novel annotation?!"); }
 				FSArray cuis = brat.getOntologyConceptArr();
 				for(int i=0;i<cuis.size();i++){
 					OntologyConcept oc = (OntologyConcept) cuis.get(i);

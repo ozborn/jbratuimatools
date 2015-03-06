@@ -56,6 +56,11 @@ public class AnnotatorStatistics implements Serializable {
 			assert(dba.getDocName().length()>4);
 			String annotator_name = dba.getAnnotatorName();
 			String text_key = dba.getDiscontinousText();
+			if(dba.getIsNovelEntity()==true) {
+				//System.out.println("Skipping "+dba.getAnnotatorName()+"--"+
+				//dba.getDocName()+"--T"+dba.getId()+"---"+dba.getCoveredText());
+				continue;
+			}
 			String allcuis = getCUIs(dba);
 			buildAnnotationHash(annotator_name, text_key, allcuis,anno_results);
 			map_type_hash.put(dba.getDocName()+"T"+dba.getId(), allcuis);
@@ -122,9 +127,6 @@ public class AnnotatorStatistics implements Serializable {
 
 
 	public void print(Hashtable<String,Hashtable<String,HashMultiset<String>>> ghash){
-		//System.out.println(ghash);
-		//System.out.println(ghash.get(ALL_ANNOTATORS));
-		//printMappingTypeCounts(ghash); //Doesn't count correctly
 		printGlobalTypeCounts(map_type_hash);
 	}
 
@@ -173,7 +175,7 @@ public class AnnotatorStatistics implements Serializable {
 	public void printSemanticTypeDistribution(){
 		//Key is CUI, Value is Hashmultiset of semantic types with counts
 		Hashtable<String,HashMultiset<String>> dist = new Hashtable<String,HashMultiset<String>>();
-		Hashtable<String,String> cuistypehash = new Hashtable<String,String>(); //Key CUI, Value , seperated semantic types
+		Hashtable<String,String> cuistypehash = new Hashtable<String,String>(); //Key CUI, Value , separated semantic types
 		HashMultiset<String> stdist = HashMultiset.create();
 		HashMultiset<String> doublestdist = HashMultiset.create();
 		int bad_count=0, bad_form_count=0, total_cui_count=0;

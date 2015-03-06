@@ -92,8 +92,8 @@ public class BRATCollectionReader extends JCasCollectionReader_ImplBase
 		String configdirpath = textFile.getParent();
 		String configtext = FileUtils.readFileToString(hashedConfigFiles.get(configdirpath));
 
-		jCas.setDocumentText(fileText);
-		ViewUriUtil.setURI(jCas, textFile.toURI());
+		//jCas.setDocumentText(fileText);
+		ViewUriUtil.setURI(textView, textFile.toURI());
 		textView.setDocumentText(fileText);
 		annView.setDocumentText(annotations);
 		configView.setDocumentText(configtext);

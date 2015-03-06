@@ -15,7 +15,7 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.uimafit.descriptor.ConfigurationParameter;
 
 /**
- * This file reads in SemEval files into the SEMEVAL_PIPED_VIEW and the SEMEVAL_TEXT_VIEW
+ * This file reads in SemEval files into the Semeval PIPED_VIEW and the SEMEVAL_TEXT_VIEW
  * @author ozborn
  *
  */
@@ -38,7 +38,7 @@ public class SemEval2015ViewCreatorAnnotator extends JCasAnnotator_ImplBase {
 		try
 		{
 			pipedView = jcas.createView(SemEval2015Constants.PIPED_VIEW);
-			semevalTextView = jcas.createView(SemEval2015Constants.GOLD_VIEW);
+			semevalTextView = jcas; //Use the default/gold view
 		} catch (CASException e)
 		{
 			e.printStackTrace();

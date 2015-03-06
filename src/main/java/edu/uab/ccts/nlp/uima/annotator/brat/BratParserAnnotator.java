@@ -1,7 +1,9 @@
 package edu.uab.ccts.nlp.uima.annotator.brat;
 
 import java.io.File;
+import java.util.Comparator;
 import java.util.Hashtable;
+import java.util.TreeMap;
 
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
@@ -32,7 +34,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 	BratConfiguration bratconfig;
 
 	//These are re-initialized each time in process method
-	Hashtable<String,String> bratKeyDict = null;
+	TreeMap<String,String> bratKeyDict = null;
 	Hashtable<String,DiscontinousBratAnnotation> uimaKeyDict  = null;
 	boolean verbose = true;
 
@@ -42,9 +44,18 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 	 * All annotations should go into BratConstants.TEXT_VIEW
 	 */
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
+		//uimaKeyDict doesn't need to be sorted
+		uimaKeyDict = new Hashtable<String,DiscontinousBratAnnotation>(); //Key Txxx, Value brat diseases
+		bratKeyDict = new TreeMap<String,String>(new Comparator<String>(){
+			public int compare (String x, String y) {
+				if(!x.substring(0, 1).equals(y.substring(0,1))) {
+					return x.compareTo(y)*-1; //Reverse the order, want to put # annotations at end
+				}
+				return Integer.compare(Integer.parseInt(x.substring(1, x.length())),
+						Integer.parseInt(y.substring(1, y.length())));
+			}
+		});
 
-		uimaKeyDict = new Hashtable<String,DiscontinousBratAnnotation>();
-		bratKeyDict = new Hashtable<String,String>();
 		int semeval_cuiless_count=0;
 		int brat_cuiless_count=0;
 		int brat_annotated_count=0;
@@ -101,8 +112,10 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 			}
 		}
 
+		//System.out.println(bratKeyDict);
 
-		//Get all our entities first
+
+		//Get all our entities (diseases) first
 		for(String key : bratKeyDict.keySet()){
 			if(key.trim().startsWith("T")) {
 				String[] tabfields = bratKeyDict.get(key).split("\t");
@@ -138,9 +151,11 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 			}
 		}
 		brat_cuiless_count=uimaKeyDict.size();
+		//System.out.println(docname+" : "+uimaKeyDict.size()); //T15 is in there, T44, T13
 
-
+		int last_pre_existing_disease_start = 0; //-1 indicates no more pre-existing diseases
 		for(String key : bratKeyDict.keySet()){
+			//System.out.println("UKeydict size:"+uimaKeyDict.size()); //T15 is in there, T44, T13
 			if(key.startsWith("R")){
 				BinaryTextRelation btr = new BinaryTextRelation(textView);
 				String[] tabfields = bratKeyDict.get(key).split("\t");
@@ -155,7 +170,25 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				two.setArgument(uimaKeyDict.get(span_fields[4]));
 				btr.setArg2(two);
 				btr.addToIndexes(textView);
-			} else if(key.trim().startsWith("T")) { continue;
+			} else if(key.trim().startsWith("T")) { 
+				//Check to identify novel annotated stuff
+				DiscontinousBratAnnotation dis = uimaKeyDict.get(key.trim());
+				if(dis==null) { 
+					//Not a disease
+					//System.out.println("Got null in "+docname+":"+key.trim()+" size "+uimaKeyDict.size());
+					continue; 
+				} 
+				int cur = Integer.parseInt(bratKeyDict.get(key).split("\t")[0].split(" ")[1]);
+				this.getContext().getLogger().log(Level.FINEST,"cur:"+cur+" LastPreExist"+last_pre_existing_disease_start);
+				if(last_pre_existing_disease_start>=0 && cur>=last_pre_existing_disease_start){
+					last_pre_existing_disease_start=cur;
+					dis.setIsNovelEntity(false);
+					//System.out.println(docname+" -pre-exist- "+key+" -- "+cur);
+				} else {
+					dis.setIsNovelEntity(true);
+					last_pre_existing_disease_start=-1;
+					this.getContext().getLogger().log(Level.FINE,"Detected novel disease:"+dis.getId());
+				}
 			} else if(key.startsWith("#")) {
 				String[] tabfields = bratKeyDict.get(key).split("\t");
 				String[] span_fields = tabfields[0].split(" ");
@@ -253,7 +286,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 	public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {
 		return AnalysisEngineFactory.createEngineDescription(BratParserAnnotator.class);
 	}
-	
+
 	public static boolean isWellFormedCUI(String cui) {
 		if(cui.startsWith("C") && cui.length()==8) return true;
 		return false;

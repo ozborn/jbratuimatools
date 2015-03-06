@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <typeSystemDescription xmlns="http://uima.apache.org/resourceSpecifier">
-	<name>DiseaseDisorderAttribute</name>
-	<description/>
-	<version/>
+	<name>DiscontinousBratAnnotation</name>
+	<description>Represents a BRAT discontinous annotation entity</description>
+	<version>1</version>
 	<vendor/>
 	<imports>
 		<import name="org.apache.ctakes.typesystem.types.TypeSystem"/>
@@ -33,6 +33,16 @@
           <name>DiscontinousText</name>
           <description>Concatenated covered  text of all the annotations that make up this discontinous annotation.</description>
           <rangeTypeName>uima.cas.String</rangeTypeName>
+        </featureDescription>
+      <featureDescription>
+          <name>isNovelEntity</name>
+          <description>Indicates whether this entity was created manually by the annotator as indicated by an out of sequence T identifier</description>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
+        </featureDescription>
+        <featureDescription>
+          <name>isSnomedConcept</name>
+          <description>True if the CUI has an atom in SNOMED_CT</description>
+          <rangeTypeName>uima.cas.Boolean</rangeTypeName>
         </featureDescription>
       </features>
 		</typeDescription>

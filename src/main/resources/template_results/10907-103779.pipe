@@ -1,0 +1,11 @@
+10907-103779.text|121-141|C0031039|no|null|patient|null|yes|109-119|unmarked|null|unmarked|null|false|null|false|null|C0031050|121-132|
+10907-103779.text|1010-1016,1023-1031,1043-1052|C3164530|no|null|patient|null|no|null|unmarked|null|moderate|1036-1042|false|null|false|null|C0225949|1010-1031|
+10907-103779.text|1056-1067,1148-1157|C0007177|yes|1118-1120|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0031050|1056-1067|
+10907-103779.text|1086-1106|C0031039|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0031050|1086-1097|
+10907-103779.text|1519-1525,1532-1540,1552-1561|C3164530|no|null|patient|null|no|null|unmarked|null|moderate|1545-1551|false|null|false|null|C0225949|1519-1540|
+10907-103779.text|1624-1646|C0042300|no|null|patient|null|yes|1604-1623|unmarked|null|unmarked|null|false|null|false|null|C0018826|1624-1632|
+10907-103779.text|1681-1701|C0031039|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0031050|1681-1692|
+10907-103779.text|1780-1792,1806-1814|C0021368|no|null|patient|null|yes|1764-1779|unmarked|null|unmarked|null|false|null|false|null|C0225973|1732-1749|
+10907-103779.text|1796-1814|CUI-lessC0333353|no|null|patient|null|yes|1764-1779|unmarked|null|unmarked|null|false|null|false|null|C0225973|1732-1749|
+10907-103779.text|1855-1864|C0007177|yes|1825-1827|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+10907-103779.text|1955-1975|C0031039|no|null|patient|null|yes|1976-1983|worsened|1984-1990|unmarked|null|false|null|false|null|C0031050|1955-1966|

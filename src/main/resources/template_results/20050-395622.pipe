@@ -1,0 +1,13 @@
+20050-395622.text|384-391|C0001430|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+20050-395622.text|532-544|C0023518|no|null|patient|null|no|null|increased|532-540|unmarked|null|false|null|false|null|null|null|
+20050-395622.text|833-845|C0023518|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+20050-395622.text|1352-1368|CUI-lessC0205251,C0231953|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0024109|1356-1360|
+20050-395622.text|1375-1395|CUI-lessC0205095,C1281570,C2711287|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+20050-395622.text|1509-1515,1526-1533|CUI-lessC0205413,C2711287|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225730|1481-1485|
+20050-395622.text|1582-1593|C0004144|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225708|1621-1636|
+20050-395622.text|1654-1675|CUI-lessC0437920|yes|1639-1653|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C1266908|1654-1661|
+20050-395622.text|1703-1717|CUI-lessC0205413,C2711287|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C1261075|1719-1735|
+20050-395622.text|1741-1761|CUI-lessC0205095,C1281570,C2711287|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+20050-395622.text|1796-1803|CUI-lessC2711287|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225730|1786-1790|
+20050-395622.text|1820-1831|C0004144|no|null|patient|null|yes|1804-1819|unmarked|null|unmarked|null|false|null|false|null|C0225730|1786-1790|
+20050-395622.text|1835-1844|C0032285|no|null|patient|null|yes|1804-1819|unmarked|null|unmarked|null|false|null|false|null|C0225730|1786-1790|

@@ -1,0 +1,13 @@
+19911-175533.text|311-326|CUI-lessC0443172,C0449440|no|null|patient|null|yes|300-306|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19911-175533.text|374-380|C0243026|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19911-175533.text|514-518|C0022661|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19911-175533.text|528-541|C1145670|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0035237|528-532|
+19911-175533.text|618-633|CUI-lessC0443172,C0449440|no|null|patient|null|yes|607-613|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19911-175533.text|833-852|C1145670|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0035237|833-844|
+19911-175533.text|925-941|C0032227|no|null|patient|null|no|null|increased|946-955|moderate|910-918|false|null|false|null|C0225779|919-932|
+19911-175533.text|1038-1056|C0013604|no|null|patient|null|yes|1060-1076|unmarked|null|moderate|1033-1037|false|null|false|null|C0225706|1018-1028|
+19911-175533.text|1079-1105|CUI-lessC0450424,C0264576|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0025066|1088-1099|
+19911-175533.text|1132-1148|C0032227|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225779|1126-1139|
+19911-175533.text|1165-1189|C0004144|no|null|patient|null|yes|1214-1221|improved|1230-1238|severe|1153-1164|false|null|false|null|C1261077|1165-1180|
+19911-175533.text|1302-1314|C0032326|yes|1299-1301|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19911-175533.text|1423-1435|C0032326|yes|1420-1422|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|

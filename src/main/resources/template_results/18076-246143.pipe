@@ -1,0 +1,14 @@
+18076-246143.text|303-313|CUI-lessC0018790|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+18076-246143.text|316-330|C0032290|no|null|patient|null|no|315-316|unmarked|null|unmarked|null|false|null|false|null|null|null|
+18076-246143.text|462-477|C0023885|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0023884|462-469|
+18076-246143.text|493-505|C1145670|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+18076-246143.text|567-578|C0162297|no|null|patient|null|no|null|unmarked|null|severe|561-566|false|null|false|null|C0035237|567-571|
+18076-246143.text|618-628|CUI-lessC0018790|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+18076-246143.text|631-645|C0032290|no|null|patient|null|no|630-631|unmarked|null|unmarked|null|false|null|false|null|null|null|
+18076-246143.text|804-823|C1145670|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0035237|804-815|
+18076-246143.text|1276-1302|CUI-lessC0225702,C0034051,C0449774|no|null|patient|null|no|null|worsened|1304-1309|unmarked|null|false|null|false|null|C0225738|1332-1336|
+18076-246143.text|1276-1302|CUI-lessC0225702,C0034051,C0449774|no|null|patient|null|no|null|worsened|1304-1309|unmarked|null|false|null|false|null|C0225738|1332-1336|
+18076-246143.text|1352-1368|C0032227|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225784|1347-1359|
+18076-246143.text|1534-1560|CUI-lessC0225702,C0034051,C0449774|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225702|1534-1543|
+18076-246143.text|1600-1609,1619-1628|C0876973|no|null|patient|null|yes|1568-1581|unmarked|null|unmarked|null|false|null|false|null|C0024109|1600-1609|
+18076-246143.text|1600-1615|C0034063|no|null|patient|null|yes|1568-1581|unmarked|null|unmarked|null|false|null|false|null|C0024109|1600-1609|

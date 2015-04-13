@@ -1,0 +1,14 @@
+01487-290421.text|321-336|C0007273|no|null|patient|null|yes|319-320|unmarked|null|unmarked|null|false|null|false|null|C0007272|321-328|
+01487-290421.text|478-481|C1956346|no|null|patient|null|no|null|unmarked|null|severe|471-477|false|null|false|null|null|null|
+01487-290421.text|510-525|C0007273|no|null|patient|null|yes|508-509|unmarked|null|unmarked|null|false|null|false|null|C0007272|510-517|
+01487-290421.text|581-596|C0007273|no|null|patient|null|yes|578-580|unmarked|null|unmarked|null|false|null|false|null|C0007272|581-588|
+01487-290421.text|714-717|C0162871|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+01487-290421.text|739-744|CUI-lessC0006318|no|null|patient|null|yes|726-738|unmarked|null|unmarked|null|false|null|false|null|null|null|
+01487-290421.text|766-772|CUI-lessC0332461|no|null|patient|null|no|null|unmarked|null|slight|758-765|false|null|false|null|C0226157|801-809|
+01487-290421.text|841-847|CUI-lessC0332461|no|null|patient|null|no|null|unmarked|null|moderate|811-819|false|null|false|null|C0226156|831-840|
+01487-290421.text|1022-1034|C0340569|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0226156|1016-1025|
+01487-290421.text|1216-1228|C0340569|yes|1196-1210|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0226157|1211-1219|
+01487-290421.text|1341-1344,1381-1389|C0340569|no|null|patient|null|no|null|unmarked|null|moderate|1301-1309|false|null|false|null|C0226156|1335-1344|
+01487-290421.text|1345-1351|CUI-lessC0332461|no|null|patient|null|no|null|unmarked|null|moderate|1301-1309|false|null|false|null|C0226156|1335-1344|
+01487-290421.text|1409-1412,1447-1455|C0340569|yes|1421-1423|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0226157|1404-1412|
+01487-290421.text|1413-1419|CUI-lessC0332461|no|null|patient|null|no|null|unmarked|null|slight|1396-1403|false|null|false|null|C0226157|1404-1412|

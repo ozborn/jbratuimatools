@@ -1,0 +1,12 @@
+26563-387055.text|297-300|C0032326|no|null|patient|null|yes|293-296|unmarked|null|unmarked|null|false|null|false|null|null|null|
+26563-387055.text|450-466|C0032227|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0032225|450-457|
+26563-387055.text|501-504|C0032326|no|null|patient|null|yes|497-500|unmarked|null|unmarked|null|false|null|false|null|null|null|
+26563-387055.text|647-663|C0032227|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0032225|647-654|
+26563-387055.text|674-686|C0032326|no|null|patient|null|yes|665-673|unmarked|null|unmarked|null|false|null|false|null|null|null|
+26563-387055.text|915-927|C0032326|yes|899-914|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+26563-387055.text|977-982,993-1001|CUI-lessC0018800|no|null|patient|null|no|null|unmarked|null|moderate|986-992|false|null|false|null|C0018787|977-982|
+26563-387055.text|1060-1093|CUI-lessC3532326|no|null|patient|null|no|null|unmarked|null|moderate|1055-1059|false|null|false|null|C0459963|1060-1078|
+26563-387055.text|1154-1170|C0032227|no|null|patient|null|no|null|increased|1120-1128|unmarked|null|false|null|false|null|C0225779|1148-1161|
+26563-387055.text|1276-1288|C0032326|yes|1255-1275|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+26563-387055.text|1330-1333|C0018802|no|null|patient|null|no|null|worsened|1320-1329|unmarked|null|false|null|false|null|null|null|
+26563-387055.text|1383-1399|C0032227|no|null|patient|null|no|null|increased|1349-1357|unmarked|null|false|null|false|null|C0225779|1377-1390|

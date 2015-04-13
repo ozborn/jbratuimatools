@@ -1,0 +1,17 @@
+19584-178988.text|304-312|C0013687|no|null|patient|null|yes|291-299|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19584-178988.text|492-509|C0026771|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19584-178988.text|537-547|CUI-lessC0700198|no|null|patient|null|yes|534-535|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19584-178988.text|549-567|CUI-lessC0542537,C0004048|no|null|patient|null|yes|534-535|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19584-178988.text|631-639|C0013687|no|null|patient|null|yes|618-626|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19584-178988.text|822-839|C0026771|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19584-178988.text|842-865|CUI-lessC0542537,C0004048|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19584-178988.text|870-886|CUI-lessC0542537,C0030054|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19584-178988.text|1027-1047|CUI-lessC0205216,C0231953|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19584-178988.text|1059-1086|C0747635|no|null|patient|null|no|null|increased|1094-1101|unmarked|null|false|null|false|null|C0032225|1069-1076|
+19584-178988.text|1059-1086|C0747635|no|null|patient|null|no|null|increased|1094-1101|unmarked|null|false|null|false|null|C0032225|1069-1076|
+19584-178988.text|1122-1136|CUI-lessC0205413,C1265876|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0446938|1144-1158|
+19584-178988.text|1203-1214|C0004144|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225704|1193-1202|
+19584-178988.text|1229-1232|C0018802|yes|1226-1228|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19584-178988.text|1246-1259|C0521530|yes|1226-1228|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+19584-178988.text|1280-1298|CUI-lessC0175895,C0178587|no|null|patient|null|yes|1340-1358|unmarked|null|unmarked|null|false|null|false|null|C1284882|1326-1335|
+19584-178988.text|1280-1298|CUI-lessC0175895,C0178587|no|null|patient|null|yes|1340-1358|unmarked|null|unmarked|null|false|null|false|null|C1284882|1326-1335|

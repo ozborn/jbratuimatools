@@ -1,0 +1,17 @@
+23389-095475.text|122-134|C0014118|no|null|patient|null|yes|110-120|unmarked|null|unmarked|null|false|null|false|null|null|null|
+23389-095475.text|136-161|CUI-lessC0080310|no|null|patient|null|yes|110-120|unmarked|null|unmarked|null|false|null|false|null|C0225897|136-152|
+23389-095475.text|164-175|CUI-lessC0039231|no|null|patient|null|yes|110-120|unmarked|null|unmarked|null|false|null|false|null|null|null|
+23389-095475.text|180-186|C0243026|no|null|patient|null|yes|110-120|unmarked|null|unmarked|null|false|null|false|null|null|null|
+23389-095475.text|496-507,518-525|C0344720|no|null|patient|null|no|null|unmarked|null|moderate|511-517|false|null|false|null|C0225860|496-507|
+23389-095475.text|1053-1073|C0003504|yes|1050-1052|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003501|1053-1059|
+23389-095475.text|1166-1186|C0026266|no|null|patient|null|no|null|unmarked|null|severe|1142-1160|false|null|false|null|C0026264|1166-1172|
+23389-095475.text|1223-1243|C0031039|yes|1220-1222|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0031050|1223-1234|
+23389-095475.text|1315-1326,1337-1344|C0344720|no|null|patient|null|no|null|unmarked|null|moderate|1330-1336|false|null|false|null|C0225860|1315-1326|
+23389-095475.text|1444-1478,1491-1497|CUI-lessC3266756|no|null|patient|null|yes|1482-1490|unmarked|null|unmarked|null|false|null|false|null|C0225897|1444-1460|
+23389-095475.text|1581-1592|C0086439|no|null|patient|null|yes|1574-1580|unmarked|null|unmarked|null|false|null|false|null|C0018819|1558-1564|
+23389-095475.text|1581-1592|C0086439|no|null|patient|null|yes|1574-1580|unmarked|null|unmarked|null|false|null|false|null|C0018819|1558-1564|
+23389-095475.text|1750-1770|C0003504|yes|1747-1749|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003501|1750-1756|
+23389-095475.text|1900-1920|C0026266|no|null|patient|null|yes|1854-1861|unmarked|null|severe|1876-1894|false|null|false|null|C0026264|1900-1906|
+23389-095475.text|1933-1939|CUI-lessC0428813|yes|1930-1932|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003501|1980-1986|
+23389-095475.text|1933-1939|CUI-lessC0428813|yes|1930-1932|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003501|1980-1986|
+23389-095475.text|2000-2020|C0031039|yes|1997-1999|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0031050|2000-2011|

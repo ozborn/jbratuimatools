@@ -1,0 +1,15 @@
+17451-147855.text|446-463|C0029944|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+17451-147855.text|465-474|C0278061|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+17451-147855.text|632-651|C0747752|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+17451-147855.text|653-661|C0029944|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+17451-147855.text|662-683|C0278061|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+17451-147855.text|871-891,908-915|CUI-lessC0746459|no|null|patient|null|yes|892-898|unmarked|null|slight|899-907|false|null|false|null|C0025066|871-882|
+17451-147855.text|940-956|CUI-lessC0205251,C0438189|no|null|patient|null|yes|926-939|decreased|940-943|unmarked|null|false|null|false|null|C0024109|944-948|
+17451-147855.text|1074-1085|C0004144|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225706|1105-1115|
+17451-147855.text|1132-1139|C1265876|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225732|1181-1195|
+17451-147855.text|1132-1139|C1265876|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225732|1181-1195|
+17451-147855.text|1227-1237|CUI-lessC0220787|no|null|patient|null|yes|1202-1215|unmarked|null|unmarked|null|false|null|false|null|null|null|
+17451-147855.text|1267-1284|CUI-lessC0038354,C0442800|no|null|patient|null|no|null|unmarked|null|severe|1258-1266|false|null|false|null|C0038351|1277-1284|
+17451-147855.text|1351-1383|CUI-lessC0746459|no|null|patient|null|yes|1342-1350|unmarked|null|unmarked|null|false|null|false|null|C0025066|1363-1374|
+17451-147855.text|1489-1499|CUI-lessC0220787|no|null|patient|null|yes|1469-1477|unmarked|null|unmarked|null|false|null|false|null|NULL|1507-1516|
+17451-147855.text|1530-1547|CUI-lessC0038354,C0442800|no|null|patient|null|no|null|unmarked|null|severe|1521-1529|false|null|false|null|C0038351|1540-1547|

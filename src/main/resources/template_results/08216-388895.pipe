@@ -1,0 +1,12 @@
+08216-388895.text|372-385|C0018817|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0018792|372-378|
+08216-388895.text|394-414|C0018817|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225836|394-407|
+08216-388895.text|552-555|C0016522|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+08216-388895.text|556-559|C0018817|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+08216-388895.text|581-584|C0018817|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+08216-388895.text|1067-1084|CUI-lessC0184511,C0231940|no|null|patient|null|no|null|improved|1067-1075|unmarked|null|false|null|false|null|C0225708|1092-1107|
+08216-388895.text|1174-1190|CUI-lessC0544704|no|null|patient|null|no|null|increased|1159-1170|unmarked|null|false|null|false|null|CUI-less|1198-1220|
+08216-388895.text|1247-1250|C0018802|yes|1232-1246|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+08216-388895.text|1254-1266|C0032326|yes|1232-1246|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+08216-388895.text|1301-1313|C0032326|yes|1286-1300|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+08216-388895.text|1349-1366|CUI-lessC0184511,C0231940|no|null|patient|null|no|null|improved|1349-1357|unmarked|null|false|null|false|null|C0225708|1367-1377|
+08216-388895.text|1393-1410|CUI-lessC1457868,C0231940|no|null|patient|null|no|null|worsened|1393-1401|unmarked|null|false|null|false|null|C0225732|1411-1420|

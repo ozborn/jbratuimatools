@@ -1,0 +1,16 @@
+11098-004672.text|409-418|C0004604|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C1995000|409-413|
+11098-004672.text|449-457|C0022821|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0230612|438-448|
+11098-004672.text|713-721|C0022821|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0230612|702-712|
+11098-004672.text|726-743|C0158266|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0021815|726-730|
+11098-004672.text|808-821|C0024031|no|null|patient|null|no|null|unmarked|null|severe|796-807|false|null|false|null|C0230102|808-816|
+11098-004672.text|1156-1164|CUI-lessC0277797|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+11098-004672.text|2823-2833|C0019080|no|null|patient|null|no|null|unmarked|null|severe|2811-2822|false|null|false|null|C0005767|2823-2828|
+11098-004672.text|2902-2915|C0009566|yes|2894-2901|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+11098-004672.text|2964-2978|CUI-lessC0474550|no|null|patient|null|no|null|decreased|2964-2967|unmarked|null|false|null|false|null|null|null|
+11098-004672.text|3119-3123|C0030193|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+11098-004672.text|3259-3282|C0079027|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+11098-004672.text|3315-3327|C0005779|no|null|patient|null|yes|3287-3298|unmarked|null|unmarked|null|false|null|false|null|null|null|
+11098-004672.text|4870-4878|C0022821|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0230612|4859-4869|
+11098-004672.text|4994-4999|C0332803|no|null|patient|null|no|null|unmarked|null|unmarked|null|true|4978-4981|false|null|null|null|
+11098-004672.text|5034-5038|C0030193|no|null|patient|null|no|null|unmarked|null|unmarked|null|true|5029-5033|false|null|null|null|
+11098-004672.text|5286-5291|C0332803|no|null|patient|null|no|null|unmarked|null|unmarked|null|true|5276-5279|false|null|null|null|

@@ -1,0 +1,12 @@
+00587-400001.text|337-346|C0037199|no|null|patient|null|yes|324-336|unmarked|null|unmarked|null|false|null|false|null|null|null|
+00587-400001.text|398-411|CUI-lessC0038002|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+00587-400001.text|557-569|CUI-lessC0522347|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0229300|547-560|
+00587-400001.text|651-660|C0037199|no|null|patient|null|yes|638-650|unmarked|null|unmarked|null|false|null|false|null|null|null|
+00587-400001.text|873-885|CUI-lessC0522347|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+00587-400001.text|896-905|C0037199|no|null|patient|null|yes|887-895|unmarked|null|unmarked|null|false|null|false|null|null|null|
+00587-400001.text|1059-1069|CUI-lessC0205400,C0015028|no|null|patient|null|no|null|unmarked|null|slight|1052-1058|false|null|false|null|C0015028|1081-1088|
+00587-400001.text|1143-1165|C0263978|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225399|1113-1130|
+00587-400001.text|1226-1238,1280-1284|C0426460|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0027432|1226-1238|
+00587-400001.text|1226-1247|C0549397|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0027432|1226-1238|
+00587-400001.text|1363-1374|CUI-lessC0332521,C0230053|yes|1359-1362|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0230053|1337-1354|
+00587-400001.text|1531-1555|CUI-lessC0205400,C0015028|no|null|patient|null|no|null|unmarked|null|slight|1523-1530|false|null|false|null|C0015028|1531-1544|

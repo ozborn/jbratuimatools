@@ -1,0 +1,13 @@
+14835-325902.text|296-301|C0019080|no|null|patient|null|yes|288-294|unmarked|null|unmarked|null|false|null|false|null|null|null|
+14835-325902.text|377-394|C0018946|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0038541|377-385|
+14835-325902.text|614-619|C0019080|no|null|patient|null|yes|585-591|unmarked|null|unmarked|null|false|null|false|null|null|null|
+14835-325902.text|869-887|C0018946|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0038541|859-877|
+14835-325902.text|1067-1090|C0151699|yes|1048-1062|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0524466|1067-1079|
+14835-325902.text|1144-1162|C0018944|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+14835-325902.text|1196-1210|C0032268|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+14835-325902.text|1280-1294|C0032268|no|null|patient|null|no|null|increased|1275-1279|unmarked|null|false|null|false|null|C0228176|1326-1341|
+14835-325902.text|1411-1420,1427-1437|CUI-lessC0205277,C0151699|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+14835-325902.text|1411-1426|CUI-lessC0205277,C0023182|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+14835-325902.text|1587-1607,1620-1631|CUI-lessC0553686|yes|1563-1580|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0005847|1587-1595|
+14835-325902.text|1587-1616|CUI-lessC0007785,C0205147|yes|1563-1580|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0005847|1587-1595|
+14835-325902.text|1905-1928|C0151699|yes|1886-1900|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0524466|1905-1917|

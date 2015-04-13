@@ -1,0 +1,17 @@
+06091-383430.text|311-332|C0473508|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06091-383430.text|349-354|C0032044|no|null|patient|null|yes|347-348|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06091-383430.text|376-407|C0033270|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06091-383430.text|541-562|C0473508|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06091-383430.text|579-586|C0032044|no|null|patient|null|yes|577-578|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06091-383430.text|627-644|C0033270|no|null|patient|null|yes|595-603|unmarked|null|unmarked|null|false|null|false|null|C0042149|604-610|
+06091-383430.text|694-715|C0473508|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06091-383430.text|732-739|C0032044|no|null|patient|null|yes|730-731|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06091-383430.text|780-797|C0033270|no|null|patient|null|yes|748-756|unmarked|null|unmarked|null|false|null|false|null|C0042149|757-763|
+06091-383430.text|936-955|C0032797|no|null|patient|null|yes|913-923|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06091-383430.text|1179-1185,1192-1202|CUI-lessC0237062|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0042149|1179-1185|
+06091-383430.text|1362-1373|CUI-lessC0042131|no|null|patient|null|no|null|increased|1352-1361|unmarked|null|false|null|false|null|C0227817|1381-1401|
+06091-383430.text|1619-1631|C2919424|yes|1604-1618|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0001575|1619-1626|
+06091-383430.text|1652-1669|CUI-lessC3665480|yes|1632-1651|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0030797|1657-1663|
+06091-383430.text|1716-1729,1734-1740|CUI-lessC0567036|no|null|patient|null|no|null|improved|1697-1708|unmarked|null|false|null|false|null|C0042149|1734-1740|
+06091-383430.text|1783-1794|CUI-lessC0042131|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|CUI-less|1816-1847|
+06091-383430.text|1874-1904|C0033270|no|null|patient|null|yes|1859-1865|unmarked|null|unmarked|null|false|null|false|null|null|null|

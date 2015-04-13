@@ -1,0 +1,16 @@
+22566-151087.text|304-313|C0032285|no|null|patient|null|yes|291-299|unmarked|null|unmarked|null|false|null|false|null|null|null|
+22566-151087.text|317-335|CUI-lessC0160316|no|null|patient|null|yes|291-299|unmarked|null|unmarked|null|false|null|false|null|C0225805|317-327|
+22566-151087.text|372-379|C0036572|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+22566-151087.text|524-537|C0585106|no|null|patient|null|yes|511-523|unmarked|null|unmarked|null|false|null|false|null|C1261074|524-527|
+22566-151087.text|612-621|C0032285|no|null|patient|null|yes|599-607|unmarked|null|unmarked|null|false|null|false|null|null|null|
+22566-151087.text|625-643|CUI-lessC0160316|no|null|patient|null|yes|599-607|unmarked|null|unmarked|null|false|null|false|null|C0225805|625-635|
+22566-151087.text|818-828|C0332448|no|null|patient|null|yes|806-817|unmarked|null|unmarked|null|false|null|false|null|null|null|
+22566-151087.text|972-993|CUI-lessC0240035|no|null|patient|null|no|null|increased|962-971|unmarked|null|false|null|false|null|null|null|
+22566-151087.text|1008-1026|C0340106|no|null|patient|null|yes|994-1007|unmarked|null|unmarked|null|false|null|false|null|C0024109|1008-1017|
+22566-151087.text|1038-1050|CUI-lessC0018800|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+22566-151087.text|1069-1087|CUI-lessC0149823|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0038351|1069-1076|
+22566-151087.text|1117-1128|C0004144|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225732|1104-1116|
+22566-151087.text|1149-1159|C0332448|yes|1131-1142|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+22566-151087.text|1232-1247|CUI-lessC0585013|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0448034|1255-1273|
+22566-151087.text|1314-1335|CUI-lessC0240035|no|null|patient|null|no|null|increased|1302-1310|moderate|1289-1293|false|null|false|null|null|null|
+22566-151087.text|1407-1417|C0332448|yes|1389-1400|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|

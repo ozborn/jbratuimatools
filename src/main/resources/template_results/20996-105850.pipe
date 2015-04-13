@@ -1,0 +1,17 @@
+20996-105850.text|123-138|C0018816|no|null|patient|null|yes|138-139|unmarked|null|unmarked|null|false|null|false|null|C0018787|123-130|
+20996-105850.text|140-145|CUI-lessC0015967|no|null|patient|null|yes|111-121|unmarked|null|unmarked|null|false|null|false|null|null|null|
+20996-105850.text|147-158|CUI-lessC0020649|no|null|patient|null|yes|111-121|unmarked|null|unmarked|null|false|null|false|null|null|null|
+20996-105850.text|160-166|C0243026|no|null|patient|null|yes|111-121|unmarked|null|unmarked|null|false|null|false|null|null|null|
+20996-105850.text|639-660|CUI-lessC0679218,C1305766,C0439182|yes|636-638|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C1305766|647-651|
+20996-105850.text|864-866|C0003507|yes|861-863|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003501|813-825|
+20996-105850.text|871-873|C0003504|yes|868-870|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003501|813-825|
+20996-105850.text|933-935|C0026266|no|null|patient|null|no|null|unmarked|null|slight|925-932|false|null|false|null|C0026264|877-889|
+20996-105850.text|963-982,989-997|C2959459|no|null|patient|null|no|null|unmarked|null|moderate|956-962|false|null|false|null|C0225928|973-997|
+20996-105850.text|1031-1033|C0040961|no|null|patient|null|no|null|unmarked|null|moderate|999-1015|false|null|false|null|C0040960|939-954|
+20996-105850.text|1147-1149|C0034088|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0034086|1066-1080|
+20996-105850.text|1186-1206|C0031039|no|null|patient|null|no|null|unmarked|null|slight|1166-1173|false|null|false|null|C0031050|1186-1197|
+20996-105850.text|1233-1249|C0032227|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225787|1228-1240|
+20996-105850.text|1613-1633|C0003504|yes|1610-1612|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003501|1613-1619|
+20996-105850.text|1693-1713|C0026266|no|null|patient|null|no|null|unmarked|null|slight|1685-1692|false|null|false|null|C0026264|1693-1699|
+20996-105850.text|1719-1728,1735-1743,1755-1764|C2959459|no|null|patient|null|no|null|unmarked|null|moderate|1748-1754|false|null|false|null|C0225928|1719-1743|
+20996-105850.text|1857-1877|C0031039|no|null|patient|null|no|null|unmarked|null|slight|1837-1844|false|null|false|null|C0031050|1857-1868|

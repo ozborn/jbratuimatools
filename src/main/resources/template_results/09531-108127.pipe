@@ -1,0 +1,16 @@
+09531-108127.text|123-135|C0014118|no|null|patient|null|yes|122-123|unmarked|null|unmarked|null|false|null|false|null|null|null|
+09531-108127.text|876-896|C0003504|yes|873-875|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003501|876-882|
+09531-108127.text|901-907|CUI-lessC1265602|yes|898-900|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003501|939-951|
+09531-108127.text|911-922|C1285498|yes|898-900|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003501|939-951|
+09531-108127.text|1023-1027|CUI-lessC0577559|yes|1020-1022|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0026264|1057-1069|
+09531-108127.text|1031-1041|C1285498|yes|1020-1022|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0026264|1057-1069|
+09531-108127.text|1083-1103|C0026266|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0026264|1083-1089|
+09531-108127.text|1243-1265|C0034088|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0034086|1243-1251|
+09531-108127.text|1294-1314|C0031039|yes|1291-1293|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0031050|1294-1305|
+09531-108127.text|1614-1634|C0003504|yes|1611-1613|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003501|1614-1620|
+09531-108127.text|1639-1645|CUI-lessC1265602|yes|1636-1638|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003501|1677-1689|
+09531-108127.text|1649-1660|C1285498|yes|1636-1638|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003501|1677-1689|
+09531-108127.text|1745-1749|CUI-lessC0577559|yes|1742-1744|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0026264|1779-1791|
+09531-108127.text|1753-1763|C1285498|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0026264|1779-1791|
+09531-108127.text|1805-1825|C0031039|yes|1802-1804|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0031050|1805-1816|
+09531-108127.text|1860-1872|C0014118|yes|1827-1859|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|

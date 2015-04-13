@@ -1,0 +1,15 @@
+26176-226973.text|297-307|C0032285|no|null|patient|null|yes|293-296|unmarked|null|unmarked|null|false|null|false|null|null|null|
+26176-226973.text|483-491|C0019080|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+26176-226973.text|530-539|C0032285|no|null|patient|null|yes|526-529|unmarked|null|unmarked|null|false|null|false|null|null|null|
+26176-226973.text|573-583|C0032285|no|null|patient|null|yes|569-572|unmarked|null|unmarked|null|false|null|false|null|null|null|
+26176-226973.text|724-732|C0019080|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+26176-226973.text|760-769|C0032285|no|null|patient|null|yes|751-759|unmarked|null|unmarked|null|false|null|false|null|null|null|
+26176-226973.text|1036-1054|CUI-lessC0457109|no|null|patient|null|no|null|increased|1058-1066|unmarked|null|false|null|false|null|C0018787|1036-1043|
+26176-226973.text|1194-1207|CUI-lessC0449584|no|null|patient|null|no|null|increased|1184-1193|unmarked|null|false|null|false|null|C1261077|1219-1234|
+26176-226973.text|1254-1265|C0004144|no|null|patient|null|yes|1235-1241|unmarked|null|unmarked|null|false|null|false|null|C1261077|1219-1234|
+26176-226973.text|1376-1391|C0034063|no|null|patient|null|yes|1357-1372|unmarked|null|slight|1349-1356|false|null|false|null|C0024109|1376-1385|
+26176-226973.text|1454-1461|C1265876|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C1261077|1469-1484|
+26176-226973.text|1505-1516|C0004144|no|null|patient|null|yes|1485-1491|unmarked|null|unmarked|null|false|null|false|null|C1261077|1469-1484|
+26176-226973.text|1539-1548|C0032285|no|null|patient|null|yes|1549-1570|unmarked|null|unmarked|null|false|null|false|null|C1261077|1469-1484|
+26176-226973.text|1576-1588|CUI-lessC0018800|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+26176-226973.text|1618-1625|C0018801|yes|1589-1617|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|

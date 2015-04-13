@@ -1,0 +1,13 @@
+16055-152402.text|323-338|C0043241|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+16055-152402.text|556-572|C0032227|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225779|554-563|
+16055-152402.text|574-578,591-600|C0004144|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0024109|574-578|
+16055-152402.text|617-640|CUI-lessC0235567|no|null|patient|null|yes|615-616|unmarked|null|unmarked|null|false|null|false|null|C0024109|574-578|
+16055-152402.text|945-961|C0032227|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0032225|945-952|
+16055-152402.text|977-990|C0004144|no|null|patient|null|yes|968-976|unmarked|null|unmarked|null|false|null|false|null|C0024109|977-981|
+16055-152402.text|1240-1252|C0032326|yes|1225-1239|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+16055-152402.text|1494-1510|C0032227|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225784|1489-1501|
+16055-152402.text|1541-1557|C0032227|no|null|patient|null|no|null|unmarked|null|moderate|1517-1525|false|null|false|null|C0225779|1535-1548|
+16055-152402.text|1600-1607|C1265876|no|null|patient|null|no|null|improved|1572-1581|unmarked|null|false|null|false|null|CUI-less|1582-1599|
+16055-152402.text|1623-1634|C0004144|no|null|patient|null|yes|1609-1615|unmarked|null|unmarked|null|false|null|false|null|null|null|
+16055-152402.text|1678-1695|C0032227|no|null|patient|null|no|null|unmarked|null|moderate|1663-1671|false|null|false|null|C0225779|1672-1685|
+16055-152402.text|1678-1695|C0032227|no|null|patient|null|no|null|unmarked|null|moderate|1663-1671|false|null|false|null|C0225779|1672-1685|

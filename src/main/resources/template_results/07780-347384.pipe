@@ -1,0 +1,10 @@
+07780-347384.text|658-661|CUI-lessC0225805|no|null|patient|null|yes|647-653|unmarked|null|unmarked|null|false|null|false|null|null|null|
+07780-347384.text|965-977|CUI-lessC0018800|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+07780-347384.text|1087-1112|CUI-lessC0155919|no|null|patient|null|no|null|increased|1077-1086|unmarked|null|false|null|false|null|C0459963|1120-1138|
+07780-347384.text|1158-1182|C0018802|no|null|patient|null|no|null|unmarked|null|moderate|1153-1157|false|null|false|null|C0018787|1169-1174|
+07780-347384.text|1199-1205,1247-1251|CUI-lessC0476367|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C1261075|1235-1251|
+07780-347384.text|1298-1311|CUI-lessC0028109,C0332554|no|null|patient|null|yes|1274-1282|unmarked|null|unmarked|null|false|null|false|null|C0028109|1298-1304|
+07780-347384.text|1412-1428|C0032227|yes|1409-1411|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0032225|1412-1419|
+07780-347384.text|1432-1455|C0521530|yes|1409-1411|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0024109|1432-1441|
+07780-347384.text|1462-1467,1471-1479|CUI-lessC0729956|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003483|1462-1467|
+07780-347384.text|1500-1524|C0018802|no|null|patient|null|no|null|unmarked|null|moderate|1495-1499|false|null|false|null|C0018787|1511-1516|

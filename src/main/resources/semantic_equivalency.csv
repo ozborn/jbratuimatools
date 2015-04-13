@@ -1,0 +1,21 @@
+#Format is precordinated/single_CUI||postcoordinated_cui1 postcordinated_cui2||example_text1||example_text2
+# Basically qualifiers can go with multiple diseases easily, not sure I need this list
+# Very few equivalence classes here, most just varied levels of specificity - ex)thickened leaflets versus valve stenosis, dysfunction issues
+following commands||C1720622||C0205307,C0424542
+#Need to add brain CUI
+midline shift||C0576481||C0333051,C0549183,BRAIN||
+#Need to add in body location
+pale||C0678215||C0554991,BODY
+Abdominal nondistended||C0424826||C0000731,C0332197
+Abdomen ND||C0424826||C0000731,C0332197
+Abd ND||C0424826||C0000731,C0332197
+# Not quite as BRBPR associated with both Hematochezia(below) and rectorrhagia (not below)
+BRBPR||C0018932||C0018932,C1272329
+#pre-coordinated is harsh breath sounds
+coarse breath sounds||C0231859||C0205194,C0436735
+# Single CUI is Electrocardiogram poor R-wave progression(fndg)
+Poor R wave progression||C0877038||C0429091,C0449258,C0542537
+Abdomen nontender||C0573980||C0520960,C1281594
+Abd NT||C0573980||C0520960,C1281594
+DNI||C0742532||C0021925,C0443288
+aortic valve leaflets thickened||C0741190||C0003501,C0205400

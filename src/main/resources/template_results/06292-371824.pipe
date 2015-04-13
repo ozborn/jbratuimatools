@@ -1,0 +1,16 @@
+06292-371824.text|306-314|C0013687|no|null|patient|null|yes|299-305|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06292-371824.text|320-323|C0032326|no|null|patient|null|yes|316-319|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06292-371824.text|380-426|C1276061|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0027061|405-415|
+06292-371824.text|427-435|C0032285|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06292-371824.text|657-665|C0013687|no|null|patient|null|yes|650-656|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06292-371824.text|671-674|C0032326|no|null|patient|null|yes|667-670|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06292-371824.text|894-902|C0013687|no|null|patient|null|yes|887-893|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06292-371824.text|916-928|C0032326|no|null|patient|null|yes|907-915|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06292-371824.text|1064-1072,1080-1089|CUI-lessC0225730,C2945579|no|null|patient|null|no|null|improved|1055-1063|unmarked|null|false|null|false|null|C0225730|1080-1089|
+06292-371824.text|1110-1126|C0032227|no|null|patient|null|no|null|decreased|1094-1102|unmarked|null|false|null|false|null|C0032225|1110-1117|
+06292-371824.text|1152-1164|C0032326|yes|1137-1151|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06292-371824.text|1229-1242,1251-1259|C0264583|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C1562879|1223-1242|
+06292-371824.text|1262-1280|C0264495|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+06292-371824.text|1290-1305|C0034063|no|null|patient|null|no|null|unmarked|null|moderate|1285-1289|false|null|false|null|C0225706|1325-1330|
+06292-371824.text|1420-1436|C0032227|no|null|patient|null|no|null|decreased|1403-1411|unmarked|null|false|null|false|null|C0225784|1415-1427|
+06292-371824.text|1456-1468|C0032326|yes|1441-1455|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|

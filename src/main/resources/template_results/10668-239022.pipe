@@ -1,0 +1,15 @@
+10668-239022.text|297-313|CUI-lessC0008311|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+10668-239022.text|335-351|CUI-lessC0008311|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+10668-239022.text|793-804|C0008311|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+10668-239022.text|809-815|C0243026|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+10668-239022.text|933-952|CUI-lessC0025066,C0522512|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003483|969-980|
+10668-239022.text|1006-1019|CUI-lessC0006663|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0003489|1041-1045|
+10668-239022.text|1071-1086|C0003486|no|null|patient|null|yes|1056-1062|unmarked|null|unmarked|null|false|null|false|null|C0003483|1071-1077|
+10668-239022.text|1119-1129|CUI-lessC0340643|no|null|patient|null|yes|1162-1180|unmarked|null|unmarked|null|false|null|false|null|C0581783|1204-1216|
+10668-239022.text|1119-1129|C0340643|no|null|patient|null|yes|1162-1180|unmarked|null|unmarked|null|false|null|false|null|C0581783|1204-1216|
+10668-239022.text|1119-1129|CUI-lessC0340643|no|null|patient|null|yes|1162-1180|unmarked|null|unmarked|null|false|null|false|null|C0581783|1204-1216|
+10668-239022.text|1219-1228,1263-1276|CUI-lessC0702240,C1269845|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C1562252|1258-1276|
+10668-239022.text|1293-1317|CUI-lessC0542339,C0225701,C0449584|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C1261077|1325-1340|
+10668-239022.text|1393-1413|CUI-lessC0524464,C2004491|no|null|patient|null|yes|1366-1384|unmarked|null|unmarked|null|false|null|false|null|C0032225|1385-1392|
+10668-239022.text|1442-1458|C0032227|yes|1425-1427|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0032225|1442-1449|
+10668-239022.text|1509-1524|C0034063|yes|1506-1508|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0024109|1509-1518|

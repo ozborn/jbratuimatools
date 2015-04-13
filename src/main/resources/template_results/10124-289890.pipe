@@ -1,0 +1,14 @@
+10124-289890.text|294-302|C0013687|no|null|patient|null|yes|302-303|unmarked|null|unmarked|null|false|null|false|null|null|null|
+10124-289890.text|304-314|C0332448|no|null|patient|null|yes|314-315|unmarked|null|unmarked|null|false|null|false|null|null|null|
+10124-289890.text|487-495|CUI-lessC0746961|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+10124-289890.text|500-519|C0013404|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225386|513-519|
+10124-289890.text|571-579|C0013687|no|null|patient|null|yes|579-580|unmarked|null|unmarked|null|false|null|false|null|null|null|
+10124-289890.text|581-591|C0332448|no|null|patient|null|yes|591-592|unmarked|null|unmarked|null|false|null|false|null|null|null|
+10124-289890.text|780-787|C0242184|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+10124-289890.text|792-811|C0013404|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225386|805-811|
+10124-289890.text|1027-1050|CUI-lessC1265748,C3164494|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C1522460|1036-1050|
+10124-289890.text|1075-1089|CUI-lessC1268684|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C1522460|1036-1050|
+10124-289890.text|1247-1252,1261-1269|CUI-lessC0018800|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0018787|1247-1252|
+10124-289890.text|1290-1303|CUI-lessC0521530|yes|1283-1285|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+10124-289890.text|1342-1353|C0020452|yes|1320-1322|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0459963|1323-1341|
+10124-289890.text|1373-1390|C0032227|yes|1370-1372|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0032225|1373-1380|

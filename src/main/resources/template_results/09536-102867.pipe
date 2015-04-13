@@ -1,0 +1,17 @@
+09536-102867.text|122-142|C0031039|no|null|patient|null|yes|110-120|unmarked|null|unmarked|null|false|null|false|null|C0031050|122-133|
+09536-102867.text|146-155|C0007177|no|null|patient|null|yes|144-145|unmarked|null|unmarked|null|false|null|false|null|null|null|
+09536-102867.text|610-644,657-666|CUI-lessC1299337|no|null|patient|null|no|null|decreased|657-666|severe|648-656|false|null|false|null|C0225897|610-626|
+09536-102867.text|708-719|C0086439|no|null|patient|null|no|null|unmarked|null|severe|677-683|false|null|false|null|C0225897|691-707|
+09536-102867.text|934-943|CUI-lessC0741190|no|null|patient|null|no|null|unmarked|null|moderate|927-933|false|null|false|null|C0003501|897-909|
+09536-102867.text|971-991|C0026266|no|null|patient|null|no|null|unmarked|null|moderate|961-965|false|null|false|null|C0026264|971-977|
+09536-102867.text|1033-1053|C0031039|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0031050|1033-1044|
+09536-102867.text|1095-1104|C0007177|yes|1065-1094|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+09536-102867.text|1133-1149|C0032227|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225784|1128-1140|
+09536-102867.text|1311-1345,1370-1379|CUI-lessC1299337|no|null|patient|null|no|null|decreased|1370-1379|severe|1349-1369|false|null|false|null|C0225897|1311-1327|
+09536-102867.text|1433-1444|C0086439|no|null|patient|null|no|null|unmarked|null|severe|1390-1408|false|null|false|null|C0225897|1416-1432|
+09536-102867.text|1534-1543|CUI-lessC0741190|no|null|patient|null|no|null|unmarked|null|moderate|1527-1533|false|null|false|null|C0003501|1497-1509|
+09536-102867.text|1555-1575|C0026266|no|null|patient|null|no|null|unmarked|null|moderate|1545-1549|false|null|false|null|C0026264|1555-1561|
+09536-102867.text|1602-1622|C0031039|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0031050|1602-1613|
+09536-102867.text|1664-1673|C0007177|yes|1634-1663|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|null|null|
+09536-102867.text|1723-1743|C0031039|no|null|patient|null|no|null|increased|1752-1758|unmarked|null|false|null|false|null|C0031050|1723-1734|
+09536-102867.text|1767-1778,1782-1791|CUI-lessC3266756|no|null|patient|null|no|null|unmarked|null|unmarked|null|false|null|false|null|C0225897|1767-1769|

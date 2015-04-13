@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
+import java.util.Iterator;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -26,6 +27,7 @@ public class AnnotatorStatistics implements Serializable {
 	private static Hashtable<String,Hashtable<String,HashMultiset<String>>> anno_results = null;
 	private static Hashtable<String,String> map_type_hash = null; //Key docname+T+id, value = CUIs string (comma separated)
 	private static HashSet<String> wrong_vocabulary_cuis = null;
+	static Hashtable<String,Hashtable<String,Hashtable<String,String>>> exact_results;
 
 	public Hashtable<String, Hashtable<String, HashMultiset<String>>> getAnnotatorStats() {
 		return anno_results;
@@ -40,6 +42,10 @@ public class AnnotatorStatistics implements Serializable {
 		Hashtable<String,HashMultiset<String>> all = new Hashtable<String,HashMultiset<String>>();
 		anno_results.put(ALL_ANNOTATORS, all);
 		wrong_vocabulary_cuis = new HashSet<String>();
+		//Exact Results contains key annotator name, value Hashtable with
+		//key document_id and value Hashtable with key entity 
+		//identifier (Txx) and value comma separated CUIs
+		exact_results = new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
 	}
 
 
@@ -64,7 +70,24 @@ public class AnnotatorStatistics implements Serializable {
 			String allcuis = getCUIs(dba);
 			buildAnnotationHash(annotator_name, text_key, allcuis,anno_results);
 			map_type_hash.put(dba.getDocName()+"T"+dba.getId(), allcuis);
+			buildExactResults(dba,allcuis);
 		}
+	}
+
+
+	//Exact Results contains key annotator name, value Hashtable with
+	//key document_id and value Hashtable with key entity 
+	//identifier (Txx) and value comma separated CUIs
+	private void buildExactResults(DiscontinousBratAnnotation dba, String allcuis){
+		Hashtable<String,Hashtable<String,String>> docid_hash = exact_results.get(dba.getAnnotatorName());
+		if(docid_hash==null) docid_hash = new Hashtable<String,Hashtable<String,String>>();
+		Hashtable<String,String> entid_hash = docid_hash.get(dba.getDocName());
+		if(entid_hash==null) entid_hash = new Hashtable<String,String>();
+		entid_hash.put("T"+dba.getId(), allcuis);
+		docid_hash.put(dba.getDocName(), entid_hash);
+		exact_results.put(dba.getAnnotatorName(), docid_hash);
+
+
 	}
 
 	private void buildAnnotationHash(String annotator_name, String text_key,
@@ -97,7 +120,7 @@ public class AnnotatorStatistics implements Serializable {
 	}
 
 
-	
+
 	/**
 	 * Returns comma separated CUI string
 	 * @param dba
@@ -223,10 +246,10 @@ public class AnnotatorStatistics implements Serializable {
 			System.out.println(cui+"-"+values);
 		}
 		for (String type : Multisets.copyHighestCountFirst(stdist).elementSet()) {
-		    System.out.println(type + ": " + stdist.count(type));
+			System.out.println(type + ": " + stdist.count(type));
 		}
 		for (String type : Multisets.copyHighestCountFirst(doublestdist).elementSet()) {
-		    System.out.println(type + ": " + doublestdist.count(type));
+			System.out.println(type + ": " + doublestdist.count(type));
 		}
 		System.out.println("Total Unique CUI count was:"+dist.keySet().size());
 		System.out.println("Total CUI count was:"+total_cui_count);
@@ -234,8 +257,8 @@ public class AnnotatorStatistics implements Serializable {
 		System.out.println("Total wrong vocabulary CUI count was:"+bad_count);
 		System.out.println("Total unique wrong vocabulary CUI count was:"+wrong_vocabulary_cuis.size());
 	}
-	
-	
+
+
 	private HashMultiset<String> cleanSemanticTypes(String raw, HashMultiset<String> histogram){
 		String[] stypes = raw.split(",");
 		HashMultiset<String> clean = HashMultiset.create();
@@ -279,6 +302,50 @@ public class AnnotatorStatistics implements Serializable {
 		}
 		System.out.println(agree_count+" agreements, "+dcount+" discrepancies, "+unique_count+" untestable");
 		return discrepancies.toString();
+	}
+
+
+	/**
+	 * Counts the agreements between annotators
+	 * @return
+	 */
+	public int countAgreements(){
+		int agreements = 0;
+		Object[] annotators = exact_results.keySet().toArray();
+		System.out.println(annotators[0]+" first annotator"); System.out.flush();
+		Hashtable<String,Hashtable<String,String>> reftable = 
+				exact_results.get(annotators[0]);
+		Set<String> refdocs = reftable.keySet();
+		for(String rdoc : refdocs){
+			System.out.println("Looking at document:"+rdoc);
+			Hashtable<String,String> refents = reftable.get(rdoc);
+			Hashtable<String,String> testents = 
+					exact_results.get(annotators[1]).get(rdoc);
+			//Iterate through each entity in the document
+			//Check to see how many documents are missing
+			for(Iterator<String> entit = refents.keySet().iterator(); entit.hasNext();){
+				String refentity = entit.next();
+				System.out.println("Looking at entity:"+refentity);
+				String testentity = testents.get(refentity);
+				String refcuis = refents.get(refentity);
+				String testcuis = refents.get(refentity);
+				if(refcuis==null && testcuis==null) continue;
+				if(refcuis!=null && testcuis==null) {
+					System.out.println(annotators[1]+" has null value for "+refentity);
+					continue;
+				}
+				if(refcuis==null && testcuis!=null) {
+					System.out.println(annotators[0]+" has null value for "+refentity);
+					continue;
+				}
+				if(refcuis.trim().equalsIgnoreCase(testcuis.trim())) {
+					agreements++;
+				} else {
+					System.out.println("Disagreement:"+refcuis+" versus "+testcuis);
+				}
+			}
+		}
+		return agreements;
 	}
 
 	public String getDiscrepancies() throws Exception { 

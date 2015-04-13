@@ -22,8 +22,11 @@ import org.uimafit.descriptor.ConfigurationParameter;
 public class SemEval2015ViewCreatorAnnotator extends JCasAnnotator_ImplBase {
 
 	static final String defaultTrainingPath = "/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
+	static final String defaultDevelPath = "/home/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/devel";
+
+
 	/**
-	 * Does not populate below
+	 * FIXME Does not populate below
 	 */
 	public static final String PARAM_TRAINING_PATH = "SemEval2015TrainingPath";
 	@ConfigurationParameter(
@@ -31,6 +34,7 @@ public class SemEval2015ViewCreatorAnnotator extends JCasAnnotator_ImplBase {
 			description = "path to training directory",
 			defaultValue = defaultTrainingPath)
 	private String SemEval2015TrainingPath = defaultTrainingPath; //Needed default not working FIXME
+
 
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
@@ -45,13 +49,18 @@ public class SemEval2015ViewCreatorAnnotator extends JCasAnnotator_ImplBase {
 			System.exit(0);
 		}
 		String name = new File(ViewUriUtil.getURI(jcas).getPath()).getName();
+		//System.out.println(ViewUriUtil.getURI(jcas).getPath()); System.out.flush();
 		String[] bits = name.split("-");
 		String prefix = bits[0]+"-"+bits[1];
-		String type = bits[2];
-		if(type.toLowerCase().startsWith("discharge")) type="discharge";
-		if(type.toLowerCase().startsWith("ecg")) type="ecg";
-		if(type.toLowerCase().startsWith("echo")) type="echo";
-		if(type.toLowerCase().startsWith("radio")) type="radiology";
+		//System.out.println("Prefix was:"+prefix);System.out.flush();
+		String type = "discharge"; //Default type
+		if(bits.length>=3){
+			type = bits[2];
+			if(type.toLowerCase().startsWith("discharge")) type="discharge";
+			if(type.toLowerCase().startsWith("ecg")) type="ecg";
+			if(type.toLowerCase().startsWith("echo")) type="echo";
+			if(type.toLowerCase().startsWith("radio")) type="radiology";
+		} 
 		//System.out.println("Type:"+type);
 		//System.out.println("Prefix:"+prefix);
 		//System.out.println("Type:"+type);
@@ -67,14 +76,30 @@ public class SemEval2015ViewCreatorAnnotator extends JCasAnnotator_ImplBase {
 				String otext = FileUtils.readFileToString(ofile);
 				semevalTextView.setDocumentText(otext);
 			} else {
-				System.err.println("Could not find expected file:"+ofile.getPath());
+				//System.out.println("Did not find training text file:"+ofile);
+				ofile = new File(defaultDevelPath+File.separator+type+
+						File.separator+prefix.split("\\.")[0]+"."+SemEval2015Constants.SEMEVAL_TEXT_FILE_EXTENSION);
+				if(ofile.exists()){
+					String otext = FileUtils.readFileToString(ofile);
+					semevalTextView.setDocumentText(otext);
+				} else {
+					System.err.println("Could not find expected devel text file:"+ofile.getPath());
+				}
 			}
 			File pfile = new File(pipefilename);
 			if(pfile.exists()) {
 				String ptext = FileUtils.readFileToString(pfile);
 				pipedView.setDocumentText(ptext);
 			} else {
-				System.err.println("Could not find expected file:"+ofile.getPath());
+				//System.out.println("Could not find expected pipe file:"+pfile.getPath());
+				pfile = new File(defaultDevelPath+File.separator+type+
+						File.separator+prefix.split("\\.")[0]+"."+SemEval2015Constants.SEMEVAL_PIPED_EXTENSION);
+				if(pfile.exists()) {
+					String ptext = FileUtils.readFileToString(pfile);
+					pipedView.setDocumentText(ptext);
+				} else {
+					System.err.println("Could not find expected pipe file:"+pfile.getPath());
+				}
 			}
 		} catch (IOException e) {
 			e.printStackTrace();

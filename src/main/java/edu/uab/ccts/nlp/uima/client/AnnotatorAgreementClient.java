@@ -29,10 +29,11 @@ import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotat
  *
  */
 public class AnnotatorAgreementClient {
-	protected static String resourceDirPath = "/Users/ozborn/code/repo/cuilessdata/";
+	static String ozborn_home = "/home/ozborn";
+	protected static String resourceDirPath = ozborn_home+"/code/repo/cuilessdata/";
 	protected static String brat_annotation_root = resourceDirPath + "devel_updated/";
 	protected static String semeval2015_updated_devel_root = 
-			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/devel/discharge";
+			ozborn_home+"/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/devel/discharge";
 	//protected static String semeval2015_old_train_root = 
 	//		"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
 	public static final String[] bratExtensions = {
@@ -40,19 +41,33 @@ public class AnnotatorAgreementClient {
 	public static final String[] semevalExtensions = {
 			SemEval2015Constants.SEMEVAL_TEXT_FILE_EXTENSION};
 
+	
+	/**
+	 * Calculates annotator agreement between 2 annotators
+	 * Does not correct for agreement due to chance as there are 400K+ classes
+	 * and the effect will be too small
+	 * @param args annotator1_dataset, annotator2_dataset
+	 */
 	public static void main(String... args)
 	{
-		System.out.println(brat_annotation_root); System.out.flush();
+		if(args.length<2) System.out.println("Need 2 annotator datasets");
+		String ann1files = brat_annotation_root+args[0];
+		String ann2files = brat_annotation_root+args[1];
+		System.out.println(ann1files+" and \n"+ann2files+" being compared"); 
+		System.out.flush();
 		//Input files are manual files
-		Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
+		Collection<File> a1files = FileUtils.listFiles(new File(ann1files),
 				bratExtensions, true);
-		//Collection<File> semFiles = FileUtils.listFiles(new File(semeval2015_old_train_root),
-		//These ar ethe reference files
+		Collection<File> a2files = FileUtils.listFiles(new File(ann2files),
+				bratExtensions, true);
 		Collection<File> semFiles = FileUtils.listFiles(new File(semeval2015_updated_devel_root),
 				semevalExtensions, true);
-		//System.out.println("Got "+inputFiles.size()+" input files for check missing pipeline...");
+		System.out.println("Got "+a1files.size()+" annotator1 input files for check missing pipeline...");
+		System.out.println("Got "+a2files.size()+" annotator2 input files for check missing pipeline...");
 		System.out.println("Got "+semFiles.size()+" semeval input files for checking annotator agreement...");
-		apply(inputFiles,semFiles);
+		a1files.addAll(a2files);
+		apply(a1files,semFiles);
+			
 
 	}
 	
@@ -77,10 +92,11 @@ public class AnnotatorAgreementClient {
 		{
 			JCas annView = jcas.getView(BratConstants.TEXT_VIEW);
 			Collection<DiscontinousBratAnnotation> brats = JCasUtil.select(annView, DiscontinousBratAnnotation.class);
-			annotatorstats.add(brats); //FIXME add or use an "annotator/user" field for each Discontinous Annotation
+			annotatorstats.add(brats); 
 		}
 		annotatorstats.print(annotatorstats.getAnnotatorStats());
 		System.out.println("Annotator stats:"+annotatorstats.getAnnotatorStats());
+		System.out.println(annotatorstats.countAgreements()+" agreements");
 		System.out.println(annotatorstats.getDiscrepancies());
 		
 		

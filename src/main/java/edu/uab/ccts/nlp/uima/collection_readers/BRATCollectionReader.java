@@ -40,7 +40,8 @@ public class BRATCollectionReader extends JCasCollectionReader_ImplBase
 
 	protected List<File> annFiles = new ArrayList<File>();
 	protected List<File> textFiles = new ArrayList<File>();
-	protected Hashtable<String,File> hashedConfigFiles = new Hashtable<String,File>();
+	protected Hashtable<String,File> hashedConfigFiles = 
+			new Hashtable<String,File>();
 	protected int totalFiles = 0;
 
 	public void initialize(UimaContext context) throws ResourceInitializationException

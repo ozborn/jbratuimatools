@@ -2,6 +2,7 @@ package edu.uab.ccts.nlp.umls.tools;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 
@@ -14,15 +15,19 @@ import java.sql.DriverManager;
 public class UMLSTools {
 	
 	static String query_file_path=
-	"/Users/ozborn/code/workspaces/brat_workspace/jbratuimatools/src/main/resources/sql/oracle/select_best_umls_concept_name.sql";
+	//"/Users/ozborn/code/workspaces/brat_workspace/jbratuimatools/src/main/resources/sql/oracle/select_best_umls_concept_name.sql";
+	"/sql/oracle/select_best_umls_concept_name.sql";
 	static String query_stypes_file_path=
-	"/Users/ozborn/code/workspaces/brat_workspace/jbratuimatools/src/main/resources/sql/oracle/select_stypes_sab.sql";
+	//"/Users/ozborn/code/workspaces/brat_workspace/jbratuimatools/src/main/resources/sql/oracle/select_stypes_sab.sql";
+	"/sql/oracle/select_stypes_sab.sql";
 	static String query_sql, query_stypes_sql;
 	static Connection con;
 	
 	static {
-		File f = new File(query_file_path);
-		File f2 = new File(query_stypes_file_path);
+		URL url1 = UMLSTools.class.getClass().getResource(query_file_path);
+		File f = new File(url1.getFile());
+		URL url2 = UMLSTools.class.getClass().getResource(query_stypes_file_path);
+		File f2 = new File(url2.getFile());
 		try {
 			query_sql = FileUtils.readFileToString(f,"UTF-8");
 			query_stypes_sql = FileUtils.readFileToString(f2,"UTF-8");

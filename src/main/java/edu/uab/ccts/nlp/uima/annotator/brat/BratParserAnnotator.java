@@ -36,7 +36,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 	//These are re-initialized each time in process method
 	TreeMap<String,String> bratKeyDict = null; //Key Txx (entity id), Value Entity Row
 	Hashtable<String,DiscontinousBratAnnotation> uimaKeyDict  = null;
-	boolean verbose = false; 
+	boolean verbose = true; 
 	boolean print_problem_files_only = false;
 
 
@@ -286,7 +286,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					System.out.print(tableline);
 					return;
 				}
-			} else System.out.println(tableline);
+			} else System.out.print(tableline);
 		}
 	}
 

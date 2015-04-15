@@ -344,13 +344,17 @@ public class AnnotatorStatistics implements Serializable {
 					System.out.println(annotators[0]+" has null value for "+refentity);
 					continue;
 				}
+				
 				if(refcuis.trim().equalsIgnoreCase(testcuis.trim())) {
 					agreements++;
 				} else {
+					String refnames = UMLSTools.fetchBestConceptName(refcuis, BratConstants.UMLS_DB_CONNECT_STRING);
+					String testnames = UMLSTools.fetchBestConceptName(testcuis, BratConstants.UMLS_DB_CONNECT_STRING);
 					disagreements++;
 					String typekey = annotators[0]+":"+rdoc+":"+refentity;
 					String distext = text_type_hash.get(typekey);
-					System.out.println("DISAGREE\t"+rdoc+"\t"+refentity+"\t"+distext+"\t"+refcuis+"\t"+testcuis);
+					System.out.println("DISAGREE\t"+rdoc+"\t"+refentity+"\t"+distext+"\t"
+					+refcuis+"\t"+refnames+"\t"+testcuis+"\t"+testnames);
 				}
 			}
 		}

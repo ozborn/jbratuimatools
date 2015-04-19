@@ -348,6 +348,50 @@ public class AnnotatorStatistics implements Serializable {
 		return agreements;
 	}
 
+	/**
+	 * Prints out the text for multiple CUIs regardless of annotator
+	 */
+	public void printMultipleCUIText(){
+		HashMultiset<String> stype_combinations = HashMultiset.create();
+		StringBuffer mutlicuis = new StringBuffer();
+		mutlicuis.append("");
+		Hashtable<String,HashMultiset<String>> alls = anno_results.get(ALL_ANNOTATORS);
+		Set<String> texts = alls.keySet();
+		for(String text : texts) {
+			HashMultiset<String> test = alls.get(text);
+			String any = test.iterator().next();
+			for (String s : test.elementSet()) {
+				String[] cuiarray = s.split(",");
+				if(cuiarray.length<2) continue;
+				String bname = null;
+				bname = UMLSTools.fetchBestConceptName(s, BratConstants.UMLS_DB_CONNECT_STRING);
+				if(bname.indexOf("||")==-1) continue;
+				String[] pieces = bname.split("\\|\\|");
+				StringBuffer key = new StringBuffer();
+				for(String comp : pieces) {
+					//System.out.println(comp);
+					if(comp!=null && comp.length()>5) {
+						key.append(comp.substring(comp.length()-5, comp.length()-1)); 
+					}
+					key.append(" ");
+				}
+				stype_combinations.add(key.toString());
+				mutlicuis.append("\t"+text);
+				mutlicuis.append("\t"+bname);
+				mutlicuis.append("\t"+s);
+				mutlicuis.append("\t"+test.count(s));
+				mutlicuis.append("\n");
+			}
+		}
+		System.out.print(mutlicuis.toString());
+		for(String s : stype_combinations.elementSet()){
+			System.out.println(s+"\t"+stype_combinations.count(s));
+		}
+		System.out.print(stype_combinations);
+
+	}
+
+
 	public String getDiscrepancies() throws Exception { 
 		return getDiscrepancies(anno_results) ; 
 	}

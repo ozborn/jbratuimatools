@@ -5,6 +5,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.regex.Pattern;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -29,12 +30,13 @@ import org.cleartk.util.ViewUriUtil;
 
 import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.uima.client.SemevalCUIless2BratClient;
+import edu.uab.ccts.nlp.umls.tools.UMLSTools;
 
 
 
 /**
- * This is a general file output class that writes documents in the format needed for various
- * shared tasks. It also annotates each MetaMapExtendedHit into a SharClef2013annotation
+ * This is a general file output class that writes BRAT documents. It currently
+ * takes in semeval 2015 DiseaseDisorders and outputs them to BRAT format 
  * @author ozborn
  *
  */
@@ -47,9 +49,8 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 	Hashtable<String,String> entities = new Hashtable<String,String>();
 	String replace_regex = "\n";
 	int _relid = 1;
+	Hashtable<String,String> identifierNoteMap;
 
-	//Key Disease Identifier, String CUI list (space separated) of suggested applicable CUIs with concept names
-	//Hashtable<String,String> diseaseNoteMap = null;
 	final String UmlsConnectionString = BratConstants.UMLS_DB_CONNECT_STRING;
 
 
@@ -61,6 +62,7 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 
 			//UmlsConnectionString = (String) aContext.getConfigParameterValue(ConfigurationSingleton.PARAM_UMLS_DB_URL);
 			aContext.getLogger().log(Level.INFO,"Oracle UMLS URL is: "+UmlsConnectionString+"\n");
+			//Key Identifier (Txx), String CUI list (space separated) of suggested applicable CUIs with concept names
 		} catch (Exception e) {
 			throw new ResourceInitializationException(e);
 		}
@@ -71,13 +73,14 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 	@Override
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		String uri = ViewUriUtil.getURI(jcas).toString();
+		identifierNoteMap = new Hashtable<String,String>();
 		/*
 		String nofile = uri.substring(
 				0,
 				uri.lastIndexOf(File.separator)).toUpperCase();
 		String type = nofile.substring(nofile.lastIndexOf(File.separator)+1);
 		System.out.println("TYPE:"+type);
-		*/
+		 */
 		String txtfilename = _bratOutputPath+File.separator+
 				uri.substring(uri.lastIndexOf(File.separator)+1,uri.lastIndexOf("."))
 				+".txt";
@@ -122,7 +125,7 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 			} else {
 				String uri = ViewUriUtil.getURI(jcas).toString();
 				System.out.println("Found "+(JCasUtil.select(jcas, 
-				DiseaseDisorder.class)).size()+" Disease Disorders in "+uri);
+						DiseaseDisorder.class)).size()+" Disease Disorders in "+uri);
 			}
 			FSIndex<Annotation> dIndex = jcas.getAnnotationIndex(DiseaseDisorder.type);
 			Iterator<Annotation> dIter = dIndex.iterator();
@@ -158,11 +161,11 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 				/*
 				String suggestions = addSuggestedCUIs(jcas,sd,forbrat);
 				if(suggestions!=null && !suggestions.isEmpty()) {
-					diseaseNoteMap.put(diseaseid,suggestions);
+					identifierNoteMap.put(diseaseid,suggestions);
 					this.getContext().getLogger().log(Level.FINER,
 							"Added "+suggestions+" to disease note map");
 				}
-				*/
+				 */
 				prev_discontinous_offset = discontinous_offset;
 				prev_identifier = identifier;
 				identifier++;
@@ -179,7 +182,7 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 		} catch (Exception e ) {
 			e.printStackTrace();
 		}
-		//getAnnotatorNotes(brat_annotation); // DO NOT PRE-POPULATE
+		getAnnotatorNotes(brat_annotation); // DO NOT PRE-POPULATE DISEASE, just other CUIs
 		brat_annotation.append("\n");
 		return brat_annotation;
 	}
@@ -189,9 +192,15 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 	private int appendDiseaseDisorderAttribute(StringBuffer brat_annotation,
 			int identifier, DiseaseDisorderAttribute theatt,String typename,
 			String diseaseid) {
-		if(theatt!=null && (theatt.getBegin()!=0 && theatt.getEnd()!=0)){
+		if( (theatt!=null) && (theatt.getBegin()!=0 && theatt.getEnd()!=0)){
 			String attid = "T"+identifier;
-			this.getContext().getLogger().log(Level.FINE,"Set attid:"+attid);
+			String norm = theatt.getNorm();
+			this.getContext().getLogger().log(Level.FINE,"Attid:"+attid+" CoveredText:"+theatt.getCoveredText()+" Norm:"+norm);
+			boolean b = Pattern.matches("C\\d\\d\\d\\d\\d\\d\\d*",norm.trim());
+			if(norm !=null && b){
+				this.getContext().getLogger().log(Level.FINE,"Found CUI:"+norm);
+				identifierNoteMap.put(attid, theatt.getNorm());
+			} 
 			String attrange = theatt.getBegin()+" "+theatt.getEnd();
 			//if(entities.get(attrange)==null) {
 			brat_annotation.append(attid+"\t"+typename+" ");
@@ -252,7 +261,13 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 	}
 
 
-	/** Can not seem to use JCasUtil.selectCovering here */
+	/** 
+	 * This function was supposed to add "suggested" CUIs for the annotator
+	 * to the notes field for disease, no longer used due to annotator
+	 * suggestion
+	 * Can not seem to use JCasUtil.selectCovering here 
+	 * 
+	 * */
 	private String addSuggestedCUIs(JCas jcas, DiseaseDisorder sd, int[] array){
 		StringBuffer codes = new StringBuffer();
 		codes.append("");
@@ -305,48 +320,30 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 	}
 
 
-	//Code below was likely for pre-populating which annotars didn't like
-	/*
+	/** Populates the notes section for attributes in identifierNoteMap
+	 *  with the suggested CUI and the concept name
+	 * @param brat_annotation
+	 */
+
 	private void getAnnotatorNotes(StringBuffer brat_annotation){
 		int annot_counter=1;
-		Connection con = null;
 		try {
-			con = DriverManager.getConnection(UmlsConnectionString);
-			PreparedStatement st = con.prepareStatement(_query_sql);
-			Iterator<String> didit = diseaseNoteMap.keySet().iterator();
+			Iterator<String> didit = identifierNoteMap.keySet().iterator();
 			while(didit.hasNext()){
 				String did = didit.next();
-				String cuis[] = diseaseNoteMap.get(did).split(" ");
-				//for(String cui : cuis){
-					for(int i=0;i< cuis.length;i++){
-						String cui = cuis[i];
-						st.setString(1,cui);
-						st.setString(2,cui);
-						OracleResultSet resultset = (OracleResultSet) st.executeQuery();
-						if(resultset.next()) {
-							String goodname = resultset.getString(2);
-							String suggest = cui+":"+goodname+" ";
-							//String abbrevs = resultset.getString(3);
-							if(i==0) {
-								brat_annotation.append("#"+annot_counter+
-										"\tAnnotatorNotes "+did+"\t");
-							}
-							brat_annotation.append(suggest);
-							if(i==cuis.length-1) brat_annotation.append("\n");
-							else { brat_annotation.append("\t"); }
-						}
-						resultset.close();
-					}
-					annot_counter++;
+				String cui = identifierNoteMap.get(did);
+				String goodname = UMLSTools.fetchBestConceptName(cui, UmlsConnectionString);
+				brat_annotation.append("#"+annot_counter+"\tAnnotatorNotes "+did+"\t");
+				String suggest = cui+":"+goodname+" ";
+				brat_annotation.append(suggest+"\n");
+				annot_counter++;
 			}   
-			con.close();
 		} catch (Exception e) {
 			e.printStackTrace();
 			this.getContext().getLogger().log(Level.SEVERE,"Failed to get good concept name to suggest from UMLS");
 		}   
 	}
-	*/
-	
+
 	public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {
 		return AnalysisEngineFactory.createEngineDescription(Semeval2CUIlessBRATAnnotator.class,
 				Semeval2CUIlessBRATAnnotator.BRAT_FILE_PATH,SemevalCUIless2BratClient.brat_devel_output_root);

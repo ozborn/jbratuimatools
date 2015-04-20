@@ -5,23 +5,15 @@ import java.util.Collection;
 import java.util.Hashtable;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.uima.UIMAException;
-import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
-import org.apache.uima.fit.factory.ConfigurationParameterFactory;
-import org.apache.uima.fit.factory.ConfigurationParameterFactory.ConfigurationData;
-import org.apache.uima.fit.pipeline.JCasIterable;
 import org.apache.uima.fit.pipeline.SimplePipeline;
-import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.cleartk.util.ViewUriUtil;
 import org.uimafit.factory.AggregateBuilder;
 
 import com.google.common.collect.HashMultiset;
 
-import brat.type.DiscontinousBratAnnotation;
 import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
 import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
@@ -35,7 +27,10 @@ import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotat
 /**
  * This should read in the annotated BRAT files with multiple CUIs, and read in the SemEval2015
  * updated (Dec 3, 2014 version) training data and overlay the multiple CUI annotations for
- * the CUIless concepts to generate a new output file suitable for use as training data
+ * the CUIless concepts to generate a new output file suitable for use as training data.
+ * 
+ * Basically this generates the final data set for training data, integrating user
+ * annotations for CUIless concepts.
  * @author ozborn
  *
  */
@@ -87,9 +82,6 @@ public class WriteFinalAnnotationsClient {
 	
 		//SimplePipeline.runPipeline(reader, builder.createAggregate());
 		} catch (ResourceInitializationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UIMAException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		} catch (Exception e) {

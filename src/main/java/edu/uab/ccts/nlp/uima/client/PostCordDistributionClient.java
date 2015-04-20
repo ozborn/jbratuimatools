@@ -5,12 +5,8 @@ import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.UIMAException;
-import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
-import org.apache.uima.fit.factory.ConfigurationParameterFactory;
-import org.apache.uima.fit.factory.ConfigurationParameterFactory.ConfigurationData;
-import org.apache.uima.fit.pipeline.JCasIterable;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
@@ -27,6 +23,14 @@ import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015Constants;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotator;
 
 
+/**
+ * This analyzes the train data and prints out disease text, the CUIs and their
+ * semantic types, the number of times they have occured for all annotations have
+ * use multi CUIs. It also prints the distribution of semantic types for all
+ * multi-CUI annotations.
+ * @author ozborn
+ *
+ */
 public class PostCordDistributionClient {
 	protected static String resourceDirPath = "/Users/ozborn/code/repo/cuilessdata/";
 	protected static String brat_annotation_root = resourceDirPath + "training_clean/";

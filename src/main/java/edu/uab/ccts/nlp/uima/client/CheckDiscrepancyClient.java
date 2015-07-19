@@ -5,12 +5,8 @@ import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.UIMAException;
-import org.apache.uima.collection.CollectionReader;
 import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
-import org.apache.uima.fit.factory.ConfigurationParameterFactory;
-import org.apache.uima.fit.factory.ConfigurationParameterFactory.ConfigurationData;
-import org.apache.uima.fit.pipeline.JCasIterable;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
@@ -29,11 +25,10 @@ import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotat
 
 public class CheckDiscrepancyClient {
 	protected static String resourceDirPath = "/Users/ozborn/code/repo/cuilessdata/";
-	protected static String brat_annotation_root = resourceDirPath + "training_clean/";
-	protected static String semeval2015_updated_train_root = 
-			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/train";
-	protected static String semeval2015_old_train_root = 
-			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
+	protected static String dropboxPublicDataPath = "/Users/ozborn/Dropbox/Public_NLP_Data/";
+	
+	static String semeval2015_updated_train_root, semeval2015_old_train_root, brat_annotation_root;
+	
 	public static final String[] bratExtensions = {
 			BratConstants.BRAT_CONFIG_FILE_EXTENSION,BratConstants.BRAT_TEXT_FILE_EXTENSION};
 	public static final String[] semevalExtensions = {
@@ -41,6 +36,19 @@ public class CheckDiscrepancyClient {
 
 	public static void main(String... args)
 	{
+		if(args.length>0) {
+			resourceDirPath = args[0];
+			System.out.println("Set resourceDirPath to:"+resourceDirPath);
+			if(args.length>1) {
+				dropboxPublicDataPath = args[1];
+				System.out.println("Set dropboxPublicDataPath to:"+dropboxPublicDataPath);
+			}
+		}
+		semeval2015_updated_train_root = 
+				dropboxPublicDataPath+"semeval-2015-task-14_updated/data/train";
+		semeval2015_old_train_root = 
+				dropboxPublicDataPath+"semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
+		brat_annotation_root = resourceDirPath + "training_clean/";
 		System.out.println(brat_annotation_root); System.out.flush();
 		Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
 				bratExtensions, true);
@@ -49,7 +57,6 @@ public class CheckDiscrepancyClient {
 		//System.out.println("Got "+inputFiles.size()+" input files for check missing pipeline...");
 		System.out.println("Got "+semFiles.size()+" semeval input files for check missing pipeline...");
 		apply(inputFiles,semFiles);
-
 	}
 	
 	public static void apply(Collection<File> files, Collection<File> semfiles) 

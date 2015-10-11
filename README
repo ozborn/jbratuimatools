@@ -1,9 +1,0 @@
-Collection of java UIMA tools to handle analysis of BRAT annotations
-Includes functionality to:
-1) Check for missing CUIs
-2) Check for disrepancies
-3) Output brat annotations overlayed on SemEval data
-4) Generate SemEval based annotations for BRAT annotation
-
-TODO:
-Calculate annotator agreement...

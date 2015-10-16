@@ -202,8 +202,11 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				//Retrieve Entity
 				DiscontinousBratAnnotation annotated = uimaDiseaseDict.get(span_fields[1]);
 				if(annotated==null) {
-					extra_summary+="EXTRA-"+span_fields[1];
-					extra_annotations++;
+					DiscontinousBratAnnotation notdisease = uimaNotDiseaseDict.get(span_fields[1]);
+					if(notdisease==null) {
+						extra_summary+="EXTRA-"+span_fields[1];
+						extra_annotations++;
+					}
 					continue;
 				}
 				//Add CUIs

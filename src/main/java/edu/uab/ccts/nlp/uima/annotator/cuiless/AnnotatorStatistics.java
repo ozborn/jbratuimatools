@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -203,14 +204,16 @@ public class AnnotatorStatistics implements Serializable {
 		HashMultiset<String> doublestdist = HashMultiset.create();
 		int bad_count=0, bad_form_count=0, total_cui_count=0;
 		try {
-			for(String cuis : map_type_hash.values()) {
+			//for(String cuis : map_type_hash.values()) {
+			for(Map.Entry<String,String> mapentry : map_type_hash.entrySet()) {
+				String cuis = mapentry.getValue();
 				String[] cs = cuis.split(",");
 				if(BratParserAnnotator.isWellFormedCUI(cs[0])) { doublestdist.add(cuis); }
 				//Iterate through all the cuis for this mapping
 				for(int i=0;i<cs.length;i++){
 					String cui = cs[i].trim();
 					if(!BratParserAnnotator.isWellFormedCUI(cui)) {
-						System.out.println("Badly formed cui:"+cui);
+						System.out.println(mapentry.getKey()+" has badly formed cui:"+cui);
 						bad_form_count++;
 						continue;
 					}
@@ -221,7 +224,7 @@ public class AnnotatorStatistics implements Serializable {
 						String[] cuiinfo = UMLSTools.fetchCUIInfo(cui, BratConstants.UMLS_DB_CONNECT_STRING);
 						cuistypehash.put(cui,cuiinfo[2]);
 						if(cuiinfo[3].indexOf("SNOMEDCT")==-1) {
-							System.out.println("Bad SAB for "+cui+" in "+cuiinfo[3]);
+							System.out.println(mapentry.getKey()+" has non-SNOMED-CT CUI "+cui+" from ontology "+cuiinfo[3]);
 							wrong_vocabulary_cuis.add(cui);
 							bad_count++;
 						}

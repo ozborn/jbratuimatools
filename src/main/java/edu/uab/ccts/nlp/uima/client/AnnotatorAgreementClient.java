@@ -25,6 +25,7 @@ import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotat
 
 /**
  * Calculates annotator agreement in the devel dataset between multiple annotators
+ * but currently just 2 annotators. FIXME - awaiting Maio's results
  * @author ozborn
  *
  */

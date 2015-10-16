@@ -76,6 +76,7 @@ public class WriteFinalAnnotationsClient {
 		builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(semeval2015_old_train_root));
 		builder.add(SemEval2015ParserAnnotator.getDescription());
 		builder.add(BratParserAnnotator.getDescription());
+		//Need add annotator to do the merging?
 		builder.add(MergedCUIlessConsumer.getDescription());
 		for (JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))
 		{}

@@ -35,7 +35,8 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 
 	//These are re-initialized each time in process method
 	TreeMap<String,String> bratKeyDict = null;
-	Hashtable<String,DiscontinousBratAnnotation> uimaKeyDict  = null;
+	Hashtable<String,DiscontinousBratAnnotation> uimaDiseaseDict  = null; //Key Txxx, Value brat diseases
+	Hashtable<String,DiscontinousBratAnnotation> uimaNotDiseaseDict  = null; //Key Txxx, Value brat non-disease
 	boolean verbose = true;
 
 
@@ -45,7 +46,8 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 	 */
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		//uimaKeyDict doesn't need to be sorted
-		uimaKeyDict = new Hashtable<String,DiscontinousBratAnnotation>(); //Key Txxx, Value brat diseases
+		uimaDiseaseDict = new Hashtable<String,DiscontinousBratAnnotation>(); //Key Txxx, Value brat diseases
+		uimaNotDiseaseDict = new Hashtable<String,DiscontinousBratAnnotation>(); //Key Txxx, Value brat diseases
 		bratKeyDict = new TreeMap<String,String>(new Comparator<String>(){
 			public int compare (String x, String y) {
 				if(!x.substring(0, 1).equals(y.substring(0,1))) {
@@ -119,7 +121,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		for(String key : bratKeyDict.keySet()){
 			if(key.trim().startsWith("T")) {
 				String[] tabfields = bratKeyDict.get(key).split("\t");
-				if(!tabfields[0].startsWith("Disease")) continue;
+				//if(!tabfields[0].startsWith("Disease")) continue;
 				DiscontinousBratAnnotation dba = new DiscontinousBratAnnotation(textView);
 				dba.setAnnotatorName(annotator_name);
 				dba.setDocName(docname);
@@ -147,10 +149,12 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					dba.setSpans(thespans);
 				}
 				dba.setDiscontinousText(text);
-				uimaKeyDict.put(key,dba);
+				if(!tabfields[0].startsWith("Disease")) { 
+					uimaNotDiseaseDict.put(key, dba);
+				} else { uimaDiseaseDict.put(key,dba); }
 			}
 		}
-		brat_cuiless_count=uimaKeyDict.size();
+		brat_cuiless_count=uimaDiseaseDict.size();
 		//System.out.println(docname+" : "+uimaKeyDict.size()); //T15 is in there, T44, T13
 
 		int last_pre_existing_disease_start = 0; //-1 indicates no more pre-existing diseases
@@ -164,15 +168,15 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				btr.setCategory(reltype);
 				//if(reltype.indexOf(BratConstants.NER_TYPE.BODYLOCATION.getName())!=-1) {
 				RelationArgument one = new RelationArgument(textView);
-				one.setArgument(uimaKeyDict.get(span_fields[2]));
+				one.setArgument(uimaDiseaseDict.get(span_fields[2]));
 				btr.setArg1(one);
 				RelationArgument two = new RelationArgument(textView);
-				two.setArgument(uimaKeyDict.get(span_fields[4]));
+				two.setArgument(uimaDiseaseDict.get(span_fields[4]));
 				btr.setArg2(two);
 				btr.addToIndexes(textView);
 			} else if(key.trim().startsWith("T")) { 
 				//Check to identify novel annotated stuff
-				DiscontinousBratAnnotation dis = uimaKeyDict.get(key.trim());
+				DiscontinousBratAnnotation dis = uimaDiseaseDict.get(key.trim());
 				if(dis==null) { 
 					//Not a disease
 					//System.out.println("Got null in "+docname+":"+key.trim()+" size "+uimaKeyDict.size());
@@ -193,7 +197,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				String[] tabfields = bratKeyDict.get(key).split("\t");
 				String[] span_fields = tabfields[0].split(" ");
 				//Retrieve Entity
-				DiscontinousBratAnnotation annotated = uimaKeyDict.get(span_fields[1]);
+				DiscontinousBratAnnotation annotated = uimaDiseaseDict.get(span_fields[1]);
 				if(annotated==null) {
 					extra_summary+="EXTRA-"+span_fields[1];
 					extra_annotations++;
@@ -204,7 +208,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				assert(cuis.length>0);
 				if(!(cuis[0].startsWith("C") && cuis.length<6)){
 					help_cui_count++;
-					help_summary+="HELP-"+(bratKeyDict.get(key))+uimaKeyDict.get(key);
+					help_summary+="HELP-"+(bratKeyDict.get(key))+uimaDiseaseDict.get(key);
 					continue;
 				}
 				FSArray ontarray = new FSArray(textView,cuis.length);
@@ -221,13 +225,13 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				ontarray.addToIndexes(textView);
 				if(ontarray!=null) annotated.setOntologyConceptArr(ontarray);
 				annotated.addToIndexes(textView);
-				uimaKeyDict.remove(span_fields[1]);
+				uimaDiseaseDict.remove(span_fields[1]);
 				brat_annotated_count++;
 			}
 		}
-		unannotated_count=uimaKeyDict.size();
+		unannotated_count=uimaDiseaseDict.size();
 		if(unannotated_count>0) {
-			for(String s : uimaKeyDict.keySet()) {
+			for(String s : uimaDiseaseDict.keySet()) {
 				unannotated_summary += s+":"+bratKeyDict.get(s).split("\t")[1]+"\t";
 			}
 			if(unannotated_count>=brat_cuiless_count) unannotated_summary = "NOT_ANNOTATED";

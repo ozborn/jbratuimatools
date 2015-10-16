@@ -53,6 +53,8 @@ public class SemEval2015Constants
                 defaultNorms.put(TEMPORAL_RELATION, "none");
         }
 
+	static final String defaultTrainingPath = "/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
+	static final String defaultDevelPath = "/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/devel";
 
 
 }

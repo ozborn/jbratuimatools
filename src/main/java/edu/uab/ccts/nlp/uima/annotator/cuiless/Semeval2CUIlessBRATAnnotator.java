@@ -3,8 +3,11 @@ package edu.uab.ccts.nlp.uima.annotator.cuiless;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.net.URL;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Properties;
 import java.util.regex.Pattern;
 
 import org.apache.uima.UimaContext;
@@ -36,7 +39,7 @@ import edu.uab.ccts.nlp.umls.tools.UMLSTools;
 
 /**
  * This is a general file output class that writes BRAT documents. It currently
- * takes in semeval 2015 DiseaseDisorders and outputs them to BRAT format 
+ * takes in Semeval 2015 DiseaseDisorders and outputs them to BRAT format 
  * @author ozborn
  *
  */
@@ -49,7 +52,8 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 	Hashtable<String,String> entities = new Hashtable<String,String>();
 	String replace_regex = "\n";
 	int _relid = 1;
-	Hashtable<String,String> identifierNoteMap;
+	Hashtable<String,String> identifierNoteMap; //Key attribute id, value is the norm
+	static Properties semeval2umls;
 
 	final String UmlsConnectionString = BratConstants.UMLS_DB_CONNECT_STRING;
 
@@ -63,6 +67,13 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 			//UmlsConnectionString = (String) aContext.getConfigParameterValue(ConfigurationSingleton.PARAM_UMLS_DB_URL);
 			aContext.getLogger().log(Level.INFO,"Oracle UMLS URL is: "+UmlsConnectionString+"\n");
 			//Key Identifier (Txx), String CUI list (space separated) of suggested applicable CUIs with concept names
+			//Load up semeval2umls in order to assign CUIs to course, severity, etc...
+			URL u1 = this.getClass().getResource("/semeval2umls.properties");
+			semeval2umls = new Properties();
+			//InputStream in = getClass().getResourceAsStream("semeval2umls.properties");
+			//semeval2umls.load(in);
+			//in.close();
+			semeval2umls.load(u1.openStream());
 		} catch (Exception e) {
 			throw new ResourceInitializationException(e);
 		}
@@ -197,10 +208,16 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 			String norm = theatt.getNorm();
 			this.getContext().getLogger().log(Level.FINE,"Attid:"+attid+" CoveredText:"+theatt.getCoveredText()+" Norm:"+norm);
 			boolean b = Pattern.matches("C\\d\\d\\d\\d\\d\\d\\d*",norm.trim());
-			if(norm !=null && b){
-				this.getContext().getLogger().log(Level.FINE,"Found CUI:"+norm);
-				identifierNoteMap.put(attid, theatt.getNorm());
-			} 
+			if(norm !=null){
+				if(b) { //Add in body locations, uniquely identified by having a CUI as a norm
+					this.getContext().getLogger().log(Level.FINE,"Found CUI:"+norm);
+					identifierNoteMap.put(attid, norm);
+				} else { //Add in non-body locations
+					String attcui = semeval2umls.getProperty(norm);
+					if(attcui!=null) identifierNoteMap.put(attid, attcui);
+					else this.getContext().getLogger().log(Level.INFO,"No CUI for:"+norm);
+				}
+			}  
 			String attrange = theatt.getBegin()+" "+theatt.getEnd();
 			//if(entities.get(attrange)==null) {
 			brat_annotation.append(attid+"\t"+typename+" ");
@@ -331,7 +348,7 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 			Iterator<String> didit = identifierNoteMap.keySet().iterator();
 			while(didit.hasNext()){
 				String did = didit.next();
-				String cui = identifierNoteMap.get(did);
+				String cui = identifierNoteMap.get(did).trim();
 				String goodname = UMLSTools.fetchBestConceptName(cui, UmlsConnectionString);
 				brat_annotation.append("#"+annot_counter+"\tAnnotatorNotes "+did+"\t");
 				String suggest = cui+":"+goodname+" ";

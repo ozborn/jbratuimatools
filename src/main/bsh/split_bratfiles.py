@@ -5,7 +5,7 @@ import errno
 import shutil
 
 cuiless_dir = "/Users/ozborn/code/repo/cuilessdata"
-outdir = cuiless_dir + "/devel_updated/"
+outdir = cuiless_dir + "/devel_updated_v2/"
 if(len(sys.argv) > 2):
         pass
 else :

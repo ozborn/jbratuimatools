@@ -29,11 +29,14 @@ import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotat
 
 public class CheckMissingPipelineClient {
 	protected static String resourceDirPath = "/Users/ozborn/code/repo/cuilessdata/";
-	protected static String brat_annotation_root = resourceDirPath + "training_clean/";
+	//protected static String brat_annotation_root = resourceDirPath + "training_clean/";
+	protected static String brat_annotation_root = resourceDirPath + "devel/devel_updated_v2/";
 	protected static String semeval2015_updated_train_root = 
 			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/train";
-	protected static String semeval2015_old_train_root = 
-			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
+	protected static String semeval2015_updated_devel_root = 
+			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/devel/discharge";
+	protected static String semeval2015_old_train_root = System.getProperty("user.home")+
+			"/Dropbox/Public_NLP_Data/semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
 	public static final String[] bratExtensions = {
 			BratConstants.BRAT_CONFIG_FILE_EXTENSION,BratConstants.BRAT_TEXT_FILE_EXTENSION};
 	public static final String[] semevalExtensions = {
@@ -46,7 +49,8 @@ public class CheckMissingPipelineClient {
 		System.out.println(brat_annotation_root); System.out.flush();
 		Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
 				bratExtensions, true);
-		Collection<File> semFiles = FileUtils.listFiles(new File(semeval2015_old_train_root),
+		//Collection<File> semFiles = FileUtils.listFiles(new File(semeval2015_old_train_root),
+		Collection<File> semFiles = FileUtils.listFiles(new File(semeval2015_updated_devel_root),
 				semevalExtensions, true);
 		//System.out.println("Got "+inputFiles.size()+" input files for check missing pipeline...");
 		System.out.println("Got "+semFiles.size()+" semeval input files for check missing pipeline...");

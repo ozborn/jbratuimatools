@@ -21,9 +21,6 @@ import org.uimafit.descriptor.ConfigurationParameter;
  */
 public class SemEval2015ViewCreatorAnnotator extends JCasAnnotator_ImplBase {
 
-	static final String defaultTrainingPath = "/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
-	static final String defaultDevelPath = "/home/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/devel";
-
 
 	/**
 	 * FIXME Does not populate below
@@ -32,8 +29,8 @@ public class SemEval2015ViewCreatorAnnotator extends JCasAnnotator_ImplBase {
 	@ConfigurationParameter(
 			name = PARAM_TRAINING_PATH,
 			description = "path to training directory",
-			defaultValue = defaultTrainingPath)
-	private String SemEval2015TrainingPath = defaultTrainingPath; //Needed default not working FIXME
+			defaultValue = SemEval2015Constants.defaultTrainingPath)
+	private String SemEval2015TrainingPath = SemEval2015Constants.defaultTrainingPath; //Needed default not working FIXME
 
 
 	@Override
@@ -66,9 +63,9 @@ public class SemEval2015ViewCreatorAnnotator extends JCasAnnotator_ImplBase {
 		//System.out.println("Type:"+type);
 		//Fails, FIXME
 		//System.out.println("Not working?! - SemPath:"+SemEval2015TrainingPath);
-		String original_textfile_name = defaultTrainingPath+File.separator+type+
+		String original_textfile_name = SemEval2015Constants.defaultTrainingPath+File.separator+type+
 				File.separator+prefix+"."+SemEval2015Constants.SEMEVAL_TEXT_FILE_EXTENSION;
-		String pipefilename = defaultTrainingPath+File.separator+type+
+		String pipefilename = SemEval2015Constants.defaultTrainingPath+File.separator+type+
 				File.separator+prefix+"."+SemEval2015Constants.SEMEVAL_PIPED_EXTENSION;
 		try {
 			File ofile = new File(original_textfile_name);
@@ -77,7 +74,7 @@ public class SemEval2015ViewCreatorAnnotator extends JCasAnnotator_ImplBase {
 				semevalTextView.setDocumentText(otext);
 			} else {
 				//System.out.println("Did not find training text file:"+ofile);
-				ofile = new File(defaultDevelPath+File.separator+type+
+				ofile = new File(SemEval2015Constants.defaultDevelPath+File.separator+type+
 						File.separator+prefix.split("\\.")[0]+"."+SemEval2015Constants.SEMEVAL_TEXT_FILE_EXTENSION);
 				if(ofile.exists()){
 					String otext = FileUtils.readFileToString(ofile);
@@ -92,7 +89,7 @@ public class SemEval2015ViewCreatorAnnotator extends JCasAnnotator_ImplBase {
 				pipedView.setDocumentText(ptext);
 			} else {
 				//System.out.println("Could not find expected pipe file:"+pfile.getPath());
-				pfile = new File(defaultDevelPath+File.separator+type+
+				pfile = new File(SemEval2015Constants.defaultDevelPath+File.separator+type+
 						File.separator+prefix.split("\\.")[0]+"."+SemEval2015Constants.SEMEVAL_PIPED_EXTENSION);
 				if(pfile.exists()) {
 					String ptext = FileUtils.readFileToString(pfile);

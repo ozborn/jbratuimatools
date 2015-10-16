@@ -51,6 +51,7 @@ public class BRATCollectionReader extends JCasCollectionReader_ImplBase
 		files = FileUtils.listFiles(new File(brat_file_path),
 				CheckMissingPipelineClient.bratExtensions, true);
 		}
+		System.out.println("Total file count for BRATCollectionReader is "+files.size());
 		
 		
 		//Files can be text files (hopefully with associated ann files) or the config file

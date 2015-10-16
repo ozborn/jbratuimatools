@@ -21,6 +21,9 @@ import org.uimafit.descriptor.ConfigurationParameter;
  */
 public class SemEval2015ViewCreatorAnnotator extends JCasAnnotator_ImplBase {
 
+	static final String defaultTrainingPath = "/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
+	static final String updatedTrainingPath = "/Users/ozborn/Dropbox/public_nlp_data/semeval-2015-task-14-updated/data/train";
+	static final String defaultDevelPath = "/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/devel";
 
 	/**
 	 * FIXME Does not populate below

@@ -34,10 +34,11 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 	BratConfiguration bratconfig;
 
 	//These are re-initialized each time in process method
-	TreeMap<String,String> bratKeyDict = null;
+	TreeMap<String,String> bratKeyDict = null; //Key Txx (entity id), Value Entity Row
 	Hashtable<String,DiscontinousBratAnnotation> uimaDiseaseDict  = null; //Key Txxx, Value brat diseases
 	Hashtable<String,DiscontinousBratAnnotation> uimaNotDiseaseDict  = null; //Key Txxx, Value brat non-disease
-	boolean verbose = true;
+	boolean verbose = true; 
+	boolean print_problem_files_only = false;
 
 
 	@Override
@@ -90,6 +91,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		String datasetname = pathbits[pathbits.length-2];
 		String annotator_name = pathbits[pathbits.length-2].split("_")[0];
 
+		//System.out.println("Processing "+annotator_name+" "+docname);
 		semeval_cuiless_count = getSemEvalCUIlessCount(jcas,
 				semeval_cuiless_count, semevalPipeView);
 
@@ -112,6 +114,8 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				}
 				bratKeyDict.put(key,value);
 			}
+		} else {
+			System.err.println("No annotation view?!");
 		}
 
 		//System.out.println(bratKeyDict);
@@ -155,11 +159,10 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 			}
 		}
 		brat_cuiless_count=uimaDiseaseDict.size();
-		//System.out.println(docname+" : "+uimaKeyDict.size()); //T15 is in there, T44, T13
+		//System.out.println(docname+" has uimaDiseaseDict size of "+uimaDiseaseDict.size()); //T15 is in there, T44, T13
 
 		int last_pre_existing_disease_start = 0; //-1 indicates no more pre-existing diseases
 		for(String key : bratKeyDict.keySet()){
-			//System.out.println("UKeydict size:"+uimaKeyDict.size()); //T15 is in there, T44, T13
 			if(key.startsWith("R")){
 				BinaryTextRelation btr = new BinaryTextRelation(textView);
 				String[] tabfields = bratKeyDict.get(key).split("\t");
@@ -237,6 +240,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 			if(unannotated_count>=brat_cuiless_count) unannotated_summary = "NOT_ANNOTATED";
 			if(unannotated_count>=semeval_cuiless_count) unannotated_summary = "NOT_ANNOTATED";
 		}
+		//System.out.println("Unannotated_count:"+unannotated_count+" Extra_annotations:"+extra_annotations);
 		printTableLine(semeval_cuiless_count, brat_cuiless_count,
 				brat_annotated_count, unannotated_count, extra_annotations,
 				help_cui_count, docname, annotator_name, unannotated_summary,
@@ -281,9 +285,12 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				"\t"+extra_annotations+"\t"+help_cui_count+"\t"+datasetname+"\t"+docname+
 				"\t"+unannotated_summary+"\t"+extra_summary+"\t"+help_summary+"\n");
 		if(verbose) {
-			if( (unannotated_count>0) || extra_annotations>0) {
-				System.out.print(tableline);
-			}
+			if(print_problem_files_only) {
+				if( (unannotated_count>0) || extra_annotations>0) {
+					System.out.print(tableline);
+					return;
+				}
+			} else System.out.print(tableline);
 		}
 	}
 

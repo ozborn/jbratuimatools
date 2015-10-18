@@ -13,7 +13,6 @@ import org.apache.uima.fit.component.JCasCollectionReader_ImplBase;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.uima.client.CheckMissingPipelineClient;
 
 import java.io.File;
 import java.io.IOException;
@@ -49,7 +48,7 @@ public class BRATCollectionReader extends JCasCollectionReader_ImplBase
 		if(files==null || files.size()==0) {
 			//Attempt to get from file path
 		files = FileUtils.listFiles(new File(brat_file_path),
-				CheckMissingPipelineClient.bratExtensions, true);
+				BratConstants.bratExtensions, true);
 		}
 		System.out.println("Total file count for BRATCollectionReader is "+files.size());
 		

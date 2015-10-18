@@ -253,7 +253,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 	private int getSemEvalCUIlessCount(JCas jcas, int semeval_cuiless_count,
 			JCas semevalPipeView) {
 		try {
-			semeval_cuiless_count=-1;
+			semeval_cuiless_count=0;
 			semevalPipeView = jcas.getView(SemEval2015Constants.PIPED_VIEW);
 			String[] pipelines = semevalPipeView.getDocumentText().split(System.getProperty("line.separator"));
 			String[] prev_chunks = null;

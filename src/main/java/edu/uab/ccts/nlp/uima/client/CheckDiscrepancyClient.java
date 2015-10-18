@@ -29,38 +29,29 @@ import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotat
  *
  */
 public class CheckDiscrepancyClient {
-	static String resourceDirPath = System.getProperty("user.home")+"/code/repo/cuilessdata/";
-	static String dropboxPublicDataPath = System.getProperty("user.home")+"/Dropbox/Public_NLP_Data/";
 	
 	static String semeval2015_updated_train_root, semeval2015_old_train_root, semeval_dir_root,brat_annotation_root;
 	
-	public static final String[] bratExtensions = {
-			BratConstants.BRAT_CONFIG_FILE_EXTENSION,BratConstants.BRAT_TEXT_FILE_EXTENSION};
-	public static final String[] semevalExtensions = {
-			SemEval2015Constants.SEMEVAL_TEXT_FILE_EXTENSION};
+
 
 	public static void main(String... args)
 	{
-		brat_annotation_root = resourceDirPath + "training_clean/";
-		semeval2015_updated_train_root = 
-				dropboxPublicDataPath+"semeval-2015-task-14_updated/data/train";
-		semeval2015_old_train_root = 
-				dropboxPublicDataPath+"semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
-		semeval_dir_root = semeval2015_old_train_root;
+		brat_annotation_root = ClientConfiguration.resourceDirPath + "training_clean/";
+		semeval_dir_root = ClientConfiguration.semeval2015_old_train_root;
 		System.out.println("Using:\n Brat Annotation Root Directory:"+brat_annotation_root+
 				"\nSemeval Input Root Directory:"+semeval_dir_root); System.out.flush();
 		if(args.length>0) {
-			resourceDirPath = args[0];
-			System.out.println("Set resourceDirPath to:"+resourceDirPath);
+			ClientConfiguration.resourceDirPath = args[0];
+			System.out.println("Set resourceDirPath to:"+ClientConfiguration.resourceDirPath);
 			if(args.length>1) {
-				dropboxPublicDataPath = args[1];
-				System.out.println("Set dropboxPublicDataPath to:"+dropboxPublicDataPath);
+				ClientConfiguration.dropboxPublicDataPath = args[1];
+				System.out.println("Set dropboxPublicDataPath to:"+ClientConfiguration.dropboxPublicDataPath);
 			}
 		}
 		Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
-				bratExtensions, true);
+				BratConstants.bratExtensions, true);
 		Collection<File> semFiles = FileUtils.listFiles(new File(semeval_dir_root),
-				semevalExtensions, true);
+				SemEval2015Constants.semevalExtensions, true);
 		//System.out.println("Got "+inputFiles.size()+" input files for check missing pipeline...");
 		System.out.println("Semeval Input Files:"+semFiles.size()+"\nBrat Input Files:"+
 		inputFiles.size());

@@ -8,7 +8,7 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import edu.uab.ccts.nlp.uima.client.CheckMissingPipelineClient;
+import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015Constants;
 
 /**
  * For my own SemEval comparison, not needed for generic BRAT stuff
@@ -37,7 +37,7 @@ public class SemEval2015BratCompareCollectionReader extends
 		if(semevalFiles==null | semevalFiles.size()==0){
 			System.out.println("Semeval Files were null or empty");
 			semevalFiles = FileUtils.listFiles(new File(semeval_path),
-				CheckMissingPipelineClient.semevalExtensions, true);
+				SemEval2015Constants.semevalExtensions, true);
 		}
 	}
 

@@ -14,6 +14,7 @@ import org.uimafit.factory.AggregateBuilder;
 
 import edu.uab.ccts.nlp.uima.annotator.cuiless.Semeval2CUIlessBRATAnnotator;
 import edu.uab.ccts.nlp.uima.collection_readers.SemEval2015CollectionReader;
+import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015Constants;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ParserAnnotator;
 
 
@@ -27,12 +28,6 @@ public class SemevalCUIless2BratClient {
 	protected static String resourceDirPath = "/Users/ozborn/code/repo/cuilessdata/";
 	protected static String brat_annotation_root = resourceDirPath + "training_clean/";
 	public final static String brat_devel_output_root = resourceDirPath + "input/devel_updated";
-	protected static String semeval2015_updated_train_root = 
-			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/train";
-	protected static String semeval2015_updated_devel_root = 
-			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/devel/discharge";
-	public static final String[] pipeExtension = {
-			SemEval2015CollectionReader.PIPE_SUFFIX};
 
 	
 	/**
@@ -42,10 +37,11 @@ public class SemevalCUIless2BratClient {
 	 */
 	public static void main(String... args)
 	{
-		Collection<File> semFiles = FileUtils.listFiles(new File(semeval2015_updated_devel_root),
-				pipeExtension, true);
+		String st[] = {SemEval2015Constants.SEMEVAL_PIPED_EXTENSION};
+		Collection<File> semFiles = FileUtils.listFiles(new File(ClientConfiguration.semeval2015_updated_devel_root),
+		st, true);
 		System.out.println("Got "+semFiles.size()+" semeval input files...");
-		apply(semeval2015_updated_devel_root,semFiles);
+		apply(ClientConfiguration.semeval2015_updated_devel_root,semFiles);
 
 	}
 

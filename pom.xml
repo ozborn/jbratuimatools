@@ -27,6 +27,11 @@
                         <artifactId>ojdbc7</artifactId>
                         <version>12.1.0.1</version>
                 </dependency>
+                <dependency>
+                        <groupId>edu.uab.ccts.nlp.uima</groupId>
+                        <artifactId>semeval2015</artifactId>
+                        <version>0.0.1-SNAPSHOT</version>
+                </dependency>
 
 <dependency>
 	<groupId>com.google.guava</groupId>

@@ -1,7 +1,7 @@
 package edu.uab.ccts.nlp.uima.annotator.shared_task;
 
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015Constants;
+import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
 
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;

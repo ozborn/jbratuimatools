@@ -15,10 +15,10 @@ import org.uimafit.factory.AggregateBuilder;
 import com.google.common.collect.HashMultiset;
 
 import edu.uab.ccts.nlp.brat.BratConstants;
+import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
 import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
 import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
 import edu.uab.ccts.nlp.uima.collection_readers.SemEval2015BratCompareCollectionReader;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015Constants;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ParserAnnotator;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.MergedCUIlessConsumer;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotator;

@@ -26,7 +26,7 @@ import edu.uab.ccts.nlp.brat.BratConfiguration;
 import edu.uab.ccts.nlp.brat.BratConfigurationImpl;
 import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.brat.BratEntity;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015Constants;
+import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
 import brat.type.DiscontinousBratAnnotation;
 
 public class BratParserAnnotator extends JCasAnnotator_ImplBase {

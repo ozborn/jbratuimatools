@@ -8,7 +8,7 @@ import org.apache.uima.UimaContext;
 import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.resource.ResourceInitializationException;
 
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015Constants;
+import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
 
 /**
  * For my own SemEval comparison, not needed for generic BRAT stuff

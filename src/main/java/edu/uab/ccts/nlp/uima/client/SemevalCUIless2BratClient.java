@@ -14,7 +14,7 @@ import org.uimafit.factory.AggregateBuilder;
 
 import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
 import edu.uab.ccts.nlp.uima.annotator.cuiless.Semeval2CUIlessBRATAnnotator;
-import edu.uab.ccts.nlp.uima.collection_readers.SemEval2015CollectionReader;
+import edu.uab.ccts.nlp.uima.collection_reader.SemEval2015CollectionReader;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ParserAnnotator;
 
 

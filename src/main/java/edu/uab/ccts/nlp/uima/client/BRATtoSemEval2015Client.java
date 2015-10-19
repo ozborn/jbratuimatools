@@ -15,12 +15,11 @@ import org.uimafit.factory.AggregateBuilder;
 import com.google.common.collect.HashMultiset;
 
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
 import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
 import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
-import edu.uab.ccts.nlp.uima.collection_readers.SemEval2015BratCompareCollectionReader;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ParserAnnotator;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.MergedCUIlessConsumer;
+import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015Task2Consumer;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotator;
 
 
@@ -40,55 +39,59 @@ import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotat
  */
 public class BRATtoSemEval2015Client {
 	static Hashtable<String,Hashtable<String,HashMultiset<String>>> annotation_results = 
-	new Hashtable<String,Hashtable<String,HashMultiset<String>>>();
-	
+			new Hashtable<String,Hashtable<String,HashMultiset<String>>>();
+
 	static String brat_annotation_root = null;
+	static String output_directory = "target"+File.separator+"cuiless"+File.separator;
 
 	public static void main(String... args)
 	{
 		if(args.length>0 && args[0].equalsIgnoreCase("devel")) {
+			output_directory+="devel";
 			brat_annotation_root = ClientConfiguration.brat_annotated_devel_data;
-		} else { brat_annotation_root = ClientConfiguration.brat_annotated_training_data; }
-
-		System.out.println("Writing final annotation for:"+brat_annotation_root); System.out.flush();
+		} else { 
+			output_directory+="train";
+			brat_annotation_root = ClientConfiguration.brat_annotated_training_data; 
+		}
+		File outdir = new File(output_directory); 
+		if(!outdir.mkdirs()) {
+			System.err.println("Can not create needed output directory");
+			System.exit(0);
+		}
+		System.out.println("Writing cuiless annotations for:"+brat_annotation_root); System.out.flush();
 
 		Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
 				BratConstants.bratExtensions, true);
-		Collection<File> semFiles = FileUtils.listFiles(new File(ClientConfiguration.semeval2015_updated_train_root),
-				SemEval2015Constants.semevalExtensions, true);
-		System.out.println("Got "+inputFiles.size()+" brat input files for converting to SemEvall 2015 format...");
-		System.out.println("Got "+semFiles.size()+" semeval input files for reference...");
-		apply(inputFiles,semFiles);
+		System.out.println("Got "+inputFiles.size()+" brat input files for converting to SemEval 2015 format...");
+		apply(inputFiles);
 
 	}
-	
-	public static void apply(Collection<File> files, Collection<File> semfiles) 
-	{
-		try {
-		CollectionReaderDescription crd = CollectionReaderFactory.createReaderDescription(
-				SemEval2015BratCompareCollectionReader.class,
-					BRATCollectionReader.PARAM_FILES,
-					files,
-					SemEval2015BratCompareCollectionReader.PARAM_SEMEVAL_FILES,
-					semfiles
-			);
 
-		AggregateBuilder builder = new AggregateBuilder();
-		builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.semeval2015_old_train_root));
-		builder.add(SemEval2015ParserAnnotator.getDescription());
-		builder.add(BratParserAnnotator.getDescription());
-		//Need add annotator to do the merging?
-		builder.add(MergedCUIlessConsumer.getDescription());
-		for (JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))
-		{}
-	
-		//SimplePipeline.runPipeline(reader, builder.createAggregate());
-		} catch (ResourceInitializationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (Exception e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
+	public static void apply(Collection<File> files){
+		{
+			try {
+				CollectionReaderDescription crd = CollectionReaderFactory.createReaderDescription(
+						BRATCollectionReader.class,
+						BRATCollectionReader.PARAM_FILES,
+						files
+						);
+
+				AggregateBuilder builder = new AggregateBuilder();
+				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.semeval2015_old_train_root));
+				builder.add(SemEval2015ParserAnnotator.getDescription());
+				builder.add(BratParserAnnotator.getDescription());
+				builder.add(MergedCUIlessConsumer.getDescription());
+				builder.add(SemEval2015Task2Consumer.getCuilessDescription(output_directory));
+
+				for (JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))
+				{}
+
+				//SimplePipeline.runPipeline(reader, builder.createAggregate());
+			} catch (ResourceInitializationException e) {
+				e.printStackTrace();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		}
 	}
 }

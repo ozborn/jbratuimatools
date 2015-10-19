@@ -28,7 +28,7 @@ public class BRATCollectionReader extends JCasCollectionReader_ImplBase
 	@ConfigurationParameter(
 			name = PARAM_FILES,
 			description = "points to a collection of files including annotation.conf and BRAT (.ann) files")
-	protected Collection<File> files;
+	protected Collection<File> brat_files;
 
 	public static final String PARAM_FILE_PATH = "brat_file_path";
 	@ConfigurationParameter(
@@ -45,16 +45,16 @@ public class BRATCollectionReader extends JCasCollectionReader_ImplBase
 
 	public void initialize(UimaContext context) throws ResourceInitializationException
 	{
-		if(files==null || files.size()==0) {
+		if(brat_files==null || brat_files.size()==0) {
 			//Attempt to get from file path
-		files = FileUtils.listFiles(new File(brat_file_path),
+		brat_files = FileUtils.listFiles(new File(brat_file_path),
 				BratConstants.bratExtensions, true);
 		}
-		System.out.println("Total file count for BRATCollectionReader is "+files.size());
+		System.out.println("Total file count for BRATCollectionReader is "+brat_files.size());
 		
 		
 		//Files can be text files (hopefully with associated ann files) or the config file
-		for (File f : files)
+		for (File f : brat_files)
 		{
 			if(f.getName().equals(BratConstants.BRAT_CONFIG_FILE_NAME)) {
 				hashedConfigFiles.put(f.getParent(), f);

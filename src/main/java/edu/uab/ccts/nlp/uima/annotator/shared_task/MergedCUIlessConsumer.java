@@ -5,186 +5,106 @@ import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
 
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
-import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
-import org.apache.uima.cas.CASRuntimeException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
 import org.cleartk.semeval2015.type.DiseaseDisorder;
-import org.cleartk.semeval2015.type.DiseaseDisorderAttribute;
-import org.cleartk.semeval2015.type.DisorderRelation;
-import org.cleartk.semeval2015.type.DisorderSpan;
 import org.uimafit.component.JCasAnnotator_ImplBase;
-import org.uimafit.descriptor.ConfigurationParameter;
 import org.uimafit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
 import brat.type.DiscontinousBratAnnotation;
 
-import java.io.File;
-import java.io.FileWriter;
-import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Collection;
-import java.util.List;
 
 /**
- * Writes out SemEval2015 annotations in piped format, overwrites CUI-less
- * CUIs for disorders if BRAT annotations are present
+ * Convert DiscontinousBratAnnotations in BRAT_TEXT_VIEW to DiseaseDisorders in default/GOLD_VIEW
+ * 
  * @author ozborn
  *
  */
 public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
-
-	public static final String PARAM_OUTPUT_DIRECTORY = "outputDir";
-	public static String resourceDirPath = "src/main/resources/";
-	public static final String defaultPipedOutputDir = resourceDirPath+"template_results/";
-	@ConfigurationParameter(
-			name = PARAM_OUTPUT_DIRECTORY,
-			description = "Path to the output directory for Task 2",
-			defaultValue="src/main/resources/template_results/")
-	private String outputDir = resourceDirPath+"template_results/";
 	public static boolean VERBOSE = false;
 
-	public static AnalysisEngineDescription createAnnotatorDescription()
-			throws ResourceInitializationException
-	{
+	// Counts annotation type by origin (semeval, brat or both)
+	int only_brat, only_semeval, both_brat_semeval;
+	int brat_annotation_size, semeval_annotation_size, semeval_cuiless_size;
+	JCas disorderView = null, bratView = null;
 
-		return AnalysisEngineFactory.createPrimitiveDescription(
-				MergedCUIlessConsumer.class,
-				MergedCUIlessConsumer.PARAM_OUTPUT_DIRECTORY,
-				resourceDirPath + "semeval-2015-task-14/subtask-c/data");
-	}
-
-	public void initialize(UimaContext context) throws ResourceInitializationException
-	{
-		super.initialize(context);
-		try {
-			File out = new File(outputDir);
-			if (!out.exists())
-			{
-				if (!out.mkdir()) System.out.println("Could not make directory " + outputDir);
-			} else
-			{
-				if (VERBOSE) System.out.println(outputDir + " exists!");
-			}
-		} catch (Exception e)
-		{
-			e.printStackTrace();
-		}
-	}
-
+	
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException
 	{
-		JCas disorderView = null, bratView = null;
-		try {
-			bratView = aJCas.getView(BratConstants.TEXT_VIEW);
-			disorderView = aJCas.getView(SemEval2015Constants.GOLD_VIEW);
-		} catch (CASRuntimeException e1) {
-			try {
-				disorderView = aJCas.getView(SemEval2015Constants.APP_VIEW);
-			} catch (CASRuntimeException e2) {
-				this.getContext().getLogger().log(Level.SEVERE,"Can not get a view with disorders to output");
-			} catch (Exception e) { e.printStackTrace(); }
-		} catch (Exception e) { e.printStackTrace(); }
-		if(!JCasUtil.exists(disorderView, DiseaseDisorder.class)) {
-			this.getContext().getLogger().log(Level.SEVERE,
-					"Can not find DiseaseDisorders to output in"+disorderView.getViewName());
-		}
+		setupViews(aJCas);
+		only_brat=0; only_semeval=0; both_brat_semeval=0;
+		brat_annotation_size=0; semeval_annotation_size=0; semeval_cuiless_size=0;
 
 		String docid = null;
-		for (DocumentID di : JCasUtil.select(disorderView, DocumentID.class))
-		{
-			docid = di.getDocumentID();
-			break;
+		for (DocumentID di : JCasUtil.select(disorderView, DocumentID.class)) {
+			docid = di.getDocumentID(); break; 
 		}
 
-		String filepath = outputDir + File.separator +
-				docid.substring(0, docid.length() - 4) + "pipe";
-
-		try
-		{
+		try {
+			//CasCopier copier = new CasCopier(aJCas.getCas(),aJCas.getCas());
 			Collection<DiscontinousBratAnnotation> col = JCasUtil.select(bratView, DiscontinousBratAnnotation.class);
-			this.getContext().getLogger().log(Level.FINE,"Found a annotated brat collection of size "+col.size());
-			int input_cuiless_count = 0;
-			for(DiseaseDisorder indis : JCasUtil.select(disorderView, DiseaseDisorder.class)){
-				if(indis.getCui().equalsIgnoreCase("CUI-less")) input_cuiless_count++;
-			}
-			Writer writer = new FileWriter(filepath);
+
 			for (DiseaseDisorder ds : JCasUtil.select(disorderView, DiseaseDisorder.class))
 			{
-				associateSpans(disorderView, ds);
-				String results = getDiseaseDisorderSemEval2015Format(bratView, docid, ds);
-				if (VERBOSE) System.out.println(results);
-				writer.write(results + "\n");
+				semeval_annotation_size++;
+				//SemEval2015Task2Consumer.associateSpans(disorderView, ds); //May need this to get body CUIs?
+				if(ds.getCui().equalsIgnoreCase("CUI-less")) {
+					semeval_cuiless_size++;
+					updateAnnotatedCUI(bratView,ds);
+				}
 			}
-			writer.close();
-			if(input_cuiless_count!= col.size()){
+
+			this.getContext().getLogger().log(Level.FINE,"Found an input semeval CUI-less collection of size "
+					+semeval_cuiless_size);
+			this.getContext().getLogger().log(Level.FINE,"Found a annotated brat collection of size "+col.size());
+			if(semeval_cuiless_size!= col.size() || both_brat_semeval!=semeval_cuiless_size){
 				this.getContext().getLogger().log(Level.WARNING,docid+" has input cuiless:"+
-			input_cuiless_count+"  and annotated cuiless:"+col.size());
+						semeval_cuiless_size+"  and annotated cuiless:"+col.size());
+				this.getContext().getLogger().log(Level.INFO,"Both SemEval and Brat:"+both_brat_semeval);
 			}
+			if(only_semeval!=0) this.getContext().getLogger().log(Level.INFO,"SemEval Only Size:"+only_semeval);
+
 		} catch (Exception e)
 		{
 			e.printStackTrace();
 		}
 	}
 
-	/**
-	 * FIXME Need to handle multiple lines
-	 */
-	private String getDiseaseDisorderSemEval2015Format(JCas jcas, String docid, DiseaseDisorder dd)
-	{
-		StringBuffer output_lines = new StringBuffer(2000);
-		output_lines.append(docid);
-		output_lines.append(SemEval2015Constants.OUTPUT_SEPERATOR);
-		FSArray spans = dd.getSpans();
-		for (int i = 0; i < spans.size(); i++)
-		{
-			DisorderSpan ds = (DisorderSpan) spans.get(i);
-			output_lines.append(ds.getBegin() + "-" + ds.getEnd());
-			if (i != spans.size() - 1) output_lines.append(",");
-			//			System.out.print(ds.getCoveredText() + "\t");
+
+	private void setupViews(JCas aJCas) throws AnalysisEngineProcessException {
+		try {
+			bratView = aJCas.getView(BratConstants.TEXT_VIEW);
+			disorderView = aJCas.getView(SemEval2015Constants.GOLD_VIEW);
+			if(!JCasUtil.exists(disorderView, DiseaseDisorder.class)) {
+				this.getContext().getLogger().log(Level.SEVERE,
+						"Can not find DiseaseDisorders to check BratAnnotations with in"
+								+disorderView.getViewName());
+			}
+		} catch (Exception e) {
+			this.getContext().getLogger().log(Level.SEVERE,"Can not get required view!");
+			throw(new AnalysisEngineProcessException(e));
 		}
-		output_lines.append(SemEval2015Constants.OUTPUT_SEPERATOR);
-		//If CUI-less, look for the CUI in BRAT annotations
-		if(dd.getCui().equalsIgnoreCase("cui-less")){
-			updateAnnotatedCUI(jcas,dd);
-		} 
-		output_lines.append(dd.getCui());
-		output_lines.append(SemEval2015Constants.OUTPUT_SEPERATOR);
-		FSArray atts = dd.getAttributes();
-		output_lines.append(fetchAttributeString(atts, SemEval2015Constants.NEGATION_RELATION));
-		output_lines.append(fetchAttributeString(atts, SemEval2015Constants.SUBJECT_RELATION));
-		output_lines.append(fetchAttributeString(atts, SemEval2015Constants.UNCERTAINITY_RELATION));
-		output_lines.append(fetchAttributeString(atts, SemEval2015Constants.COURSE_RELATION));
-		output_lines.append(fetchAttributeString(atts, SemEval2015Constants.SEVERITY_RELATION));
-		output_lines.append(fetchAttributeString(atts, SemEval2015Constants.CONDITIONAL_RELATION));
-		output_lines.append(fetchAttributeString(atts, SemEval2015Constants.GENERIC_RELATION));
-		output_lines.append(fetchAttributeString(atts, SemEval2015Constants.BODY_RELATION));
-		//output_lines.append(fetchAttributeString(atts, SemEval2015Constants.DOCTIME_RELATION));
-		//output_lines.append(fetchAttributeString(atts, SemEval2015Constants.TEMPORAL_RELATION));
-		//		System.out.println();
-		return output_lines.toString();
 	}
 
 
-
 	/**
-	 * Fetches the BRAT annotated CUI/s
+	 * Fetches the BRAT annotated CUI/s, updates CUI-less with out new CUIs
 	 */
 	private boolean updateAnnotatedCUI(JCas bratview, DiseaseDisorder dd) {
 		boolean matched = false;
 		String cuiless = "CUI-less";
 		this.getContext().getLogger().log(Level.FINE,"Trying to find a match for cui-less concept: "
-		+dd.getCoveredText()+" start/end "+dd.getBegin()+"/"+dd.getEnd());
+				+dd.getCoveredText()+" start/end "+dd.getBegin()+"/"+dd.getEnd());
 		String failures = "";
 		for (DiscontinousBratAnnotation brat: JCasUtil.select(bratview, DiscontinousBratAnnotation.class)) {
-			if(brat.getEnd()==dd.getEnd() &&
-					brat.getBegin()==dd.getBegin()) {
+			if(brat.getEnd()==dd.getEnd() && brat.getBegin()==dd.getBegin()) {
 				if(brat.getIsNovelEntity()==false) { matched = true; }
 				else { this.getContext().getLogger().log(Level.WARNING, "Matched novel annotation?!"); }
 				FSArray cuis = brat.getOntologyConceptArr();
@@ -206,95 +126,21 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 				docid = di.getDocumentID();
 				break;
 			}
-			System.out.println(docid+" - failed to find a match for:"+dd.getCoveredText()+" in:\n"+failures);
-		} 
+			only_semeval++;
+			this.getContext().getLogger().log(Level.WARNING, 
+					docid+" - failed to find a match for:"+dd.getCoveredText()+" in:\n"+failures);
+		} else { both_brat_semeval++; } 
 		dd.setCui(cuiless);
 		return matched;
 	}
 
-	/**
-	 * Too bad UIMA doesn't have built in hashtables...
-	 */
-	private String fetchAttributeString(FSArray atts, String type)
-	{
-		String norm = SemEval2015Constants.defaultNorms.get(type);
-		String cue = "null";
-		if (atts != null)
-		{
-			for (int i = 0; i < atts.size(); i++)
-			{
-				DiseaseDisorderAttribute dda = (DiseaseDisorderAttribute) atts.get(i);
-				if (type.equals(dda.getAttributeType()))
-				{
-					norm = dda.getNorm();
-					if (!type.equals(SemEval2015Constants.DOCTIME_RELATION))
-					{
-						FSArray attspans = dda.getSpans();
-						if (attspans == null)
-						{
-							//							System.out.println(dda.getBegin() + " to " + dda.getEnd() + " has no atts!!!!");
-							continue;
-						}
-						for (int j = 0; j < attspans.size(); j++)
-						{
-							DisorderSpan ds = (DisorderSpan) attspans.get(j);
-							if (j == 0) cue = (ds.getBegin() + "-" + ds.getEnd());
-							else
-							{
-								cue = cue + "," + ds.getBegin() + "-" + ds.getEnd();
-							}
-							//							System.out.print(ds.getCoveredText() + "\t");
-
-						}
-						String out = norm + SemEval2015Constants.OUTPUT_SEPERATOR + cue;
-						//						if (type.equals(SemEval2015Constants.BODY_RELATION))
-						out += SemEval2015Constants.OUTPUT_SEPERATOR;
-						return out;
-					} else if (!type.equals(SemEval2015Constants.BODY_RELATION)){
-						return norm;
-					} else
-					{
-						return norm + SemEval2015Constants.OUTPUT_SEPERATOR;
-					}
-				}
-			}
-		}
-		return norm + SemEval2015Constants.OUTPUT_SEPERATOR + cue + SemEval2015Constants.OUTPUT_SEPERATOR;
-	}
-
-	public static void associateSpans(JCas jCas, DiseaseDisorder dd)
-	{
-		List<DiseaseDisorderAttribute> atts = new ArrayList<>();
-		for (DisorderRelation rel: JCasUtil.select(jCas, DisorderRelation.class))
-		{
-			DisorderSpan s = (DisorderSpan) rel.getArg2().getArgument();
-
-			for (DisorderSpan span : JCasUtil.select(dd.getSpans(), DisorderSpan.class))
-			{
-				if (span == s)
-				{
-					atts.add((DiseaseDisorderAttribute) rel.getArg1().getArgument());
-				}
-			}
-		}
-		FSArray relSpans = new FSArray(jCas, atts.size());
-		int min_begin = -1, max_end = -1;
-		for (int i = 0; i < atts.size(); i++)
-		{
-			DiseaseDisorderAttribute ds = atts.get(i);
-			if (ds.getBegin() < min_begin || min_begin == -1) min_begin = ds.getBegin();
-			if (ds.getEnd() > max_end) max_end = ds.getEnd();
-			relSpans.set(i, ds);
-		}
-		dd.setAttributes(relSpans);
-	}
 
 
 	public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {
 		return 
-				AnalysisEngineFactory.createPrimitiveDescription(MergedCUIlessConsumer.class,
-						MergedCUIlessConsumer.PARAM_OUTPUT_DIRECTORY,
-						defaultPipedOutputDir);
+				AnalysisEngineFactory.createPrimitiveDescription(MergedCUIlessConsumer.class);
 	}
+
+
 
 }

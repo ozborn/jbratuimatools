@@ -12,6 +12,7 @@ import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
 
 /**
  * For my own SemEval comparison, not needed for generic BRAT stuff
+ * FIXME - delete/replace this
  * @author ozborn
  *
  */

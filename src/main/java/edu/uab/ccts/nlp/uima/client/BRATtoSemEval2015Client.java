@@ -43,6 +43,7 @@ public class BRATtoSemEval2015Client {
 
 	static String brat_annotation_root = null;
 	static String output_directory = "target"+File.separator+"cuiless"+File.separator;
+	static boolean roundtrip_test = false; //True if testing ability to roundtrip files without cui-less adjustment
 
 	public static void main(String... args)
 	{
@@ -53,6 +54,7 @@ public class BRATtoSemEval2015Client {
 			output_directory+="train";
 			brat_annotation_root = ClientConfiguration.brat_annotated_training_data; 
 		}
+		if(args.length>1 && args[1].equalsIgnoreCase("roundtrip")) roundtrip_test=true;
 		File outdir = new File(output_directory); 
 		if(!outdir.exists()){
 			if(!outdir.mkdirs()) {
@@ -82,7 +84,7 @@ public class BRATtoSemEval2015Client {
 				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.semeval2015_old_train_root));
 				builder.add(SemEval2015ParserAnnotator.getDescription());
 				builder.add(BratParserAnnotator.getDescription());
-				//builder.add(MergedCUIlessConsumer.getDescription());
+				if(!roundtrip_test) builder.add(MergedCUIlessConsumer.getDescription());
 				builder.add(SemEval2015Task2Consumer.getCuilessDescription(output_directory));
 
 				for (JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))

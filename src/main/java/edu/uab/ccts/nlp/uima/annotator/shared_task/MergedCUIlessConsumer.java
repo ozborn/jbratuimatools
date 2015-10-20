@@ -100,6 +100,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 	private boolean updateAnnotatedCUI(JCas bratview, DiseaseDisorder dd) {
 		boolean matched = false;
 		String cuiless = "CUI-less";
+		String replacement_cui = "";
 		this.getContext().getLogger().log(Level.FINE,"Trying to find a match for cui-less concept: "
 				+dd.getCoveredText()+" start/end "+dd.getBegin()+"/"+dd.getEnd());
 		String failures = "";
@@ -112,8 +113,8 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 					OntologyConcept oc = (OntologyConcept) cuis.get(i);
 					String cui = oc.getCode();
 					if(i==cuis.size()-1) {
-						cuiless += cui;
-					} else cuiless += cui+",";
+						replacement_cui += cui;
+					} else replacement_cui += cui+",";
 				}
 				break;
 			} else {
@@ -130,7 +131,8 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			this.getContext().getLogger().log(Level.WARNING, 
 					docid+" - failed to find a match for:"+dd.getCoveredText()+" in:\n"+failures);
 		} else { both_brat_semeval++; } 
-		dd.setCui(cuiless);
+		if(replacement_cui.isEmpty()) dd.setCui(cuiless);
+		else dd.setCui(replacement_cui);
 		return matched;
 	}
 

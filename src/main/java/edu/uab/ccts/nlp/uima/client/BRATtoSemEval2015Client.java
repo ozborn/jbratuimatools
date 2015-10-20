@@ -54,9 +54,11 @@ public class BRATtoSemEval2015Client {
 			brat_annotation_root = ClientConfiguration.brat_annotated_training_data; 
 		}
 		File outdir = new File(output_directory); 
-		if(!outdir.mkdirs()) {
-			System.err.println("Can not create needed output directory");
-			System.exit(0);
+		if(!outdir.exists()){
+			if(!outdir.mkdirs()) {
+				System.err.println("Can not create needed output directory");
+				System.exit(0);
+			}
 		}
 		System.out.println("Writing cuiless annotations for:"+brat_annotation_root); System.out.flush();
 
@@ -80,7 +82,7 @@ public class BRATtoSemEval2015Client {
 				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.semeval2015_old_train_root));
 				builder.add(SemEval2015ParserAnnotator.getDescription());
 				builder.add(BratParserAnnotator.getDescription());
-				builder.add(MergedCUIlessConsumer.getDescription());
+				//builder.add(MergedCUIlessConsumer.getDescription());
 				builder.add(SemEval2015Task2Consumer.getCuilessDescription(output_directory));
 
 				for (JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))

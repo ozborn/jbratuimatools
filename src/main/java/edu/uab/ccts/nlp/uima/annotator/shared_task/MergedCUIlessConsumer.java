@@ -21,7 +21,8 @@ import brat.type.DiscontinousBratAnnotation;
 import java.util.Collection;
 
 /**
- * Convert DiscontinousBratAnnotations in BRAT_TEXT_VIEW to DiseaseDisorders in default/GOLD_VIEW
+ * Updated DiseaseDisorders in default/GOLD_VIEW to use the CUI mappings done by the annotators
+ * for the CUI-less concepts which are stored as DiscontinousBratAnnotations in BRAT_TEXT_VIEW 
  * 
  * @author ozborn
  *

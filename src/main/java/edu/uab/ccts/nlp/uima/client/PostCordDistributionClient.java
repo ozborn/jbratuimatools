@@ -19,7 +19,6 @@ import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
 import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
 import edu.uab.ccts.nlp.uima.annotator.cuiless.AnnotatorStatistics;
 import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
-import edu.uab.ccts.nlp.uima.collection_readers.SemEval2015BratCompareCollectionReader;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotator;
 
 
@@ -39,9 +38,9 @@ public class PostCordDistributionClient {
 	protected static String semeval2015_old_train_root = 
 			"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
 	public static final String[] bratExtensions = {
-			BratConstants.BRAT_CONFIG_FILE_EXTENSION,BratConstants.BRAT_TEXT_FILE_EXTENSION};
+		BratConstants.BRAT_CONFIG_FILE_EXTENSION,BratConstants.BRAT_TEXT_FILE_EXTENSION};
 	public static final String[] semevalExtensions = {
-			SemEval2015Constants.SEMEVAL_TEXT_FILE_EXTENSION};
+		SemEval2015Constants.SEMEVAL_TEXT_FILE_EXTENSION};
 
 	public static void main(String... args)
 	{
@@ -55,35 +54,35 @@ public class PostCordDistributionClient {
 		apply(inputFiles,semFiles);
 
 	}
-	
+
 	public static void apply(Collection<File> files, Collection<File> semfiles) 
 	{
 		try {
-    
-		CollectionReaderDescription crd = CollectionReaderFactory.createReaderDescription(
-				SemEval2015BratCompareCollectionReader.class,
+
+			CollectionReaderDescription crd = CollectionReaderFactory.createReaderDescription(
+					BRATCollectionReader.class,
 					BRATCollectionReader.PARAM_FILES,
-					files,
-					SemEval2015BratCompareCollectionReader.PARAM_SEMEVAL_FILES,
-					semfiles
-			);
+					files
+					);
 
-		AggregateBuilder builder = new AggregateBuilder();
-		builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(semeval2015_old_train_root));
-		builder.add(BratParserAnnotator.getDescription());
 
-		AnnotatorStatistics annotatorstats = new AnnotatorStatistics();
-		for (JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))
-		{
-			JCas annView = jcas.getView(BratConstants.TEXT_VIEW);
-			Collection<DiscontinousBratAnnotation> brats = JCasUtil.select(annView, DiscontinousBratAnnotation.class);
-			annotatorstats.add(brats);
-		}
-		annotatorstats.print(annotatorstats.getAnnotatorStats());
-		System.out.println("Annotator stats:"+annotatorstats.getAnnotatorStats());
-		annotatorstats.printMultipleCUIText();
-		
-		
+
+			AggregateBuilder builder = new AggregateBuilder();
+			builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(semeval2015_old_train_root));
+			builder.add(BratParserAnnotator.getDescription());
+
+			AnnotatorStatistics annotatorstats = new AnnotatorStatistics();
+			for (JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))
+			{
+				JCas annView = jcas.getView(BratConstants.TEXT_VIEW);
+				Collection<DiscontinousBratAnnotation> brats = JCasUtil.select(annView, DiscontinousBratAnnotation.class);
+				annotatorstats.add(brats);
+			}
+			annotatorstats.print(annotatorstats.getAnnotatorStats());
+			System.out.println("Annotator stats:"+annotatorstats.getAnnotatorStats());
+			annotatorstats.printMultipleCUIText();
+
+
 		} catch (ResourceInitializationException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

@@ -19,28 +19,19 @@ import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
 import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
 import edu.uab.ccts.nlp.uima.annotator.cuiless.AnnotatorStatistics;
 import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
-import edu.uab.ccts.nlp.uima.collection_readers.SemEval2015BratCompareCollectionReader;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotator;
 
 
 /**
+ * TODO (Incomplete)
  * Calculates annotator agreement in the devel dataset between multiple annotators
  * but currently just 2 annotators. FIXME - awaiting Maio's results
  * @author ozborn
  *
  */
 public class AnnotatorAgreementClient {
-	static String ozborn_home = "/home/ozborn";
-	protected static String resourceDirPath = ozborn_home+"/code/repo/cuilessdata/";
+	protected static String resourceDirPath = ClientConfiguration.resourceDirPath;
 	protected static String brat_annotation_root = resourceDirPath + "devel_updated/";
-	protected static String semeval2015_updated_devel_root = 
-			ozborn_home+"/Dropbox/Public_NLP_Data/semeval-2015-task-14_updated/data/devel/discharge";
-	//protected static String semeval2015_old_train_root = 
-	//		"/Users/ozborn/Dropbox/Public_NLP_Data/semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
-	public static final String[] bratExtensions = {
-			BratConstants.BRAT_CONFIG_FILE_EXTENSION,BratConstants.BRAT_TEXT_FILE_EXTENSION};
-	public static final String[] semevalExtensions = {
-			SemEval2015Constants.SEMEVAL_TEXT_FILE_EXTENSION};
 
 	
 	/**
@@ -58,11 +49,11 @@ public class AnnotatorAgreementClient {
 		System.out.flush();
 		//Input files are manual files
 		Collection<File> a1files = FileUtils.listFiles(new File(ann1files),
-				bratExtensions, true);
+				BratConstants.bratExtensions, true);
 		Collection<File> a2files = FileUtils.listFiles(new File(ann2files),
-				bratExtensions, true);
-		Collection<File> semFiles = FileUtils.listFiles(new File(semeval2015_updated_devel_root),
-				semevalExtensions, true);
+				BratConstants.bratExtensions, true);
+		Collection<File> semFiles = FileUtils.listFiles(new File(ClientConfiguration.semeval2015_updated_devel_root),
+				SemEval2015Constants.semevalExtensions, true);
 		System.out.println("Got "+a1files.size()+" annotator1 input files for check missing pipeline...");
 		System.out.println("Got "+a2files.size()+" annotator2 input files for check missing pipeline...");
 		System.out.println("Got "+semFiles.size()+" semeval input files for checking annotator agreement...");
@@ -76,6 +67,7 @@ public class AnnotatorAgreementClient {
 	{
 		try {
     
+		/*
 		CollectionReaderDescription crd = CollectionReaderFactory.createReaderDescription(
 				SemEval2015BratCompareCollectionReader.class,
 					BRATCollectionReader.PARAM_FILES,
@@ -83,9 +75,16 @@ public class AnnotatorAgreementClient {
 					SemEval2015BratCompareCollectionReader.PARAM_SEMEVAL_FILES,
 					semfiles
 			);
+			*/
+			CollectionReaderDescription crd = CollectionReaderFactory.createReaderDescription(
+					BRATCollectionReader.class,
+					BRATCollectionReader.PARAM_FILES,
+					files
+					);
+
 
 		AggregateBuilder builder = new AggregateBuilder();
-		builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(semeval2015_updated_devel_root));
+		builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.semeval2015_updated_devel_root));
 		builder.add(BratParserAnnotator.getDescription());
 
 		AnnotatorStatistics annotatorstats = new AnnotatorStatistics();

@@ -13,7 +13,7 @@ public class ClientConfiguration {
 			"semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
 	
 	static String brat_annotated_training_data = resourceDirPath + "training_clean/";
-	static String brat_annotated_devel_data;
+	static String brat_annotated_devel_data = resourceDirPath + "devel/matt_neu_only"; //TODO replace with adjuciated data from both
 
 
 }

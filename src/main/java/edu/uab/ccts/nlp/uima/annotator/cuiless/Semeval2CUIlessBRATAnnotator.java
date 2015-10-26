@@ -3,7 +3,6 @@ package edu.uab.ccts.nlp.uima.annotator.cuiless;
 import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URL;
 import java.util.Hashtable;
 import java.util.Iterator;

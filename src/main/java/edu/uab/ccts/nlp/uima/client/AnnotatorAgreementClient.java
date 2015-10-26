@@ -15,7 +15,6 @@ import org.uimafit.factory.AggregateBuilder;
 
 import brat.type.DiscontinousBratAnnotation;
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
 import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
 import edu.uab.ccts.nlp.uima.annotator.cuiless.AnnotatorStatistics;
 import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
@@ -52,30 +51,17 @@ public class AnnotatorAgreementClient {
 				BratConstants.bratExtensions, true);
 		Collection<File> a2files = FileUtils.listFiles(new File(ann2files),
 				BratConstants.bratExtensions, true);
-		Collection<File> semFiles = FileUtils.listFiles(new File(ClientConfiguration.semeval2015_updated_devel_root),
-				SemEval2015Constants.semevalExtensions, true);
 		System.out.println("Got "+a1files.size()+" annotator1 input files for check missing pipeline...");
 		System.out.println("Got "+a2files.size()+" annotator2 input files for check missing pipeline...");
-		System.out.println("Got "+semFiles.size()+" semeval input files for checking annotator agreement...");
 		a1files.addAll(a2files);
-		apply(a1files,semFiles);
+		apply(a1files);
 			
 
 	}
 	
-	public static void apply(Collection<File> files, Collection<File> semfiles) 
+	public static void apply(Collection<File> files)
 	{
 		try {
-    
-		/*
-		CollectionReaderDescription crd = CollectionReaderFactory.createReaderDescription(
-				SemEval2015BratCompareCollectionReader.class,
-					BRATCollectionReader.PARAM_FILES,
-					files,
-					SemEval2015BratCompareCollectionReader.PARAM_SEMEVAL_FILES,
-					semfiles
-			);
-			*/
 			CollectionReaderDescription crd = CollectionReaderFactory.createReaderDescription(
 					BRATCollectionReader.class,
 					BRATCollectionReader.PARAM_FILES,

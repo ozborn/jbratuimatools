@@ -15,7 +15,6 @@ import org.uimafit.factory.AggregateBuilder;
 
 import brat.type.DiscontinousBratAnnotation;
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
 import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
 import edu.uab.ccts.nlp.uima.annotator.cuiless.AnnotatorStatistics;
 import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
@@ -49,15 +48,12 @@ public class CheckDiscrepancyClient {
 				}
 				Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
 						BratConstants.bratExtensions, true);
-				Collection<File> semFiles = FileUtils.listFiles(new File(semeval_dir_root),
-						SemEval2015Constants.semevalExtensions, true);
 				//System.out.println("Got "+inputFiles.size()+" input files for check missing pipeline...");
-				System.out.println("Semeval Input Files:"+semFiles.size()+"\nBrat Input Files:"+
-						inputFiles.size());
-				apply(inputFiles,semFiles);
+				System.out.println("\nBrat Input Files:"+ inputFiles.size());
+				apply(inputFiles);
 	}
 
-	public static void apply(Collection<File> files, Collection<File> semfiles) 
+	public static void apply(Collection<File> files) 
 	{
 		try {
 

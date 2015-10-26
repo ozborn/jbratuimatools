@@ -35,27 +35,20 @@ public class CheckMissingPipelineClient {
 
 	public static void main(String... args)
 	{
-		Collection<File> semFiles = null;
 		if(isTraining) {
 			System.out.println("Checking missing data in training data set");
 			brat_annotation_root = ClientConfiguration.resourceDirPath + "training_clean/";
-			semFiles = FileUtils.listFiles(new File(ClientConfiguration.semeval2015_old_train_root),
-					SemEval2015Constants.semevalExtensions, true);
-		} else {
-			semFiles = FileUtils.listFiles(new File(ClientConfiguration.semeval2015_updated_devel_root),
-					SemEval2015Constants.semevalExtensions, true);
-		}
+		} 
 		System.out.println(brat_annotation_root); System.out.flush();
 
 		Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
 				BratConstants.bratExtensions, true);
 		System.out.println("Got "+inputFiles.size()+" brat input files for check missing pipeline...");
-		System.out.println("Got "+semFiles.size()+" semeval input files for check missing pipeline...");
-		apply(inputFiles,semFiles);
+		apply(inputFiles);
 
 	}
 
-	public static void apply(Collection<File> files, Collection<File> semfiles) 
+	public static void apply(Collection<File> files)
 	{
 		try {
 

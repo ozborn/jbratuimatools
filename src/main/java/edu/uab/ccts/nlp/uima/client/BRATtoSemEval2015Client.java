@@ -17,7 +17,7 @@ import com.google.common.collect.HashMultiset;
 import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
 import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ParserAnnotator;
+import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015GoldAttributeParserAnnotator;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.MergedCUIlessConsumer;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015Task2Consumer;
 import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotator;
@@ -82,7 +82,7 @@ public class BRATtoSemEval2015Client {
 
 				AggregateBuilder builder = new AggregateBuilder();
 				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.semeval2015_old_train_root));
-				builder.add(SemEval2015ParserAnnotator.getDescription());
+				builder.add(SemEval2015GoldAttributeParserAnnotator.getDescription());
 				builder.add(BratParserAnnotator.getDescription());
 				if(!roundtrip_test) builder.add(MergedCUIlessConsumer.getDescription());
 				builder.add(SemEval2015Task2Consumer.getCuilessDescription(output_directory));

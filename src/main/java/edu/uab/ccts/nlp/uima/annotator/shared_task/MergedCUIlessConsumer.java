@@ -9,6 +9,7 @@ import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
 import org.cleartk.semeval2015.type.DiseaseDisorder;
@@ -56,7 +57,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			{
 				semeval_annotation_size++;
 				//SemEval2015Task2Consumer.associateSpans(disorderView, ds); //May need this to get body CUIs?
-				if(ds.getCui().equalsIgnoreCase("CUI-less")) {
+				if(ds.getCuis().get(0).equalsIgnoreCase("CUI-less")) {
 					semeval_cuiless_size++;
 					updateAnnotatedCUI(bratView,ds);
 				}
@@ -101,6 +102,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 	private boolean updateAnnotatedCUI(JCas bratview, DiseaseDisorder dd) {
 		boolean matched = false;
 		String cuiless = "CUI-less";
+		StringArray cuisa = null;
 		String replacement_cui = "";
 		this.getContext().getLogger().log(Level.FINE,"Trying to find a match for cui-less concept: "
 				+dd.getCoveredText()+" start/end "+dd.getBegin()+"/"+dd.getEnd());
@@ -132,8 +134,13 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			this.getContext().getLogger().log(Level.WARNING, 
 					docid+" - failed to find a match for:"+dd.getCoveredText()+" in:\n"+failures);
 		} else { both_brat_semeval++; } 
-		if(replacement_cui.isEmpty()) dd.setCui(cuiless);
-		else dd.setCui(replacement_cui);
+		if(replacement_cui.isEmpty()) { cuisa = new StringArray(bratview,1); cuisa.set(0, cuiless); dd.setCuis(cuisa); }
+		else {
+			String multicuis[] = replacement_cui.split(" ");
+			cuisa = new StringArray(bratview,multicuis.length);
+			for(int i=0;i<multicuis.length;i++) { cuisa.set(i, multicuis[i]); }
+			dd.setCuis(cuisa);
+		}
 		return matched;
 	}
 

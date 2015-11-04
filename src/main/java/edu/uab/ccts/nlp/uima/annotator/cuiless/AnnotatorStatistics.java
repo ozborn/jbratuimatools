@@ -16,6 +16,12 @@ import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
 import edu.uab.ccts.nlp.umls.tools.UMLSTools;
 
+import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
+import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
+import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.uima.cas.FeatureStructure;
+import org.apache.uima.fit.util.JCasUtil;
+import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 
 import brat.type.DiscontinousBratAnnotation;
@@ -28,8 +34,11 @@ public class AnnotatorStatistics implements Serializable {
 	private static Hashtable<String,Hashtable<String,HashMultiset<String>>> anno_results = null;
 	private static Hashtable<String,String> map_type_hash = null; //Key docname+T+id, value = CUIs string (comma separated)
 	private static Hashtable<String,String> text_type_hash = null; //Key annotator_name+doc_name+entity_id - Value = text
+	private static Hashtable<String,Hashtable<DiscontinousBratAnnotation,Integer>> brat_ctakes_matching_cui_count
+	= new Hashtable<String,Hashtable<DiscontinousBratAnnotation,Integer>>(); //Key annotator_name, Value = Hashtable with key DiscontinousBratAnnotation, Values Count of Matching CTAKES CUIS
 	private static HashSet<String> wrong_vocabulary_cuis = null;
-	static Hashtable<String,Hashtable<String,Hashtable<String,String>>> exact_results;
+	static Hashtable<String,Hashtable<String,Hashtable<String,String>>> exact_results
+	= new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
 
 	public Hashtable<String, Hashtable<String, HashMultiset<String>>> getAnnotatorStats() {
 		return anno_results;
@@ -49,6 +58,53 @@ public class AnnotatorStatistics implements Serializable {
 		//key document_id and value Hashtable with key entity 
 		//identifier (Txx) and value comma separated CUIs
 		exact_results = new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
+	}
+	
+	/**
+	 */
+	public void addCtakesCUIs(JCas annview, JCas ctakesview){
+			Collection<DiscontinousBratAnnotation> brats = JCasUtil.select(annview, DiscontinousBratAnnotation.class);
+			Hashtable<DiscontinousBratAnnotation,Integer> cui_matches = new Hashtable<DiscontinousBratAnnotation,Integer>();
+			String docname = null;
+			for(DiscontinousBratAnnotation dba : brats) {
+				docname = dba.getDocName();
+				TreeSet<String> bratcuis =  new TreeSet<String>();
+				Integer cui_match_count = 0;
+				String commacui = getCUIs(dba);
+				String commabratcuis[] = commacui.split(",");
+				for(int i=0;i<commabratcuis.length;i++) { bratcuis.add(commabratcuis[i]);}
+				System.out.println("Doc:"+docname+" with brat:"+dba.getCoveredText()+ " and cuis:"+commacui);
+				Collection<IdentifiedAnnotation> overlap = JCasUtil.selectCovered(ctakesview,
+						IdentifiedAnnotation.class,dba.getBegin(),dba.getEnd());
+				for(Iterator<IdentifiedAnnotation> it=overlap.iterator();it.hasNext();) {
+					IdentifiedAnnotation ia = it.next();
+					FSArray fsArray = ia.getOntologyConceptArr();
+					if(fsArray == null) break;
+					for(FeatureStructure featureStructure : fsArray.toArray()) {
+						OntologyConcept ontologyConcept = (OntologyConcept) featureStructure;
+						if(ontologyConcept instanceof UmlsConcept) {
+							UmlsConcept umlsConcept = (UmlsConcept) ontologyConcept;
+							String code = umlsConcept.getCui();
+							if(bratcuis.contains(code)) { cui_match_count++; }
+							else System.out.println(ia.getCoveredText()+" with "+code+" does not match");
+						} else {
+							String ucode = ontologyConcept.getCode();
+							if(ucode.startsWith("C") && bratcuis.contains(ucode)) {
+								cui_match_count++;
+							}
+							else System.out.println(ia.getCoveredText()+" with "+ucode+" does not match");
+						}
+					}
+				}	
+				if(cui_match_count>=bratcuis.size()) {
+					System.out.println("CTakes has CUI");
+				} else {
+					System.out.println("CTakes lacks CUI/s");
+				}
+				cui_matches.put(dba, cui_match_count);
+			}
+			System.out.println("Total count of CUI matches:"+cui_matches.size());
+			brat_ctakes_matching_cui_count.put(docname, cui_matches);
 	}
 
 
@@ -405,7 +461,15 @@ public class AnnotatorStatistics implements Serializable {
 			System.out.println(s+"\t"+stype_combinations.count(s));
 		}
 		System.out.print(stype_combinations);
-
+	}
+	
+	
+	public void printCtakesBratSummary(){
+		Integer exact_match, no_match, partial_match,over_match;
+		for(Iterator<String> it = brat_ctakes_matching_cui_count.keySet().iterator();it.hasNext();){
+			Hashtable<DiscontinousBratAnnotation,Integer> hash = brat_ctakes_matching_cui_count.get(it.next());
+			
+		}
 	}
 
 

@@ -19,10 +19,12 @@ import edu.uab.ccts.nlp.umls.tools.UMLSTools;
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
+import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
+import org.cleartk.util.ViewUriUtil;
 
 import brat.type.DiscontinousBratAnnotation;
 
@@ -34,8 +36,8 @@ public class AnnotatorStatistics implements Serializable {
 	private static Hashtable<String,Hashtable<String,HashMultiset<String>>> anno_results = null;
 	private static Hashtable<String,String> map_type_hash = null; //Key docname+T+id, value = CUIs string (comma separated)
 	private static Hashtable<String,String> text_type_hash = null; //Key annotator_name+doc_name+entity_id - Value = text
-	private static Hashtable<String,Hashtable<DiscontinousBratAnnotation,Integer>> brat_ctakes_matching_cui_count
-	= new Hashtable<String,Hashtable<DiscontinousBratAnnotation,Integer>>(); //Key annotator_name, Value = Hashtable with key DiscontinousBratAnnotation, Values Count of Matching CTAKES CUIS
+	private static Hashtable<String,Hashtable<DiscontinousBratAnnotation,Integer>> brat_ctakes_matching_cui_count;
+	private static Hashtable<String,Hashtable<DiscontinousBratAnnotation,Set<String>>> brat_ctakes_failed_cuis;
 	private static HashSet<String> wrong_vocabulary_cuis = null;
 	static Hashtable<String,Hashtable<String,Hashtable<String,String>>> exact_results
 	= new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
@@ -54,57 +56,71 @@ public class AnnotatorStatistics implements Serializable {
 		Hashtable<String,HashMultiset<String>> all = new Hashtable<String,HashMultiset<String>>();
 		anno_results.put(ALL_ANNOTATORS, all);
 		wrong_vocabulary_cuis = new HashSet<String>();
+		brat_ctakes_matching_cui_count = new Hashtable<String,Hashtable<DiscontinousBratAnnotation,Integer>>(); //Key document_name, Value = Hashtable with key DiscontinousBratAnnotation, Values Count of Matching CTAKES CUIS
+		brat_ctakes_failed_cuis = new Hashtable<String,Hashtable<DiscontinousBratAnnotation,Set<String>>>(); //Key document_name, Value = Hashtable with key DiscontinousBratAnnotation, Values Set of failed to match CUIS
 		//Exact Results contains key annotator name, value Hashtable with
 		//key document_id and value Hashtable with key entity 
 		//identifier (Txx) and value comma separated CUIs
 		exact_results = new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
 	}
-	
+
 	/**
 	 */
-	public void addCtakesCUIs(JCas annview, JCas ctakesview){
-			Collection<DiscontinousBratAnnotation> brats = JCasUtil.select(annview, DiscontinousBratAnnotation.class);
-			Hashtable<DiscontinousBratAnnotation,Integer> cui_matches = new Hashtable<DiscontinousBratAnnotation,Integer>();
-			String docname = null;
-			for(DiscontinousBratAnnotation dba : brats) {
-				docname = dba.getDocName();
-				TreeSet<String> bratcuis =  new TreeSet<String>();
-				Integer cui_match_count = 0;
-				String commacui = getCUIs(dba);
-				String commabratcuis[] = commacui.split(",");
-				for(int i=0;i<commabratcuis.length;i++) { bratcuis.add(commabratcuis[i]);}
-				System.out.println("Doc:"+docname+" with brat:"+dba.getCoveredText()+ " and cuis:"+commacui);
-				Collection<IdentifiedAnnotation> overlap = JCasUtil.selectCovered(ctakesview,
-						IdentifiedAnnotation.class,dba.getBegin(),dba.getEnd());
-				for(Iterator<IdentifiedAnnotation> it=overlap.iterator();it.hasNext();) {
-					IdentifiedAnnotation ia = it.next();
-					FSArray fsArray = ia.getOntologyConceptArr();
-					if(fsArray == null) break;
-					for(FeatureStructure featureStructure : fsArray.toArray()) {
-						OntologyConcept ontologyConcept = (OntologyConcept) featureStructure;
-						if(ontologyConcept instanceof UmlsConcept) {
-							UmlsConcept umlsConcept = (UmlsConcept) ontologyConcept;
-							String code = umlsConcept.getCui();
-							if(bratcuis.contains(code)) { cui_match_count++; }
-							else System.out.println(ia.getCoveredText()+" with "+code+" does not match");
-						} else {
-							String ucode = ontologyConcept.getCode();
-							if(ucode.startsWith("C") && bratcuis.contains(ucode)) {
-								cui_match_count++;
+	public void addCtakesCUIs(JCas annview, JCas ctakesview) throws AnalysisEngineProcessException {
+		Collection<DiscontinousBratAnnotation> brats = JCasUtil.select(annview, DiscontinousBratAnnotation.class);
+		Hashtable<DiscontinousBratAnnotation,Integer> cui_matches = new Hashtable<DiscontinousBratAnnotation,Integer>();
+		Hashtable<DiscontinousBratAnnotation,Set<String>> failed_matches = new Hashtable<DiscontinousBratAnnotation,Set<String>>();
+		String docname = ViewUriUtil.getURI(annview).toString();
+		for(DiscontinousBratAnnotation dba : brats) {
+			docname = dba.getDocName();
+			TreeSet<String> bratcuis =  new TreeSet<String>();
+			Integer cui_match_count = new Integer(0);
+			String commacui = getCUIs(dba);
+			String commabratcuis[] = commacui.split(",");
+			for(int i=0;i<commabratcuis.length;i++) { bratcuis.add(commabratcuis[i]);}
+			System.out.println("Doc:"+docname+" with brat:"+dba.getCoveredText()+ " and cuis:"+commacui);
+			Collection<IdentifiedAnnotation> overlap = JCasUtil.selectCovered(ctakesview,
+					IdentifiedAnnotation.class,dba.getBegin(),dba.getEnd());
+			for(Iterator<IdentifiedAnnotation> it=overlap.iterator();it.hasNext();) {
+				IdentifiedAnnotation ia = it.next();
+				FSArray fsArray = ia.getOntologyConceptArr();
+				if(fsArray == null) break;
+				for(FeatureStructure featureStructure : fsArray.toArray()) {
+					OntologyConcept ontologyConcept = (OntologyConcept) featureStructure;
+					if(ontologyConcept instanceof UmlsConcept) {
+						UmlsConcept umlsConcept = (UmlsConcept) ontologyConcept;
+						String code = umlsConcept.getCui();
+						if(bratcuis.contains(code)) { cui_match_count++; }
+						else {
+							System.out.println(ctakesview.getDocumentText().substring(ia.getBegin(), ia.getEnd())+" with "+code+" does not match");
+							if(failed_matches.isEmpty()) failed_matches.put(dba, new TreeSet<String>());
+							Set<String> fcuis = failed_matches.get(dba);
+							fcuis.add(code);
+						}
+					} else {
+						String ucode = ontologyConcept.getCode();
+						if(ucode.startsWith("C")) {
+							if(bratcuis.contains(ucode)) { cui_match_count++; }
+							else {
+								if(failed_matches.isEmpty()) failed_matches.put(dba, new TreeSet<String>());
+								Set<String> fcuis = failed_matches.get(dba);
+								fcuis.add(ucode);
+								System.out.println(ia.getCoveredText()+" with "+ucode+" does not match");
 							}
-							else System.out.println(ia.getCoveredText()+" with "+ucode+" does not match");
 						}
 					}
-				}	
-				if(cui_match_count>=bratcuis.size()) {
-					System.out.println("CTakes has CUI");
-				} else {
-					System.out.println("CTakes lacks CUI/s");
 				}
-				cui_matches.put(dba, cui_match_count);
+			}	
+			if(cui_match_count>=bratcuis.size()) {
+				System.out.println("CTakes has CUI");
+			} else {
+				System.out.println("CTakes lacks CUI/s");
 			}
-			System.out.println("Total count of CUI matches:"+cui_matches.size());
-			brat_ctakes_matching_cui_count.put(docname, cui_matches);
+			cui_matches.put(dba, cui_match_count);
+		}
+		System.out.println("Total count of CUI matches:"+cui_matches.size());
+		brat_ctakes_matching_cui_count.put(docname, cui_matches);
+		brat_ctakes_failed_cuis.put(docname, failed_matches);
 	}
 
 
@@ -146,9 +162,8 @@ public class AnnotatorStatistics implements Serializable {
 		entid_hash.put("T"+dba.getId(), allcuis);
 		docid_hash.put(dba.getDocName(), entid_hash);
 		exact_results.put(dba.getAnnotatorName(), docid_hash);
-
-
 	}
+
 
 	private void buildAnnotationHash(String annotator_name, String text_key,
 			String allcuis, 
@@ -403,7 +418,7 @@ public class AnnotatorStatistics implements Serializable {
 					System.out.println(annotators[0]+" has null value for "+refentity);
 					continue;
 				}
-				
+
 				if(refcuis.trim().equalsIgnoreCase(testcuis.trim())) {
 					agreements++;
 				} else {
@@ -413,7 +428,7 @@ public class AnnotatorStatistics implements Serializable {
 					String typekey = annotators[0]+":"+rdoc+":"+refentity;
 					String distext = text_type_hash.get(typekey);
 					System.out.println("DISAGREE\t"+rdoc+"\t"+refentity+"\t"+distext+"\t"
-					+refcuis+"\t"+refnames+"\t"+testcuis+"\t"+testnames);
+							+refcuis+"\t"+refnames+"\t"+testcuis+"\t"+testnames);
 				}
 			}
 		}
@@ -462,14 +477,26 @@ public class AnnotatorStatistics implements Serializable {
 		}
 		System.out.print(stype_combinations);
 	}
-	
-	
+
+
 	public void printCtakesBratSummary(){
-		Integer exact_match, no_match, partial_match,over_match;
+		Integer all_failed=0,all_matched=0;
 		for(Iterator<String> it = brat_ctakes_matching_cui_count.keySet().iterator();it.hasNext();){
-			Hashtable<DiscontinousBratAnnotation,Integer> hash = brat_ctakes_matching_cui_count.get(it.next());
-			
+			String docname = it.next();
+			Hashtable<DiscontinousBratAnnotation,Integer> matches = brat_ctakes_matching_cui_count.get(docname);
+			for(Iterator<DiscontinousBratAnnotation> bratit = matches.keySet().iterator();it.hasNext();) {
+				DiscontinousBratAnnotation brat = bratit.next();
+				Hashtable<DiscontinousBratAnnotation,Set<String>> failed = brat_ctakes_failed_cuis.get(docname);
+				Set<String> fcuis = failed.get(brat);
+				all_failed+=fcuis.size();
+				all_matched += matches.get(brat);
+				String bratcuis="";
+				for(int i=0;i<brat.getOntologyConceptArr().size();i++) { bratcuis+=brat.getOntologyConceptArr(i);}
+				System.out.println("Doc:"+docname+" with text:"+brat.getCoveredText()+
+				" with CUIs:"+bratcuis+" and failed cuis:"+fcuis);
+			}
 		}
+		System.out.println("All matched:"+all_matched+" All failed:"+all_failed);
 	}
 
 

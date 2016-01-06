@@ -18,7 +18,6 @@ import com.google.common.collect.HashMultiset;
 
 import brat.type.DiscontinousBratAnnotation;
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
 import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
 import edu.uab.ccts.nlp.uima.annotator.cuiless.AnnotatorStatistics;
 import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;

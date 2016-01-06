@@ -10,6 +10,7 @@ import java.util.Set;
 import java.util.TreeSet;
 
 import com.google.common.collect.HashMultiset;
+import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 
 import edu.uab.ccts.nlp.brat.BratConstants;
@@ -33,6 +34,10 @@ public class AnnotatorStatistics implements Serializable {
 
 	public static final String ALL_ANNOTATORS = "ALL_ANNOTATORS";
 	private static final long serialVersionUID = 1L;
+
+	//Contains key annotator name, value Hashtable with key discontinous
+	//text and value HashMultiset containing elements that are strings
+	//of ordered, comma separated CUIs
 	private static Hashtable<String,Hashtable<String,HashMultiset<String>>> anno_results = null;
 	private static Hashtable<String,String> map_type_hash = null; //Key docname+T+id, value = CUIs string (comma separated)
 	private static Hashtable<String,String> text_type_hash = null; //Key annotator_name+doc_name+entity_id - Value = text
@@ -47,17 +52,14 @@ public class AnnotatorStatistics implements Serializable {
 	}
 
 	public AnnotatorStatistics(){
-		//Contains key annotator name, value Hashtable with key discontinous
-		//text and value HashMultiset containing elements that are strings
-		//of ordered, comma separated CUIs
 		anno_results = new Hashtable<String,Hashtable<String,HashMultiset<String>>>();
-		map_type_hash = new Hashtable<String,String>();
-		text_type_hash = new Hashtable<String,String>(); 
 		Hashtable<String,HashMultiset<String>> all = new Hashtable<String,HashMultiset<String>>();
 		anno_results.put(ALL_ANNOTATORS, all);
+		map_type_hash = new Hashtable<String,String>();
+		text_type_hash = new Hashtable<String,String>(); 
 		wrong_vocabulary_cuis = new HashSet<String>();
 		brat_ctakes_failed_cuis = new Hashtable<String,Hashtable<DiscontinousBratAnnotation,Set<String>>>(); //Key document_name, Value = Hashtable with key DiscontinousBratAnnotation, Values Set of failed to match CUIS
-		brat_ctakes_matched_cuis = new Hashtable<String,Hashtable<DiscontinousBratAnnotation,Set<String>>>(); //Key document_name, Value = Hashtable with key DiscontinousBratAnnotation, Values Set of failed to match CUIS
+		brat_ctakes_matched_cuis = new Hashtable<String,Hashtable<DiscontinousBratAnnotation,Set<String>>>(); //Key document_name, Value = Hashtable with key DiscontinousBratAnnotation, Values Set of matching CUIS
 		//Exact Results contains key annotator name, value Hashtable with
 		//key document_id and value Hashtable with key entity 
 		//identifier (Txx) and value comma separated CUIs
@@ -477,6 +479,35 @@ public class AnnotatorStatistics implements Serializable {
 			System.out.println(s+"\t"+stype_combinations.count(s));
 		}
 		System.out.print(stype_combinations);
+	}
+	
+	
+	public void printPreCoordinated(){
+		Hashtable<String,HashMultiset<String>> cuimentions = new Hashtable<String,HashMultiset<String>>();
+		anno_results.remove(ALL_ANNOTATORS);
+		for(Hashtable<String,HashMultiset<String>> h : anno_results.values()) {
+			for(String text : h.keySet()) {
+				HashMultiset<String> cuiset = h.get(text);
+				for(String commacuis : cuiset.elementSet()) {
+					if(commacuis.indexOf(",")==-1) { //Pre-coordinated
+						HashMultiset<String> cuitest = cuimentions.get(commacuis);
+						if(cuitest==null) cuitest = HashMultiset.create();
+						cuitest.add(text);
+						cuimentions.put(commacuis,cuitest);
+					}
+				}
+			}
+		}
+		for(String cui : cuimentions.keySet()) {
+			Set<Multiset.Entry<String>> histogram = cuimentions.get(cui).entrySet();
+			Integer total_count = 0;
+			StringBuffer allmentions = new StringBuffer(); allmentions.append("");
+			for(Multiset.Entry<String> mention : histogram){
+				total_count += mention.getCount();
+				allmentions.append(mention.getElement()+"\t"+mention.getCount()+"\t");
+			}
+			System.out.println(cui+"\t"+total_count+"\t"+allmentions.toString());
+		}
 	}
 
 

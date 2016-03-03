@@ -1,4 +1,4 @@
-package edu.uab.ccts.nlp.uima.annotator.cuiless;
+package edu.uab.ccts.nlp.jbratuimatools.util;
 
 import java.io.Serializable;
 import java.util.Collection;
@@ -14,7 +14,7 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
+import edu.uab.ccts.nlp.jbratuimatools.uima.annotator.BratParserAnnotator;
 import edu.uab.ccts.nlp.umls.tools.UMLSTools;
 
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;

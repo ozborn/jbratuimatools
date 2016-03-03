@@ -1,4 +1,4 @@
-package edu.uab.ccts.nlp.uima.client;
+package edu.uab.ccts.nlp.jbratuimatools.client;
 
 import java.io.File;
 import java.util.Collection;
@@ -15,10 +15,10 @@ import org.uimafit.factory.AggregateBuilder;
 
 import brat.type.DiscontinousBratAnnotation;
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
-import edu.uab.ccts.nlp.uima.annotator.cuiless.AnnotatorStatistics;
-import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotator;
+import edu.uab.ccts.nlp.jbratuimatools.uima.BRATCollectionReader;
+import edu.uab.ccts.nlp.jbratuimatools.uima.annotator.BratParserAnnotator;
+import edu.uab.ccts.nlp.jbratuimatools.util.AnnotatorStatistics;
+import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCreatorAnnotator;
 
 
 /**
@@ -29,7 +29,7 @@ import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotat
  *
  */
 public class AnnotatorAgreementClient {
-	protected static String resourceDirPath = ClientConfiguration.resourceDirPath;
+	protected static String resourceDirPath = ClientConfiguration.getCuilessDataDirPath();
 	protected static String brat_annotation_root = resourceDirPath + "devel_updated/";
 
 	
@@ -70,7 +70,7 @@ public class AnnotatorAgreementClient {
 
 
 		AggregateBuilder builder = new AggregateBuilder();
-		builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.semeval2015_updated_devel_root));
+		builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015UpdatedDevelRoot()));
 		builder.add(BratParserAnnotator.getDescription());
 
 		AnnotatorStatistics annotatorstats = new AnnotatorStatistics();

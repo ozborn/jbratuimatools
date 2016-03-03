@@ -1,4 +1,4 @@
-package edu.uab.ccts.nlp.uima.client;
+package edu.uab.ccts.nlp.jbratuimatools.client;
 
 import java.io.File;
 import java.util.Collection;
@@ -15,11 +15,11 @@ import org.uimafit.factory.AggregateBuilder;
 
 import brat.type.DiscontinousBratAnnotation;
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
-import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
-import edu.uab.ccts.nlp.uima.annotator.cuiless.AnnotatorStatistics;
-import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotator;
+import edu.uab.ccts.nlp.jbratuimatools.uima.BRATCollectionReader;
+import edu.uab.ccts.nlp.jbratuimatools.uima.annotator.BratParserAnnotator;
+import edu.uab.ccts.nlp.jbratuimatools.util.AnnotatorStatistics;
+import edu.uab.ccts.nlp.shared_task.semeval2015.SemEval2015Constants;
+import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCreatorAnnotator;
 
 
 /**

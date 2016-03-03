@@ -1,4 +1,4 @@
-package edu.uab.ccts.nlp.uima.client;
+package edu.uab.ccts.nlp.jbratuimatools.client;
 
 import java.io.File;
 import java.util.Collection;
@@ -15,12 +15,12 @@ import org.uimafit.factory.AggregateBuilder;
 import com.google.common.collect.HashMultiset;
 
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
-import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015GoldAttributeParserAnnotator;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.MergedCUIlessConsumer;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015Task2Consumer;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotator;
+import edu.uab.ccts.nlp.jbratuimatools.uima.BRATCollectionReader;
+import edu.uab.ccts.nlp.jbratuimatools.uima.annotator.BratParserAnnotator;
+import edu.uab.ccts.nlp.jbratuimatools.uima.annotator.MergedCUIlessConsumer;
+import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015GoldAttributeParserAnnotator;
+import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015Task2Consumer;
+import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCreatorAnnotator;
 
 
 /**
@@ -81,7 +81,7 @@ public class BRATtoSemEval2015Client {
 						);
 
 				AggregateBuilder builder = new AggregateBuilder();
-				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.semeval2015_old_train_root));
+				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015OldTrainRoot()));
 				builder.add(SemEval2015GoldAttributeParserAnnotator.getDescription());
 				builder.add(BratParserAnnotator.getDescription());
 				if(!roundtrip_test) builder.add(MergedCUIlessConsumer.getDescription());

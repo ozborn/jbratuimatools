@@ -1,4 +1,4 @@
-package edu.uab.ccts.nlp.uima.annotator.brat;
+package edu.uab.ccts.nlp.jbratuimatools.uima.annotator;
 
 import java.io.File;
 import java.util.Comparator;
@@ -26,7 +26,7 @@ import edu.uab.ccts.nlp.brat.BratConfiguration;
 import edu.uab.ccts.nlp.brat.BratConfigurationImpl;
 import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.brat.BratEntity;
-import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
+import edu.uab.ccts.nlp.shared_task.semeval2015.SemEval2015Constants;
 import brat.type.DiscontinousBratAnnotation;
 
 public class BratParserAnnotator extends JCasAnnotator_ImplBase {

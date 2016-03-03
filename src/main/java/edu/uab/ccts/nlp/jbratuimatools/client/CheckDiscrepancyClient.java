@@ -1,4 +1,4 @@
-package edu.uab.ccts.nlp.uima.client;
+package edu.uab.ccts.nlp.jbratuimatools.client;
 
 import java.io.File;
 import java.util.Collection;
@@ -15,38 +15,34 @@ import org.uimafit.factory.AggregateBuilder;
 
 import brat.type.DiscontinousBratAnnotation;
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
-import edu.uab.ccts.nlp.uima.annotator.cuiless.AnnotatorStatistics;
-import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotator;
+import edu.uab.ccts.nlp.jbratuimatools.uima.BRATCollectionReader;
+import edu.uab.ccts.nlp.jbratuimatools.uima.annotator.BratParserAnnotator;
+import edu.uab.ccts.nlp.jbratuimatools.util.AnnotatorStatistics;
+import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCreatorAnnotator;
 
 
 /**
- * Checks for pre-coordinated annotations among the CUI-less annotations (single mappings)
- * Provides a suggested post-coordinated if that text was post-coordinated elsewhere
- * Sorts by most frequent pre-coordinated CUIs to least frequent
- * Used to create set of CUIs for Matt Neu/Maio Danila to semantically decompose
+ * Checking for discrepancies, still using old data
  * @author ozborn
  *
  */
-public class CheckPreCoordinatedClient {
+public class CheckDiscrepancyClient {
 
 	static String semeval2015_updated_train_root, semeval2015_old_train_root, semeval_dir_root,brat_annotation_root;
 
 
-
 	public static void main(String... args)
 	{
-		brat_annotation_root = ClientConfiguration.resourceDirPath + "training_clean/";
-		semeval_dir_root = ClientConfiguration.semeval2015_old_train_root;
+		brat_annotation_root = ClientConfiguration.getCuilessDataDirPath() + "training_clean/";
+		semeval_dir_root = ClientConfiguration.getSemeval2015OldTrainRoot();
 		System.out.println("Using:\n Brat Annotation Root Directory:"+brat_annotation_root+
 				"\nSemeval Input Root Directory:"+semeval_dir_root); System.out.flush();
 				if(args.length>0) {
-					ClientConfiguration.resourceDirPath = args[0];
-					System.out.println("Set resourceDirPath to:"+ClientConfiguration.resourceDirPath);
+					ClientConfiguration.setCuilessDataDirPath(args[0]);
+					System.out.println("Set resourceDirPath to:"+ClientConfiguration.cuilessDataDirPath);
 					if(args.length>1) {
-						ClientConfiguration.dropboxPublicDataPath = args[1];
-						System.out.println("Set dropboxPublicDataPath to:"+ClientConfiguration.dropboxPublicDataPath);
+						ClientConfiguration.setDropboxPublicDataPath(args[1]);
+						System.out.println("Set dropboxPublicDataPath to:"+ClientConfiguration.getDropboxPublicDataPath());
 					}
 				}
 				Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
@@ -80,7 +76,7 @@ public class CheckPreCoordinatedClient {
 			}
 			annotatorstats.print(annotatorstats.getAnnotatorStats());
 			System.out.println("Annotator stats:"+annotatorstats.getAnnotatorStats());
-			annotatorstats.printPreCoordinated();
+			System.out.println(annotatorstats.getDiscrepancies());
 
 
 		} catch (ResourceInitializationException e) {

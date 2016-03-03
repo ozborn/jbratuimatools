@@ -1,4 +1,4 @@
-package edu.uab.ccts.nlp.uima.client;
+package edu.uab.ccts.nlp.jbratuimatools.client;
 
 import java.io.File;
 import java.util.Collection;
@@ -12,10 +12,10 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.uimafit.factory.AggregateBuilder;
 
-import edu.uab.ccts.nlp.shared_task.SemEval2015Constants;
-import edu.uab.ccts.nlp.uima.annotator.cuiless.Semeval2CUIlessBRATAnnotator;
-import edu.uab.ccts.nlp.uima.collection_reader.SemEval2015CollectionReader;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015GoldAttributeParserAnnotator;
+import edu.uab.ccts.nlp.jbratuimatools.uima.annotator.Semeval2CUIlessBRATAnnotator;
+import edu.uab.ccts.nlp.shared_task.semeval2015.SemEval2015Constants;
+import edu.uab.ccts.nlp.shared_task.semeval2015.uima.SemEval2015CollectionReader;
+import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015GoldAttributeParserAnnotator;
 
 
 /**
@@ -38,10 +38,10 @@ public class SemevalCUIless2BratClient {
 	public static void main(String... args)
 	{
 		String st[] = {SemEval2015Constants.SEMEVAL_PIPED_EXTENSION};
-		Collection<File> semFiles = FileUtils.listFiles(new File(ClientConfiguration.semeval2015_updated_devel_root),
+		Collection<File> semFiles = FileUtils.listFiles(new File(ClientConfiguration.getSemeval2015UpdatedDevelRoot()),
 		st, true);
 		System.out.println("Got "+semFiles.size()+" semeval input files...");
-		apply(ClientConfiguration.semeval2015_updated_devel_root,semFiles);
+		apply(ClientConfiguration.getSemeval2015UpdatedDevelRoot(),semFiles);
 
 	}
 

@@ -1,4 +1,4 @@
-package edu.uab.ccts.nlp.uima.annotator.cuiless;
+package edu.uab.ccts.nlp.jbratuimatools.uima.annotator;
 
 import java.io.File;
 import java.io.FileWriter;
@@ -31,7 +31,7 @@ import org.cleartk.semeval2015.type.DisorderSpan;
 import org.cleartk.util.ViewUriUtil;
 
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.uima.client.SemevalCUIless2BratClient;
+import edu.uab.ccts.nlp.jbratuimatools.client.SemevalCUIless2BratClient;
 import edu.uab.ccts.nlp.umls.tools.UMLSTools;
 
 

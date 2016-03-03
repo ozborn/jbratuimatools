@@ -1,4 +1,4 @@
-package edu.uab.ccts.nlp.uima.client;
+package edu.uab.ccts.nlp.jbratuimatools.client;
 
 import java.io.File;
 import java.util.Collection;
@@ -18,16 +18,16 @@ import com.google.common.collect.HashMultiset;
 
 import brat.type.DiscontinousBratAnnotation;
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.uima.annotator.brat.BratParserAnnotator;
-import edu.uab.ccts.nlp.uima.annotator.cuiless.AnnotatorStatistics;
-import edu.uab.ccts.nlp.uima.collection_readers.BRATCollectionReader;
-import edu.uab.ccts.nlp.uima.annotator.shared_task.SemEval2015ViewCreatorAnnotator;
+import edu.uab.ccts.nlp.jbratuimatools.uima.BRATCollectionReader;
+import edu.uab.ccts.nlp.jbratuimatools.uima.annotator.BratParserAnnotator;
+import edu.uab.ccts.nlp.jbratuimatools.util.AnnotatorStatistics;
+import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCreatorAnnotator;
 
 
 public class CheckMissingPipelineClient {
 	static boolean isTraining = true;
 
-	static String brat_annotation_root = ClientConfiguration.resourceDirPath + "devel/devel_updated_v2/";
+	static String brat_annotation_root = ClientConfiguration.cuilessDataDirPath + "devel/devel_updated_v2/";
 
 	static Hashtable<String,Hashtable<String,HashMultiset<String>>> annotation_results = 
 			new Hashtable<String,Hashtable<String,HashMultiset<String>>>();
@@ -36,7 +36,7 @@ public class CheckMissingPipelineClient {
 	{
 		if(isTraining) {
 			System.out.println("Checking missing data in training data set");
-			brat_annotation_root = ClientConfiguration.resourceDirPath + "training_clean/";
+			brat_annotation_root = ClientConfiguration.cuilessDataDirPath + "training_clean/";
 		} 
 		System.out.println(brat_annotation_root); System.out.flush();
 
@@ -61,7 +61,7 @@ public class CheckMissingPipelineClient {
 
 
 			AggregateBuilder builder = new AggregateBuilder();
-			builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.semeval2015_old_train_root));
+			builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015OldTrainRoot()));
 			builder.add(BratParserAnnotator.getDescription());
 
 			AnnotatorStatistics annotatorstats = new AnnotatorStatistics();

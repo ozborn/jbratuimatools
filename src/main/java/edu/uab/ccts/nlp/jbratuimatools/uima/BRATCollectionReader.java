@@ -1,4 +1,4 @@
-package edu.uab.ccts.nlp.uima.collection_readers;
+package edu.uab.ccts.nlp.jbratuimatools.uima;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.UimaContext;

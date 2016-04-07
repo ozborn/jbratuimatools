@@ -8,3 +8,12 @@ It includes functionality to:
 TODO:
 * Calculate annotator agreement...
 
+
+INSTALL
+Unfortunately this currently requires oracle ojdbc7.jar to function to get the ideal concept name from UMLS, so ojdbc7.jar must be downloaded and can then be installed as folllows using maven:
+
+mvn install:install-file -Dfile=/home/ozborn/Downloads/ojdbc7.jar -DgroupId=com.oracle -DartifactId=ojdbc7 -Dversion=12.1.0.1 -Dpackaging=jar
+
+
+ECLIPSE INSTALL AND BUILD
+-Add target/generated-sources/jcasgen to the source directory if doing a java build

@@ -24,13 +24,13 @@ import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCr
 /**
  * TODO (Incomplete)
  * Calculates annotator agreement in the devel dataset between multiple annotators
- * but currently just 2 annotators. FIXME - awaiting Maio's results
+ * but currently just 2 annotators.
  * @author ozborn
  *
  */
 public class AnnotatorAgreementClient {
 	protected static String resourceDirPath = ClientConfiguration.getCuilessDataDirPath();
-	protected static String brat_annotation_root = resourceDirPath + "devel_updated/";
+	protected static String brat_annotation_root = resourceDirPath + "devel/";
 
 	
 	/**

@@ -48,7 +48,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 	public void process(JCas jcas) throws AnalysisEngineProcessException {
 		//uimaKeyDict doesn't need to be sorted
 		uimaDiseaseDict = new Hashtable<String,DiscontinousBratAnnotation>(); //Key Txxx, Value brat diseases
-		uimaNotDiseaseDict = new Hashtable<String,DiscontinousBratAnnotation>(); //Key Txxx, Value brat diseases
+		uimaNotDiseaseDict = new Hashtable<String,DiscontinousBratAnnotation>(); //Key Txxx, Value brat non-diseases
 		bratKeyDict = new TreeMap<String,String>(new Comparator<String>(){
 			public int compare (String x, String y) {
 				if(!x.substring(0, 1).equals(y.substring(0,1))) {

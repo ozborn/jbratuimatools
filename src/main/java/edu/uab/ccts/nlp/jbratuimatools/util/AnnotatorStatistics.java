@@ -19,6 +19,7 @@ import edu.uab.ccts.nlp.umls.tools.UMLSTools;
 
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.refsem.UmlsConcept;
+import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.FeatureStructure;
@@ -46,6 +47,8 @@ public class AnnotatorStatistics implements Serializable {
 	private static HashSet<String> wrong_vocabulary_cuis = null;
 	static Hashtable<String,Hashtable<String,Hashtable<String,String>>> exact_results
 	= new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
+	static Hashtable<String,Hashtable<String,Hashtable<String,String>>> related_cui_results
+	= new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
 
 	public Hashtable<String, Hashtable<String, HashMultiset<String>>> getAnnotatorStats() {
 		return anno_results;
@@ -64,7 +67,9 @@ public class AnnotatorStatistics implements Serializable {
 		//key document_id and value Hashtable with key entity 
 		//identifier (Txx) and value comma separated CUIs
 		exact_results = new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
+		related_cui_results = new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
 	}
+
 
 	/**
 	 */
@@ -127,7 +132,18 @@ public class AnnotatorStatistics implements Serializable {
 	}
 
 
-	public void add(Collection<DiscontinousBratAnnotation> dbas){
+	public void add(Collection<DiscontinousBratAnnotation> dbas,
+			Collection<BinaryTextRelation> rels){
+		//Create a copy of dbas hashed on String
+		Hashtable<Integer,DiscontinousBratAnnotation> fasthash =
+		 new Hashtable<Integer,DiscontinousBratAnnotation>();
+		for(DiscontinousBratAnnotation dba : dbas) {
+			System.out.println("ADDING fasthash with id:"+dba.getId());
+			fasthash.put(dba.getId(), dba);
+		}
+		System.out.println("Our fasthash of size "+fasthash.size()+" looks like:"+fasthash.keySet());
+
+		
 		for(DiscontinousBratAnnotation dba : dbas) {
 			//System.out.println("Processing "+dba.getDiscontinousText()+" from "+
 			//dba.getDocName()+"annotated by"+dba.getAnnotatorName());
@@ -150,7 +166,26 @@ public class AnnotatorStatistics implements Serializable {
 			map_type_hash.put(dba.getDocName()+"T"+dba.getId(), allcuis);
 			text_type_hash.put(annotator_name+":"+dba.getDocName()+":T"+dba.getId(),text_key);
 			buildExactResults(dba,allcuis);
+			String relatedcuis = getRelatedCUIs(dba,rels,fasthash);
+			buildRelatedResults(dba,allcuis,relatedcuis);
 		}
+	}
+
+	
+	/*
+	  Exact Results contains key annotator name, value Hashtable with
+	  key document_id and value Hashtable with key entity 
+	  identifier (Txx) and value comma separated CUIs related to the disease
+	 */
+	private void buildRelatedResults(DiscontinousBratAnnotation dba, String allcuis,
+		String related_cuis){
+		Hashtable<String,Hashtable<String,String>> docid_hash = exact_results.get(dba.getAnnotatorName());
+		if(docid_hash==null) docid_hash = new Hashtable<String,Hashtable<String,String>>();
+		Hashtable<String,String> entid_hash = docid_hash.get(dba.getDocName());
+		if(entid_hash==null) entid_hash = new Hashtable<String,String>();
+		entid_hash.put("T"+dba.getId(), allcuis+","+related_cuis);
+		docid_hash.put(dba.getDocName(), entid_hash);
+		exact_results.put(dba.getAnnotatorName(), docid_hash);
 	}
 
 
@@ -224,6 +259,24 @@ public class AnnotatorStatistics implements Serializable {
 			return big_string;
 		}
 
+	}
+	
+	
+	public static String getRelatedCUIs(DiscontinousBratAnnotation dba,
+			Collection<BinaryTextRelation> rels,
+			Hashtable<Integer,DiscontinousBratAnnotation> fast
+		) {
+		String related_cuis = null;
+		Integer entId = dba.getId();
+		System.out.println("Looking at entity:"+entId+" of type:"+dba.getTypeID());
+		for(BinaryTextRelation btr : rels) {
+			if(btr.getArg1().getId()==entId) {
+				Integer relatedEntId = btr.getArg1().getId();
+				System.out.println("Found relation to:"+relatedEntId+" of type "+(fast.get(relatedEntId)).getTypeID());
+			}
+		}
+		
+		return related_cuis;
 	}
 
 

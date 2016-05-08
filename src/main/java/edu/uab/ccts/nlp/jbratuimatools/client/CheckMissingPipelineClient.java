@@ -5,6 +5,7 @@ import java.util.Collection;
 import java.util.Hashtable;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.uima.UIMAException;
 import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
@@ -71,7 +72,8 @@ public class CheckMissingPipelineClient {
 				Collection<DiscontinousBratAnnotation> brats = JCasUtil.select(annView, DiscontinousBratAnnotation.class);
 				//String[] pathbits = (ViewUriUtil.getURI(annView)).toString().split(File.separator);
 				//System.out.println("Got "+brats.size()+" brat annotations for "+pathbits[pathbits.length-1]);
-				annotatorstats.add(brats);
+				Collection<BinaryTextRelation> rels = JCasUtil.select(annView, BinaryTextRelation.class);
+				annotatorstats.add(brats,rels); 
 			}
 			annotatorstats.print();
 			annotatorstats.printSemanticTypeDistribution();

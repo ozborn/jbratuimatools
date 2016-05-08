@@ -4,6 +4,7 @@ import java.io.File;
 import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.uima.UIMAException;
 import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
@@ -72,7 +73,8 @@ public class CheckDiscrepancyClient {
 			{
 				JCas annView = jcas.getView(BratConstants.TEXT_VIEW);
 				Collection<DiscontinousBratAnnotation> brats = JCasUtil.select(annView, DiscontinousBratAnnotation.class);
-				annotatorstats.add(brats);
+				Collection<BinaryTextRelation> rels = JCasUtil.select(annView, BinaryTextRelation.class);
+				annotatorstats.add(brats,rels); 
 			}
 			annotatorstats.print(annotatorstats.getAnnotatorStats());
 			System.out.println("Annotator stats:"+annotatorstats.getAnnotatorStats());

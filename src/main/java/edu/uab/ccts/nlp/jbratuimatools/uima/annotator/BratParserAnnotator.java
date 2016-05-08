@@ -159,7 +159,8 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 			}
 		}
 		brat_cuiless_count=uimaDiseaseDict.size();
-		//System.out.println(docname+" has uimaDiseaseDict size of "+uimaDiseaseDict.size()); //T15 is in there, T44, T13
+		System.out.println(docname+" has uimaDiseaseDict size of "+
+				uimaDiseaseDict.size()+" and non-disease size of:"+uimaNotDiseaseDict.size()); //T15 is in there, T44, T13
 
 		int last_pre_existing_disease_start = 0; //-1 indicates no more pre-existing diseases
 		for(String key : bratKeyDict.keySet()){
@@ -180,21 +181,19 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 			} else if(key.trim().startsWith("T")) { 
 				//Check to identify novel annotated stuff
 				DiscontinousBratAnnotation dis = uimaDiseaseDict.get(key.trim());
-				if(dis==null) { 
-					//Not a disease
-					//System.out.println("Got null in "+docname+":"+key.trim()+" size "+uimaKeyDict.size());
-					continue; 
-				} 
 				int cur = Integer.parseInt(bratKeyDict.get(key).split("\t")[0].split(" ")[1]);
 				this.getContext().getLogger().log(Level.FINEST,"cur:"+cur+" LastPreExist"+last_pre_existing_disease_start);
-				if(last_pre_existing_disease_start>=0 && cur>=last_pre_existing_disease_start){
-					last_pre_existing_disease_start=cur;
-					dis.setIsNovelEntity(false);
-					//System.out.println(docname+" -pre-exist- "+key+" -- "+cur);
-				} else {
-					dis.setIsNovelEntity(true);
-					last_pre_existing_disease_start=-1;
-					this.getContext().getLogger().log(Level.FINE,"Detected novel disease:"+dis.getId());
+
+				if(dis!=null) {
+					if(last_pre_existing_disease_start>=0 && cur>=last_pre_existing_disease_start){
+						last_pre_existing_disease_start=cur;
+						dis.setIsNovelEntity(false);
+						//System.out.println(docname+" -pre-exist- "+key+" -- "+cur);
+					} else {
+						dis.setIsNovelEntity(true);
+						last_pre_existing_disease_start=-1;
+						this.getContext().getLogger().log(Level.FINE,"Detected novel disease:"+dis.getId());
+					}
 				}
 			} else if(key.startsWith("#")) {
 				String[] tabfields = bratKeyDict.get(key).split("\t");
@@ -204,35 +203,53 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				if(annotated==null) {
 					DiscontinousBratAnnotation notdisease = uimaNotDiseaseDict.get(span_fields[1]);
 					if(notdisease==null) {
-						extra_summary+="EXTRA-"+span_fields[1];
+						extra_summary+="EXTRA-"+span_fields[1]; //Indicates annotated non-T (relationship) concept
 						extra_annotations++;
+						continue;
 					}
-					continue;
 				}
-				//Add CUIs
-				String[] cuis = tabfields[1].split(" |,");
-				assert(cuis.length>0);
-				if(!(cuis[0].startsWith("C") && cuis.length<6)){
-					help_cui_count++;
-					help_summary+="HELP-"+(bratKeyDict.get(key))+uimaDiseaseDict.get(key);
-					continue;
+				//Add Disease CUIs
+				if(annotated!=null) {
+					String[] cuis = tabfields[1].split(" |,");
+					assert(cuis.length>0);
+					if(!(cuis[0].startsWith("C") && cuis.length<6)){
+						help_cui_count++;
+						help_summary+="HELP-"+(bratKeyDict.get(key))+uimaDiseaseDict.get(key);
+						continue;
+					}
+					FSArray ontarray = new FSArray(textView,cuis.length);
+					int k=0;
+					if(cuis.length==0) { cuis = new String[1]; cuis[0]="MISSED_CUI"; }
+					for(String cui : cuis) {
+						//System.out.println("Dealing with cui "+cui+" at k:"+k);
+						OntologyConcept oc = new OntologyConcept(textView);
+						oc.setCode(cui);
+						ontarray.set(k, oc);
+						oc.addToIndexes(textView);
+						k++;
+					}
+					ontarray.addToIndexes(textView);
+					if(ontarray!=null) annotated.setOntologyConceptArr(ontarray);
+					annotated.addToIndexes(textView);
+					uimaDiseaseDict.remove(span_fields[1]);
+					brat_annotated_count++;
+				} else {
+					DiscontinousBratAnnotation notdisease = uimaNotDiseaseDict.get(span_fields[1]);
+					//Pull in pre-populated annotations of non-disease stuff
+					if(notdisease!=null) {
+						String[] cuis = tabfields[1].split(":");
+						String cui = cuis[0];
+						FSArray ontarrayNotDis = new FSArray(textView,1);
+						OntologyConcept oc = new OntologyConcept(textView);
+						oc.setCode(cui);
+						ontarrayNotDis.set(0, oc);
+						oc.addToIndexes(textView);
+						ontarrayNotDis.addToIndexes(textView);
+						if(ontarrayNotDis!=null) notdisease.setOntologyConceptArr(ontarrayNotDis);
+						notdisease.addToIndexes(textView);
+					}
+
 				}
-				FSArray ontarray = new FSArray(textView,cuis.length);
-				int k=0;
-				if(cuis.length==0) { cuis = new String[1]; cuis[0]="MISSED_CUI"; }
-				for(String cui : cuis) {
-					//System.out.println("Dealing with cui "+cui+" at k:"+k);
-					OntologyConcept oc = new OntologyConcept(textView);
-					oc.setCode(cui);
-					ontarray.set(k, oc);
-					oc.addToIndexes(textView);
-					k++;
-				}
-				ontarray.addToIndexes(textView);
-				if(ontarray!=null) annotated.setOntologyConceptArr(ontarray);
-				annotated.addToIndexes(textView);
-				uimaDiseaseDict.remove(span_fields[1]);
-				brat_annotated_count++;
 			}
 		}
 		unannotated_count=uimaDiseaseDict.size();

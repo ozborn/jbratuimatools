@@ -155,14 +155,16 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				dba.setDiscontinousText(text);
 				if(!tabfields[0].startsWith("Disease")) { 
 					uimaNotDiseaseDict.put(key, dba);
+					dba.addToIndexes(textView);
 				} else { uimaDiseaseDict.put(key,dba); }
 			}
 		}
 		brat_cuiless_count=uimaDiseaseDict.size();
 		System.out.println(docname+" has uimaDiseaseDict size of "+
 				uimaDiseaseDict.size()+" and non-disease size of:"+uimaNotDiseaseDict.size()); //T15 is in there, T44, T13
+		System.out.println(docname+" uimaDiseaseDict entities:"+uimaDiseaseDict.keySet());
+		System.out.println(docname+" NonDiseaseEntities:"+uimaNotDiseaseDict.keySet());
 
-		int last_pre_existing_disease_start = 0; //-1 indicates no more pre-existing diseases
 		for(String key : bratKeyDict.keySet()){
 			if(key.startsWith("R")){
 				BinaryTextRelation btr = new BinaryTextRelation(textView);
@@ -172,13 +174,37 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				btr.setCategory(reltype);
 				//if(reltype.indexOf(BratConstants.NER_TYPE.BODYLOCATION.getName())!=-1) {
 				RelationArgument one = new RelationArgument(textView);
-				one.setArgument(uimaDiseaseDict.get(span_fields[2]));
+				DiscontinousBratAnnotation diseaseSubject = uimaDiseaseDict.get(span_fields[2]);
+				one.setArgument(diseaseSubject);
 				btr.setArg1(one);
 				RelationArgument two = new RelationArgument(textView);
-				two.setArgument(uimaDiseaseDict.get(span_fields[4]));
+				//Nondisease arguement (for this specific use case, should generalize)
+				String notDisEntKey = span_fields[4];
+				DiscontinousBratAnnotation diseaseObject = uimaNotDiseaseDict.get(notDisEntKey);
+				two.setArgument(diseaseObject);
 				btr.setArg2(two);
+				if(diseaseObject.getTypeID()==bratconfig.getIdFromType("Negation")) {
+					diseaseSubject.setPolarity(1);
+					addCui2DiscontinousBratAnnotation(textView, diseaseObject,"C0205160");
+				} else if(diseaseObject.getTypeID()==bratconfig.getIdFromType("Uncertainity")) {
+					diseaseSubject.setUncertainty(1);
+					addCui2DiscontinousBratAnnotation(textView, diseaseObject,"C0087130");
+				} else if(diseaseObject.getTypeID()==bratconfig.getIdFromType("Conditional")) {
+					diseaseSubject.setConditional(true);	
+					addCui2DiscontinousBratAnnotation(textView, diseaseObject,"C0278254");
+				} else if(diseaseObject.getTypeID()==bratconfig.getIdFromType("Generic")) {
+					diseaseSubject.setGeneric(true);	
+					addCui2DiscontinousBratAnnotation(textView, diseaseObject,"C0277545");
+				}
 				btr.addToIndexes(textView);
-			} else if(key.trim().startsWith("T")) { 
+			} 
+		}
+
+
+		//Determine if we have an annatator added Disease Annotation
+		int last_pre_existing_disease_start = 0; //-1 indicates no more pre-existing diseases
+		for(String key : bratKeyDict.keySet()){
+			if(key.trim().startsWith("T")) { 
 				//Check to identify novel annotated stuff
 				DiscontinousBratAnnotation dis = uimaDiseaseDict.get(key.trim());
 				int cur = Integer.parseInt(bratKeyDict.get(key).split("\t")[0].split(" ")[1]);
@@ -195,7 +221,12 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 						this.getContext().getLogger().log(Level.FINE,"Detected novel disease:"+dis.getId());
 					}
 				}
-			} else if(key.startsWith("#")) {
+			}
+		}
+
+
+		for(String key : bratKeyDict.keySet()){
+			if(key.startsWith("#")) {
 				String[] tabfields = bratKeyDict.get(key).split("\t");
 				String[] span_fields = tabfields[0].split(" ");
 				//Retrieve Entity
@@ -234,8 +265,9 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					uimaDiseaseDict.remove(span_fields[1]);
 					brat_annotated_count++;
 				} else {
-					DiscontinousBratAnnotation notdisease = uimaNotDiseaseDict.get(span_fields[1]);
-					//Pull in pre-populated annotations of non-disease stuff
+					DiscontinousBratAnnotation notdisease = uimaNotDiseaseDict.get(key);
+					//Pull in pre-populated annotations of bodylocation, severity and course
+					// and subject (FIXME - can not find)
 					if(notdisease!=null) {
 						String[] cuis = tabfields[1].split(":");
 						String cui = cuis[0];
@@ -246,12 +278,29 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 						oc.addToIndexes(textView);
 						ontarrayNotDis.addToIndexes(textView);
 						if(ontarrayNotDis!=null) notdisease.setOntologyConceptArr(ontarrayNotDis);
-						notdisease.addToIndexes(textView);
 					}
-
 				}
 			}
 		}
+
+
+		/** Set CUIs for non-annotated booleans negation, conditional, generic and
+		 * Uncertainty
+		 */
+		/*
+		for(String key : bratKeyDict.keySet()){
+			if(key.trim().startsWith("T")) { 
+				DiscontinousBratAnnotation notdisease = uimaNotDiseaseDict.get(key);
+				//Pull in pre-populated annotations of non-disease stuff
+				if(notdisease!=null) {
+					if(notdisease.getTypeID()==bratconfig.getIdFromType("")) {
+					}
+				}
+			}
+		}
+		*/
+
+
 		unannotated_count=uimaDiseaseDict.size();
 		if(unannotated_count>0) {
 			for(String s : uimaDiseaseDict.keySet()) {
@@ -265,6 +314,16 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				brat_annotated_count, unannotated_count, extra_annotations,
 				help_cui_count, docname, annotator_name, unannotated_summary,
 				extra_summary,help_summary,datasetname);
+	}
+
+	private void addCui2DiscontinousBratAnnotation(JCas textView, 
+			DiscontinousBratAnnotation diseaseSubject, String cui) {
+		FSArray ontarray = new FSArray(textView,1);
+		OntologyConcept oc = new OntologyConcept(textView);
+		oc.setCode(cui);
+		oc.addToIndexes(textView);
+		ontarray.addToIndexes(textView);
+		if(ontarray!=null) diseaseSubject.setOntologyConceptArr(ontarray);
 	}
 
 	private int getSemEvalCUIlessCount(JCas jcas, int semeval_cuiless_count,

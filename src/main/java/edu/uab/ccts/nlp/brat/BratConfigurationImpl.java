@@ -15,6 +15,9 @@ public class BratConfigurationImpl implements BratConfiguration {
 
 	Hashtable<String,BratEntity> entities = new Hashtable<String,BratEntity>();
 	Hashtable<String,BratRelation> relations = new Hashtable<String,BratRelation>();
+	
+	//Key is entity name, value is the integer assigned to that type
+	Hashtable<String,Integer> typeMap = new Hashtable<String,Integer>();
 
 	public enum Mode { ENTITIES ("[entities]"),
 				RELATIONS ("[relations]"),
@@ -30,6 +33,9 @@ public class BratConfigurationImpl implements BratConfiguration {
 	/**
 	 * Creates our brat configuration by parsing the annotation.conf file
 	 * TODO Add support for something other than relations and entities
+	 * EntityID is assigned based not on a standard ontology (there is none)
+	 * but the order in which types are found in the .conf file. For example,
+	 * negation may be 3, condition 4, etc...
 	 * @param config_file_text
 	 * @throws ResourceInitializationException
 	 */
@@ -55,6 +61,7 @@ public class BratConfigurationImpl implements BratConfiguration {
 		        	if(curmode==null) continue;
 		        	if(curmode == Mode.ENTITIES) {
 		        		if(!BratEntityImpl.isParseableEntity(line)) continue; 
+		        		typeMap.put(line.trim(), entity_count);
 		        		BratEntityImpl bei = new BratEntityImpl(line.trim(),entity_count++);
 		        		entities.put(line.trim(), bei);
 	        			int depth = line.length() - line.replace("\t","").length();
@@ -107,5 +114,8 @@ public class BratConfigurationImpl implements BratConfiguration {
 	public BratRelation getRelationByName(String n){
 		return relations.get(n);
 	}
+	
+	
+	public int getIdFromType(String type) { return typeMap.get(type); }
 
 }

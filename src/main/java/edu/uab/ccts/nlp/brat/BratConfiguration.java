@@ -7,5 +7,6 @@ public interface BratConfiguration {
 	public Set<BratEntity> getEntities();
 	public Set<BratRelation> getRelations();
 	public BratEntity getEntityByName(String s);
+	public int getIdFromType(String type); 
 
 }

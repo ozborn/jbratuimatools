@@ -299,7 +299,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				}
 			}
 		}
-		*/
+		 */
 
 
 		unannotated_count=uimaDiseaseDict.size();
@@ -323,8 +323,9 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		OntologyConcept oc = new OntologyConcept(textView);
 		oc.setCode(cui);
 		oc.addToIndexes(textView);
+		ontarray.set(0, oc);
 		ontarray.addToIndexes(textView);
-		if(ontarray!=null) diseaseSubject.setOntologyConceptArr(ontarray);
+		diseaseSubject.setOntologyConceptArr(ontarray);
 	}
 
 	private int getSemEvalCUIlessCount(JCas jcas, int semeval_cuiless_count,

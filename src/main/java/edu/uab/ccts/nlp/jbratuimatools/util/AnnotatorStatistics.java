@@ -259,15 +259,21 @@ public class AnnotatorStatistics implements Serializable {
 			Collection<BinaryTextRelation> rels
 		) {
 		String related_cuis = null;
-		Integer entId = dba.getId();
-		System.out.println("Looking at entity:"+entId+" of type:"+dba.getTypeID());
+		System.out.println("Looking at entity:"+dba.getDiscontinousText()+" of type:"+dba.getTypeID());
 		for(BinaryTextRelation btr : rels) {
-			if(btr.getArg1().getId()==entId) {
-				Integer relatedEntId = btr.getArg1().getId();
-				System.out.println("Found relation to:"+relatedEntId+" with details "+btr.getArg2());
+			if(btr.getArg1().getArgument()==dba) {
+				DiscontinousBratAnnotation object = (DiscontinousBratAnnotation)btr.getArg2().getArgument();
+				System.out.println("Found relation to:"+object.getDiscontinousText()+" at "+object.getBegin());
+				FSArray oa = object.getOntologyConceptArr();
+				if(oa==null || oa.size()==0) {
+					System.err.println("Failed to find needed related ontology concept!");
+					continue;
+				}
+				if(related_cuis==null) related_cuis = object.getOntologyConceptArr(0).getCode();
+				else related_cuis += ","+object.getOntologyConceptArr(0).getCode();
+				System.out.println("Found relation to:"+object.getDiscontinousText()+" with code "+related_cuis);
 			}
 		}
-		
 		return related_cuis;
 	}
 

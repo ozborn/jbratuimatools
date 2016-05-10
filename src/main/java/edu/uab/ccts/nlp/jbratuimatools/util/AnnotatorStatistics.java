@@ -13,6 +13,8 @@ import com.google.common.collect.HashMultiset;
 import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 
+import edu.uab.ccts.nlp.brat.BratConfiguration;
+import edu.uab.ccts.nlp.brat.BratConfigurationImpl;
 import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.jbratuimatools.uima.annotator.BratParserAnnotator;
 import edu.uab.ccts.nlp.umls.tools.UMLSTools;
@@ -35,6 +37,7 @@ public class AnnotatorStatistics implements Serializable {
 
 	public static final String ALL_ANNOTATORS = "ALL_ANNOTATORS";
 	private static final long serialVersionUID = 1L;
+	BratConfiguration bratconfig = null;
 
 	//Contains key annotator name, value Hashtable with key discontinous
 	//text and value HashMultiset containing elements that are strings
@@ -134,25 +137,15 @@ public class AnnotatorStatistics implements Serializable {
 
 	public void add(Collection<DiscontinousBratAnnotation> dbas,
 			Collection<BinaryTextRelation> rels){
-		//Create a copy of dbas hashed on String
-		Hashtable<Integer,DiscontinousBratAnnotation> fasthash =
-		 new Hashtable<Integer,DiscontinousBratAnnotation>();
-		for(DiscontinousBratAnnotation dba : dbas) {
-			System.out.println("ADDING fasthash with id:"+dba.getId());
-			fasthash.put(dba.getId(), dba);
-		}
-		System.out.println("Our fasthash of size "+fasthash.size()+" looks like:"+fasthash.keySet());
-
 		
+		//Only add in Disease Annotations
 		for(DiscontinousBratAnnotation dba : dbas) {
-			//System.out.println("Processing "+dba.getDiscontinousText()+" from "+
-			//dba.getDocName()+"annotated by"+dba.getAnnotatorName());
-			FSArray ontarray = dba.getOntologyConceptArr();
+
+			if(dba.getTypeID()!=0) continue; //Only disease get processed
+			System.out.println("Processing ("+dba.getBegin()+"-"+dba.getEnd()+")"+dba.getDiscontinousText()+" from "+
+			dba.getDocName()+" annotated by "+dba.getAnnotatorName());
 			assert(dba.getDocName()!=null);
 			assert(dba.getAnnotatorName()!=null);
-			assert(ontarray!=null);
-			if(ontarray.size()>5) {System.out.println(ontarray.size()); }
-			assert(ontarray.size()<6);
 			assert(dba.getDocName().length()>4);
 			String annotator_name = dba.getAnnotatorName();
 			String text_key = dba.getDiscontinousText();
@@ -166,7 +159,7 @@ public class AnnotatorStatistics implements Serializable {
 			map_type_hash.put(dba.getDocName()+"T"+dba.getId(), allcuis);
 			text_type_hash.put(annotator_name+":"+dba.getDocName()+":T"+dba.getId(),text_key);
 			buildExactResults(dba,allcuis);
-			String relatedcuis = getRelatedCUIs(dba,rels,fasthash);
+			String relatedcuis = getRelatedCUIs(dba,rels);
 			buildRelatedResults(dba,allcuis,relatedcuis);
 		}
 	}
@@ -263,8 +256,7 @@ public class AnnotatorStatistics implements Serializable {
 	
 	
 	public static String getRelatedCUIs(DiscontinousBratAnnotation dba,
-			Collection<BinaryTextRelation> rels,
-			Hashtable<Integer,DiscontinousBratAnnotation> fast
+			Collection<BinaryTextRelation> rels
 		) {
 		String related_cuis = null;
 		Integer entId = dba.getId();
@@ -272,7 +264,7 @@ public class AnnotatorStatistics implements Serializable {
 		for(BinaryTextRelation btr : rels) {
 			if(btr.getArg1().getId()==entId) {
 				Integer relatedEntId = btr.getArg1().getId();
-				System.out.println("Found relation to:"+relatedEntId+" of type "+(fast.get(relatedEntId)).getTypeID());
+				System.out.println("Found relation to:"+relatedEntId+" with details "+btr.getArg2());
 			}
 		}
 		

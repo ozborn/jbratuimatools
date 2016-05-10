@@ -191,6 +191,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					addCui2DiscontinousBratAnnotation(textView, diseaseObject,"C0087130");
 				} else if(diseaseObject.getTypeID()==bratconfig.getIdFromType("Conditional")) {
 					diseaseSubject.setConditional(true);	
+					System.out.println("Added conditional to disease object");
 					addCui2DiscontinousBratAnnotation(textView, diseaseObject,"C0278254");
 				} else if(diseaseObject.getTypeID()==bratconfig.getIdFromType("Generic")) {
 					diseaseSubject.setGeneric(true);	
@@ -231,8 +232,8 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				String[] span_fields = tabfields[0].split(" ");
 				//Retrieve Entity
 				DiscontinousBratAnnotation annotated = uimaDiseaseDict.get(span_fields[1]);
+				DiscontinousBratAnnotation notdisease = uimaNotDiseaseDict.get(span_fields[1]);
 				if(annotated==null) {
-					DiscontinousBratAnnotation notdisease = uimaNotDiseaseDict.get(span_fields[1]);
 					if(notdisease==null) {
 						extra_summary+="EXTRA-"+span_fields[1]; //Indicates annotated non-T (relationship) concept
 						extra_annotations++;
@@ -265,7 +266,6 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					uimaDiseaseDict.remove(span_fields[1]);
 					brat_annotated_count++;
 				} else {
-					DiscontinousBratAnnotation notdisease = uimaNotDiseaseDict.get(key);
 					//Pull in pre-populated annotations of bodylocation, severity and course
 					// and subject (FIXME - can not find)
 					if(notdisease!=null) {
@@ -274,6 +274,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 						FSArray ontarrayNotDis = new FSArray(textView,1);
 						OntologyConcept oc = new OntologyConcept(textView);
 						oc.setCode(cui);
+						System.out.println("Adding prepoated ontology concept "+cui+" from "+notdisease.getDiscontinousText());
 						ontarrayNotDis.set(0, oc);
 						oc.addToIndexes(textView);
 						ontarrayNotDis.addToIndexes(textView);

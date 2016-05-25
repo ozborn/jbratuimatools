@@ -1,10 +1,14 @@
 package edu.uab.ccts.nlp.jbratuimatools.util;
 
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TreeSet;
@@ -177,9 +181,20 @@ public class AnnotatorStatistics implements Serializable {
 		if(docid_hash==null) docid_hash = new Hashtable<String,Hashtable<String,String>>();
 		Hashtable<String,String> entid_hash = docid_hash.get(dba.getDocName());
 		if(entid_hash==null) entid_hash = new Hashtable<String,String>();
-		String mergedstring = allcuis;
-		if(related_cuis!=null) mergedstring=mergedstring+","+related_cuis;
-		entid_hash.put("T"+dba.getId(), mergedstring);
+		StringBuilder mergedstring = new StringBuilder();
+		HashSet<String> nodupsDisease = new HashSet<String>(Arrays.asList(allcuis.split(",")));
+		if(related_cuis!=null) {
+			HashSet<String> nodupsNotDisease = new HashSet<String>(Arrays.asList(related_cuis.split(",")));
+			nodupsDisease.addAll(nodupsNotDisease);
+		}
+		List<String> mergedList = new ArrayList<String>(nodupsDisease);
+		Collections.sort(mergedList);
+		for(int i=0;i<mergedList.size();i++){ 
+			if(i==mergedList.size()-1) {
+				mergedstring.append(mergedList.get(i)); 
+			} else { mergedstring.append(mergedList.get(i)); mergedstring.append(","); }
+		}
+		entid_hash.put("T"+dba.getId(), mergedstring.toString());
 		docid_hash.put(dba.getDocName(), entid_hash);
 		related_cui_results.put(dba.getAnnotatorName(), docid_hash);
 	}

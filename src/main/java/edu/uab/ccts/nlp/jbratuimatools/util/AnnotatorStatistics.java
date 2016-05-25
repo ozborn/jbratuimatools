@@ -14,7 +14,6 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 
 import edu.uab.ccts.nlp.brat.BratConfiguration;
-import edu.uab.ccts.nlp.brat.BratConfigurationImpl;
 import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.jbratuimatools.uima.annotator.BratParserAnnotator;
 import edu.uab.ccts.nlp.umls.tools.UMLSTools;
@@ -142,7 +141,7 @@ public class AnnotatorStatistics implements Serializable {
 		for(DiscontinousBratAnnotation dba : dbas) {
 
 			if(dba.getTypeID()!=0) continue; //Only disease get processed
-			System.out.println("Processing ("+dba.getBegin()+"-"+dba.getEnd()+")"+dba.getDiscontinousText()+" from "+
+			System.out.print("Processing ("+dba.getBegin()+"-"+dba.getEnd()+")"+dba.getDiscontinousText()+" from "+
 			dba.getDocName()+" annotated by "+dba.getAnnotatorName());
 			assert(dba.getDocName()!=null);
 			assert(dba.getAnnotatorName()!=null);
@@ -155,6 +154,8 @@ public class AnnotatorStatistics implements Serializable {
 				continue;
 			}
 			String allcuis = getCUIs(dba);
+			System.out.println("with allcuis of"+allcuis);
+			//Populate anno_results to track which mentions associate with which CUIs
 			buildAnnotationHash(annotator_name, text_key, allcuis,anno_results);
 			map_type_hash.put(dba.getDocName()+"T"+dba.getId(), allcuis);
 			text_type_hash.put(annotator_name+":"+dba.getDocName()+":T"+dba.getId(),text_key);
@@ -166,19 +167,21 @@ public class AnnotatorStatistics implements Serializable {
 
 	
 	/*
-	  Exact Results contains key annotator name, value Hashtable with
+	  Related Results contains key annotator name, value Hashtable with
 	  key document_id and value Hashtable with key entity 
-	  identifier (Txx) and value comma separated CUIs related to the disease
+	  identifier (Txx) and value comma separated CUIs related to the disease and all related CUIs
 	 */
 	private void buildRelatedResults(DiscontinousBratAnnotation dba, String allcuis,
 		String related_cuis){
-		Hashtable<String,Hashtable<String,String>> docid_hash = exact_results.get(dba.getAnnotatorName());
+		Hashtable<String,Hashtable<String,String>> docid_hash = related_cui_results.get(dba.getAnnotatorName());
 		if(docid_hash==null) docid_hash = new Hashtable<String,Hashtable<String,String>>();
 		Hashtable<String,String> entid_hash = docid_hash.get(dba.getDocName());
 		if(entid_hash==null) entid_hash = new Hashtable<String,String>();
-		entid_hash.put("T"+dba.getId(), allcuis+","+related_cuis);
+		String mergedstring = allcuis;
+		if(related_cuis!=null) mergedstring=mergedstring+","+related_cuis;
+		entid_hash.put("T"+dba.getId(), mergedstring);
 		docid_hash.put(dba.getDocName(), entid_hash);
-		exact_results.put(dba.getAnnotatorName(), docid_hash);
+		related_cui_results.put(dba.getAnnotatorName(), docid_hash);
 	}
 
 
@@ -196,12 +199,22 @@ public class AnnotatorStatistics implements Serializable {
 	}
 
 
+
+	/**
+	 * Construct annotation hash to track which mentions track with which CUIs 
+	 * @param annotator_name
+	 * @param text_key
+	 * @param allcuis
+	 * @param bighash
+			Contains key annotator name (or ALL_ANNOTATORS), value Hashtable with key discontinous
+			text and value HashMultiset containing elements that are strings
+			of ordered, comma separated CUIs
+	 */
 	private void buildAnnotationHash(String annotator_name, String text_key,
 			String allcuis, 
 			Hashtable<String,Hashtable<String,HashMultiset<String>>>  bighash){
 		Hashtable<String,HashMultiset<String>> alltexthash = 
 				bighash.get(ALL_ANNOTATORS); //Always there
-		//System.out.println("Words in alltexthash are:"+alltexthash.size());
 		Hashtable<String,HashMultiset<String>> dtexthash = 
 				bighash.get(annotator_name);
 		if(dtexthash==null) {
@@ -259,19 +272,19 @@ public class AnnotatorStatistics implements Serializable {
 			Collection<BinaryTextRelation> rels
 		) {
 		String related_cuis = null;
-		System.out.println("Looking at entity:"+dba.getDiscontinousText()+" of type:"+dba.getTypeID());
+		//System.out.println("Looking at entity:"+dba.getDiscontinousText()+" of type:"+dba.getTypeID());
 		for(BinaryTextRelation btr : rels) {
 			if(btr.getArg1().getArgument()==dba) {
 				DiscontinousBratAnnotation object = (DiscontinousBratAnnotation)btr.getArg2().getArgument();
-				System.out.println("Found relation to:"+object.getDiscontinousText()+" at "+object.getBegin());
+				//System.out.println("Found relation to:"+object.getDiscontinousText()+" at "+object.getBegin());
 				FSArray oa = object.getOntologyConceptArr();
 				if(oa==null || oa.size()==0) {
-					System.err.println("Failed to find needed related ontology concept!");
+					System.err.println("Failed to find needed related ontology concept in object :"+object.getDiscontinousText()+" at "+object.getBegin());
 					continue;
 				}
 				if(related_cuis==null) related_cuis = object.getOntologyConceptArr(0).getCode();
 				else related_cuis += ","+object.getOntologyConceptArr(0).getCode();
-				System.out.println("Found relation to:"+object.getDiscontinousText()+" with code "+related_cuis);
+				//System.out.println("Found relation to:"+object.getDiscontinousText()+" with code "+related_cuis);
 			}
 		}
 		return related_cuis;
@@ -440,20 +453,23 @@ public class AnnotatorStatistics implements Serializable {
 	 * Counts the agreements between annotators
 	 * @return
 	 */
-	public double calculateAgreement(){
+	public double calculateAgreement(boolean exact_agreement){
 		double agreements = 0.0, disagreements = 0.0;
-		Object[] annotators = exact_results.keySet().toArray();
-		System.out.println(annotators[0]+" first annotator"); System.out.flush();
+		Hashtable<String,Hashtable<String,Hashtable<String,String>>> theResults;
+		if(exact_agreement) theResults = exact_results; else theResults=related_cui_results;
+		Object[] annotators = theResults.keySet().toArray();
+		System.out.println("Reference annotator:"+annotators[0]); System.out.flush();
+
 		Hashtable<String,Hashtable<String,String>> reftable = 
-				exact_results.get(annotators[0]);
+				theResults.get(annotators[0]);
 		Set<String> refdocs = reftable.keySet();
 		for(String rdoc : refdocs){
 			//System.out.println("Looking at document:"+rdoc);
 			Hashtable<String,String> refents = reftable.get(rdoc);
 			Hashtable<String,String> testents = 
-					exact_results.get(annotators[1]).get(rdoc);
+					theResults.get(annotators[1]).get(rdoc);
 			if(testents==null) {
-				//System.out.println(annotators[1]+" did not complete "+rdoc);
+				System.err.println(annotators[1]+" did not complete "+rdoc);
 				continue;
 			}
 			//Iterate through each entity in the document
@@ -465,11 +481,11 @@ public class AnnotatorStatistics implements Serializable {
 				String testcuis = testents.get(refentity);
 				if(refcuis==null && testcuis==null) continue;
 				if(refcuis!=null && testcuis==null) {
-					System.out.println(annotators[1]+" has null value for "+refentity);
+					System.err.println(annotators[1]+" has null value for "+refentity+" in "+rdoc);
 					continue;
 				}
 				if(refcuis==null && testcuis!=null) {
-					System.out.println(annotators[0]+" has null value for "+refentity);
+					System.err.println(annotators[0]+" has null value for "+refentity+" in "+rdoc);
 					continue;
 				}
 
@@ -481,13 +497,23 @@ public class AnnotatorStatistics implements Serializable {
 					disagreements++;
 					String typekey = annotators[0]+":"+rdoc+":"+refentity;
 					String distext = text_type_hash.get(typekey);
-					System.out.println("DISAGREE\t"+rdoc+"\t"+refentity+"\t"+distext+"\t"
-							+refcuis+"\t"+refnames+"\t"+testcuis+"\t"+testnames);
+					System.out.println("DISAGREE\t"+rdoc+"\t"+distext+"\t"+refentity+"\t"
+							+annotators[0]+"\t"+refcuis+"\t"+refnames+"\t"+
+							annotators[1]+"\t"+testcuis+"\t"+testnames);
 				}
 			}
 		}
 		System.out.println(disagreements+" disagreements");
 		return agreements/(agreements+disagreements);
+	}
+	
+	
+	
+	private String getDisagreementType(String refcuis, String testcuis) {
+		String disagreeType="DISAGREE";
+		
+		return disagreeType;
+		
 	}
 
 	/**

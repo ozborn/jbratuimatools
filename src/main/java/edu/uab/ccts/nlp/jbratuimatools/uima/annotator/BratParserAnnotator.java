@@ -274,7 +274,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 						FSArray ontarrayNotDis = new FSArray(textView,1);
 						OntologyConcept oc = new OntologyConcept(textView);
 						oc.setCode(cui);
-						System.out.println("Adding prepoated ontology concept "+cui+" from "+notdisease.getDiscontinousText());
+						System.out.println("Adding prepopulated ontology concept "+cui+" from "+notdisease.getDiscontinousText());
 						ontarrayNotDis.set(0, oc);
 						oc.addToIndexes(textView);
 						ontarrayNotDis.addToIndexes(textView);

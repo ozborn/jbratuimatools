@@ -6,13 +6,13 @@ import java.util.Hashtable;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
-import org.apache.uima.UIMAException;
 import org.apache.uima.collection.CollectionReaderDescription;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
-import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uimafit.factory.AggregateBuilder;
 
 import com.google.common.collect.HashMultiset;
@@ -24,8 +24,15 @@ import edu.uab.ccts.nlp.jbratuimatools.uima.annotator.BratParserAnnotator;
 import edu.uab.ccts.nlp.jbratuimatools.util.AnnotatorStatistics;
 import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCreatorAnnotator;
 
-
+/**
+ * This should check for missing annotations in both the train and devel/testing
+ * data sets.
+ * @author ozborn
+ *
+ */
 public class CheckMissingPipelineClient {
+
+	private static final Logger LOG  = LoggerFactory.getLogger(CheckMissingPipelineClient.class);
 	static boolean isTraining = true;
 
 	static String brat_annotation_root = ClientConfiguration.cuilessDataDirPath + "devel/devel_updated_v2/";
@@ -35,15 +42,24 @@ public class CheckMissingPipelineClient {
 
 	public static void main(String... args)
 	{
-		if(isTraining) {
-			System.out.println("Checking missing data in training data set");
-			brat_annotation_root = ClientConfiguration.cuilessDataDirPath + "training_clean/";
-		} 
-		System.out.println(brat_annotation_root); System.out.flush();
+		if(args.length!=1) {
+			LOG.warn("Provide argument train/devl to indicate where to check for missing annotations");
+			System.exit(0);
+		} else {
+			if(args[0].equalsIgnoreCase("train")) {
+				LOG.info("Checking missing data in training data set");
+				brat_annotation_root = ClientConfiguration.cuilessDataDirPath + "training_clean/";
+			} else {
+				isTraining=false;
+				brat_annotation_root = ClientConfiguration.cuilessDataDirPath + "devel/consensus/";
+			}
+
+		}
+		LOG.info(brat_annotation_root);
 
 		Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
 				BratConstants.bratExtensions, true);
-		System.out.println("Got "+inputFiles.size()+" brat input files for check missing pipeline...");
+		LOG.info("Got "+inputFiles.size()+" brat input files for check missing pipeline...");
 		apply(inputFiles);
 
 	}
@@ -57,8 +73,6 @@ public class CheckMissingPipelineClient {
 					BRATCollectionReader.PARAM_FILES,
 					files
 					);
-
-
 
 
 			AggregateBuilder builder = new AggregateBuilder();
@@ -77,18 +91,10 @@ public class CheckMissingPipelineClient {
 			}
 			annotatorstats.print();
 			annotatorstats.printSemanticTypeDistribution();
-
-
 			//SimplePipeline.runPipeline(reader, builder.createAggregate());
-		} catch (ResourceInitializationException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		} catch (UIMAException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}	
 	}
 }

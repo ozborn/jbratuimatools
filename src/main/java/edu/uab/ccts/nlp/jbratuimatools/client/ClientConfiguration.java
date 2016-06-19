@@ -1,13 +1,19 @@
 package edu.uab.ccts.nlp.jbratuimatools.client;
 
 /**
- * TODO - make static variables private non-static variables
  * @author ozborn
  *
  */
 public class ClientConfiguration {
 
 	static String cuilessDataDirPath = System.getProperty("user.home")+"/code/repo/cuilessdata/";
+	static String dropboxPublicDataPath = System.getProperty("user.home")+"/Dropbox/Public_NLP_Data/";
+	private static String semeval2015OldTrainRoot = getDropboxPublicDataPath()+
+			"semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
+	private static String semeval2015UpdatedTrainRoot = getDropboxPublicDataPath()+
+			"semeval-2015-task-14_updated/data/train";
+	
+	
 	public static String getCuilessDataDirPath() {
 		return cuilessDataDirPath;
 	}
@@ -15,17 +21,13 @@ public class ClientConfiguration {
 		ClientConfiguration.cuilessDataDirPath = cuilessDataDirPath;
 	}
 	
-	static String dropboxPublicDataPath = System.getProperty("user.home")+"/Dropbox/Public_NLP_Data/";
 	public static String getDropboxPublicDataPath() {
 		return dropboxPublicDataPath;
 	}
 	public static void setDropboxPublicDataPath(String dropboxPublicDataPath) {
 		ClientConfiguration.dropboxPublicDataPath = dropboxPublicDataPath;
 	}
-
 	
-	private static String semeval2015OldTrainRoot = getDropboxPublicDataPath()+
-			"semeval-2015-task-14_old/semeval-2015-task-14/subtask-c/data/train";
 	public static String getSemeval2015OldTrainRoot() {
 		return semeval2015OldTrainRoot;
 	}
@@ -33,8 +35,6 @@ public class ClientConfiguration {
 		ClientConfiguration.semeval2015OldTrainRoot = semeval2015_old_train_root;
 	}
 
-	private static String semeval2015UpdatedTrainRoot = getDropboxPublicDataPath()+
-			"semeval-2015-task-14_updated/data/train";
 	static String getSemeval2015UpdatedTrainRoot() {
 		return semeval2015UpdatedTrainRoot;
 	}

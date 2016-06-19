@@ -23,29 +23,50 @@ import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCr
 
 
 /**
- * Checking for discrepancies, still using old data
+ * Checking for discrepancies, still using old data (FIXME to work for devel which is new format)
  * @author ozborn
  *
  */
 public class CheckDiscrepancyClient {
 
-	static String semeval2015_updated_train_root, semeval2015_old_train_root, semeval_dir_root,brat_annotation_root;
+	static String semeval2015_updated_train_root, semeval2015_old_train_root;
+	
+	static String semeval_dir_root,brat_annotation_root;
+	static String datasetType="train";
 
 
+	/**
+	 * 
+	 * @param args train|devel(train) cuilessdatadirpath(user.home/code/repo/cuilessdata) dropboxpublicdatapath 
+	 */
 	public static void main(String... args)
 	{
 		brat_annotation_root = ClientConfiguration.getCuilessDataDirPath() + "training_clean/";
-		semeval_dir_root = ClientConfiguration.getSemeval2015OldTrainRoot();
+		if(args.length>0){
+			if(args[0].equals("train")) {
+				brat_annotation_root+="training_clean/";
+				semeval_dir_root = ClientConfiguration.getSemeval2015OldTrainRoot(); //FIXME if time, update to new
+			} else {
+				brat_annotation_root="devel/consensus/";
+				datasetType="devel";
+				semeval_dir_root = ClientConfiguration.getSemeval2015UpdatedDevelRoot();
+			}
+			
+			
+		}
 		System.out.println("Using:\n Brat Annotation Root Directory:"+brat_annotation_root+
-				"\nSemeval Input Root Directory:"+semeval_dir_root); System.out.flush();
-				if(args.length>0) {
+		"\nSemeval Input Root Directory:"+semeval_dir_root); System.out.flush();
+		
+		/*
+				if(args.length>1) {
 					ClientConfiguration.setCuilessDataDirPath(args[0]);
 					System.out.println("Set resourceDirPath to:"+ClientConfiguration.cuilessDataDirPath);
-					if(args.length>1) {
+					if(args.length>2) {
 						ClientConfiguration.setDropboxPublicDataPath(args[1]);
 						System.out.println("Set dropboxPublicDataPath to:"+ClientConfiguration.getDropboxPublicDataPath());
 					}
 				}
+		*/
 				Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
 						BratConstants.bratExtensions, true);
 				//System.out.println("Got "+inputFiles.size()+" input files for check missing pipeline...");

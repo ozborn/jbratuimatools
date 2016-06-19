@@ -43,17 +43,17 @@ public class CheckMissingPipelineClient {
 	public static void main(String... args)
 	{
 		if(args.length!=1) {
-			LOG.warn("Provide argument train/devl to indicate where to check for missing annotations");
+			LOG.warn("Provide argument to cuiless data path offset  to indicate where to check for missing annotations");
+			System.err.println("data directory offset to analyze, ex) devel/neumb|devel/mdanila|training_clean");
 			System.exit(0);
 		} else {
-			if(args[0].equalsIgnoreCase("train")) {
+			if(args[0].toLowerCase().indexOf("train")!=-1) {
 				LOG.info("Checking missing data in training data set");
-				brat_annotation_root = ClientConfiguration.cuilessDataDirPath + "training_clean/";
 			} else {
 				isTraining=false;
-				brat_annotation_root = ClientConfiguration.cuilessDataDirPath + "devel/mdanila/";
 			}
 		}
+		brat_annotation_root = ClientConfiguration.cuilessDataDirPath + args[0];
 		LOG.info("Checking for missing annotations in:"+brat_annotation_root);
 
 		Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),

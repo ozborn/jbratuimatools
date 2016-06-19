@@ -176,6 +176,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				//if(reltype.indexOf(BratConstants.NER_TYPE.BODYLOCATION.getName())!=-1) {
 				RelationArgument one = new RelationArgument(textView);
 				DiscontinousBratAnnotation diseaseSubject = uimaDiseaseDict.get(span_fields[2]);
+				if(diseaseSubject==null) LOG.error("Null disease from "+btr);
 				one.setArgument(diseaseSubject);
 				btr.setArg1(one);
 				RelationArgument two = new RelationArgument(textView);

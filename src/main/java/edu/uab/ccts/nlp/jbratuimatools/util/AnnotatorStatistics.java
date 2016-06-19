@@ -32,12 +32,15 @@ import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.cleartk.util.ViewUriUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import brat.type.DiscontinousBratAnnotation;
 
 
 public class AnnotatorStatistics implements Serializable {
 
+	private static final Logger LOG  = LoggerFactory.getLogger(AnnotatorStatistics.class);
 	public static final String ALL_ANNOTATORS = "ALL_ANNOTATORS";
 	private static final long serialVersionUID = 1L;
 	BratConfiguration bratconfig = null;
@@ -145,8 +148,8 @@ public class AnnotatorStatistics implements Serializable {
 		for(DiscontinousBratAnnotation dba : dbas) {
 
 			if(dba.getTypeID()!=0) continue; //Only disease get processed
-			System.out.print("Processing ("+dba.getBegin()+"-"+dba.getEnd()+")"+dba.getDiscontinousText()+" from "+
-			dba.getDocName()+" annotated by "+dba.getAnnotatorName());
+			//System.out.print("Processing ("+dba.getBegin()+"-"+dba.getEnd()+")"+dba.getDiscontinousText()+" from "+
+			//dba.getDocName()+" annotated by "+dba.getAnnotatorName()+" ");
 			assert(dba.getDocName()!=null);
 			assert(dba.getAnnotatorName()!=null);
 			assert(dba.getDocName().length()>4);
@@ -158,7 +161,7 @@ public class AnnotatorStatistics implements Serializable {
 				continue;
 			}
 			String allcuis = getCUIs(dba);
-			System.out.println("with allcuis of"+allcuis);
+			//System.out.println("with allcuis of"+allcuis);
 			//Populate anno_results to track which mentions associate with which CUIs
 			buildAnnotationHash(annotator_name, text_key, allcuis,anno_results);
 			map_type_hash.put(dba.getDocName()+"T"+dba.getId(), allcuis);
@@ -294,7 +297,7 @@ public class AnnotatorStatistics implements Serializable {
 				//System.out.println("Found relation to:"+object.getDiscontinousText()+" at "+object.getBegin());
 				FSArray oa = object.getOntologyConceptArr();
 				if(oa==null || oa.size()==0) {
-					System.err.println("Failed to find needed related ontology concept in object :"+object.getDiscontinousText()+" at "+object.getBegin());
+					LOG.warn("Failed to find needed related ontology concept in object :"+object.getDiscontinousText()+" at "+object.getBegin());
 					continue;
 				}
 				if(related_cuis==null) related_cuis = object.getOntologyConceptArr(0).getCode();

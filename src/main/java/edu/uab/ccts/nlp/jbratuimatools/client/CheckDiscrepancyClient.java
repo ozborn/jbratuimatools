@@ -30,7 +30,6 @@ import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCr
 public class CheckDiscrepancyClient {
 
 	static String semeval2015_updated_train_root, semeval2015_old_train_root;
-	
 	static String semeval_dir_root,brat_annotation_root;
 	static String datasetType="train";
 

@@ -51,11 +51,10 @@ public class CheckMissingPipelineClient {
 				brat_annotation_root = ClientConfiguration.cuilessDataDirPath + "training_clean/";
 			} else {
 				isTraining=false;
-				brat_annotation_root = ClientConfiguration.cuilessDataDirPath + "devel/consensus/";
+				brat_annotation_root = ClientConfiguration.cuilessDataDirPath + "devel/mdanila/";
 			}
-
 		}
-		LOG.info(brat_annotation_root);
+		LOG.info("Checking for missing annotations in:"+brat_annotation_root);
 
 		Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
 				BratConstants.bratExtensions, true);
@@ -76,7 +75,11 @@ public class CheckMissingPipelineClient {
 
 
 			AggregateBuilder builder = new AggregateBuilder();
-			builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015OldTrainRoot()));
+			if(isTraining) {
+				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015OldTrainRoot()));
+			} else {
+				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015UpdatedDevelRoot()));
+			}
 			builder.add(BratParserAnnotator.getDescription());
 
 			AnnotatorStatistics annotatorstats = new AnnotatorStatistics();
@@ -93,7 +96,6 @@ public class CheckMissingPipelineClient {
 			annotatorstats.printSemanticTypeDistribution();
 			//SimplePipeline.runPipeline(reader, builder.createAggregate());
 		} catch (Exception e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}	
 	}

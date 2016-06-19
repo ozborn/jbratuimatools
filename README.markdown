@@ -16,3 +16,7 @@ mvn install:install-file -Dfile=/home/ozborn/Downloads/ojdbc7.jar -DgroupId=com.
 ECLIPSE INSTALL AND BUILD
 -Add target/generated-sources/jcasgen to the source directory if doing a java build
 -did not need to do last build
+
+TODO
+-Standardize on logging, maybe include Logger.properties for Uima Logging
+-Cleanup/Take action on log warnings for things like: "Failed to find needed related ontology concept in object :extra-axial at 1867"

@@ -11,6 +11,7 @@ import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
+import org.cleartk.util.ViewUriUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.uimafit.factory.AggregateBuilder;
@@ -86,11 +87,12 @@ public class CheckMissingPipelineClient {
 			for (JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))
 			{
 				JCas annView = jcas.getView(BratConstants.TEXT_VIEW);
+				String filepath = ViewUriUtil.getURI(annView).toString();
 				Collection<DiscontinousBratAnnotation> brats = JCasUtil.select(annView, DiscontinousBratAnnotation.class);
 				//String[] pathbits = (ViewUriUtil.getURI(annView)).toString().split(File.separator);
 				//System.out.println("Got "+brats.size()+" brat annotations for "+pathbits[pathbits.length-1]);
 				Collection<BinaryTextRelation> rels = JCasUtil.select(annView, BinaryTextRelation.class);
-				annotatorstats.add(brats,rels); 
+				annotatorstats.add(brats,rels,filepath); 
 			}
 			annotatorstats.print();
 			annotatorstats.printSemanticTypeDistribution();

@@ -58,6 +58,7 @@ public class AnnotatorStatistics implements Serializable {
 	= new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
 	static Hashtable<String,Hashtable<String,Hashtable<String,String>>> related_cui_results
 	= new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
+	private static Hashtable<String,String> datasetHash = new Hashtable<String,String>();//Key filename, String dataset
 
 	public Hashtable<String, Hashtable<String, HashMultiset<String>>> getAnnotatorStats() {
 		return anno_results;
@@ -142,11 +143,12 @@ public class AnnotatorStatistics implements Serializable {
 
 
 	public void add(Collection<DiscontinousBratAnnotation> dbas,
-			Collection<BinaryTextRelation> rels){
+			Collection<BinaryTextRelation> rels, String filepath){
 		
 		//Only add in Disease Annotations
 		for(DiscontinousBratAnnotation dba : dbas) {
 
+			datasetHash.put(dba.getDocName(), filepath);
 			if(dba.getTypeID()!=0) continue; //Only disease get processed
 			//System.out.print("Processing ("+dba.getBegin()+"-"+dba.getEnd()+")"+dba.getDiscontinousText()+" from "+
 			//dba.getDocName()+" annotated by "+dba.getAnnotatorName()+" ");
@@ -515,7 +517,8 @@ public class AnnotatorStatistics implements Serializable {
 					disagreements++;
 					String typekey = annotators[0]+":"+rdoc+":"+refentity;
 					String distext = text_type_hash.get(typekey);
-					System.out.println("DISAGREE\t"+rdoc+"\t"+distext+"\t"+refentity+"\t"
+					String filepath = datasetHash.get(rdoc);
+					System.out.println("DISAGREE\t"+filepath+"\t"+rdoc+"\t"+distext+"\t"+refentity+"\t"
 							+annotators[0]+"\t"+refcuis+"\t"+refnames+"\t"+
 							annotators[1]+"\t"+testcuis+"\t"+testnames);
 				}

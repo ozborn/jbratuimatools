@@ -12,6 +12,7 @@ import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.cleartk.util.ViewUriUtil;
 import org.uimafit.factory.AggregateBuilder;
 
 import brat.type.DiscontinousBratAnnotation;
@@ -92,9 +93,10 @@ public class CheckDiscrepancyClient {
 			for (JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))
 			{
 				JCas annView = jcas.getView(BratConstants.TEXT_VIEW);
+				String filepath = ViewUriUtil.getURI(annView).toString();
 				Collection<DiscontinousBratAnnotation> brats = JCasUtil.select(annView, DiscontinousBratAnnotation.class);
 				Collection<BinaryTextRelation> rels = JCasUtil.select(annView, BinaryTextRelation.class);
-				annotatorstats.add(brats,rels); 
+				annotatorstats.add(brats,rels,filepath); 
 			}
 			annotatorstats.print(annotatorstats.getAnnotatorStats());
 			System.out.println("Annotator stats:"+annotatorstats.getAnnotatorStats());

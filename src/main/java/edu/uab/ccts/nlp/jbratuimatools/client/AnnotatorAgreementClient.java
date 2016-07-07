@@ -85,7 +85,7 @@ public class AnnotatorAgreementClient {
 			Collection<BinaryTextRelation> rels = JCasUtil.select(annView, BinaryTextRelation.class);
 			annotatorstats.add(brats,rels,filepath); 
 		}
-		annotatorstats.print(annotatorstats.getAnnotatorStats());
+		annotatorstats.print();
 		System.out.println("Annotator stats:"+annotatorstats.getAnnotatorStats());
 		System.out.println(annotatorstats.calculateAgreement(true)+" exact annotator agreement");
 		System.out.println(annotatorstats.calculateAgreement(false)+" related annotator agreement");

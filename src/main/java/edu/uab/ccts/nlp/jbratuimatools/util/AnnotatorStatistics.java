@@ -311,12 +311,8 @@ public class AnnotatorStatistics implements Serializable {
 	}
 
 
-	public void print(Hashtable<String,Hashtable<String,HashMultiset<String>>> ghash){
-		printGlobalTypeCounts(map_type_hash);
-	}
-
 	public void print(){
-		print(anno_results);
+		printGlobalTypeCounts(map_type_hash);
 	}
 
 

@@ -98,7 +98,7 @@ public class CheckDiscrepancyClient {
 				Collection<BinaryTextRelation> rels = JCasUtil.select(annView, BinaryTextRelation.class);
 				annotatorstats.add(brats,rels,filepath); 
 			}
-			annotatorstats.print(annotatorstats.getAnnotatorStats());
+			annotatorstats.print();
 			System.out.println("Annotator stats:"+annotatorstats.getAnnotatorStats());
 			System.out.println(annotatorstats.getDiscrepancies());
 

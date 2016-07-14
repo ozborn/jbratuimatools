@@ -1,5 +1,7 @@
 package edu.uab.ccts.nlp.jbratuimatools.uima.annotator;
 
+import edu.uab.ccts.nlp.brat.BratConfiguration;
+import edu.uab.ccts.nlp.brat.BratConfigurationImpl;
 import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.shared_task.semeval2015.SemEval2015Constants;
 
@@ -7,6 +9,7 @@ import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
+import org.apache.uima.cas.CASException;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.StringArray;
@@ -20,6 +23,8 @@ import org.uimafit.util.JCasUtil;
 import brat.type.DiscontinousBratAnnotation;
 
 import java.util.Collection;
+import java.util.Iterator;
+import java.util.Vector;
 
 /**
  * Updated DiseaseDisorders in default/GOLD_VIEW to use the CUI mappings done by the annotators
@@ -48,10 +53,26 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 		for (DocumentID di : JCasUtil.select(disorderView, DocumentID.class)) {
 			docid = di.getDocumentID(); break; 
 		}
+		JCas configView;
+		BratConfiguration bratconfig;
+		try {
+			configView = aJCas.getView(BratConstants.CONFIG_VIEW);
+			bratconfig = new BratConfigurationImpl(configView.getDocumentText());
+		} catch (CASException|ResourceInitializationException e1) {
+			e1.printStackTrace();
+			throw new AnalysisEngineProcessException(e1);
+		}
 
 		try {
 			//CasCopier copier = new CasCopier(aJCas.getCas(),aJCas.getCas());
 			Collection<DiscontinousBratAnnotation> col = JCasUtil.select(bratView, DiscontinousBratAnnotation.class);
+			//Remove non-Disease annotations
+			Collection<DiscontinousBratAnnotation> onlyDisease = new Vector<DiscontinousBratAnnotation>();
+			Iterator<DiscontinousBratAnnotation> dbait = col.iterator();
+			while(dbait.hasNext()) {
+				DiscontinousBratAnnotation dba = dbait.next();
+				if(dba.getTypeID()==bratconfig.getIdFromType("Disease")) onlyDisease.add(dba);
+			}
 
 			for (DiseaseDisorder ds : JCasUtil.select(disorderView, DiseaseDisorder.class))
 			{
@@ -65,10 +86,10 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 
 			this.getContext().getLogger().log(Level.FINE,"Found an input semeval CUI-less collection of size "
 					+semeval_cuiless_size);
-			this.getContext().getLogger().log(Level.FINE,"Found a annotated brat collection of size "+col.size());
-			if(semeval_cuiless_size!= col.size() || both_brat_semeval!=semeval_cuiless_size){
+			this.getContext().getLogger().log(Level.FINE,"Found a annotated brat disease collection of size "+onlyDisease.size());
+			if(semeval_cuiless_size!= onlyDisease.size() || both_brat_semeval!=semeval_cuiless_size){
 				this.getContext().getLogger().log(Level.WARNING,docid+" has input cuiless:"+
-						semeval_cuiless_size+"  and annotated cuiless:"+col.size());
+						semeval_cuiless_size+"  and annotated cuiless:"+onlyDisease.size());
 				this.getContext().getLogger().log(Level.INFO,"Both SemEval and Brat:"+both_brat_semeval);
 			}
 			if(only_semeval!=0) this.getContext().getLogger().log(Level.INFO,"SemEval Only Size:"+only_semeval);

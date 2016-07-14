@@ -82,7 +82,7 @@ public class BRATtoSemEval2015Client {
 
 				AggregateBuilder builder = new AggregateBuilder();
 				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015OldTrainRoot()));
-				builder.add(SemEval2015GoldAttributeParserAnnotator.getDescription());
+				builder.add(SemEval2015GoldAttributeParserAnnotator.getTrainingDescription());
 				builder.add(BratParserAnnotator.getDescription());
 				if(!roundtrip_test) builder.add(MergedCUIlessConsumer.getDescription());
 				builder.add(SemEval2015Task2Consumer.getCuilessDescription(output_directory));

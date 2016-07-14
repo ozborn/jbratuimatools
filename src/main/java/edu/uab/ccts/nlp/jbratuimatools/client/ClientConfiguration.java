@@ -54,7 +54,7 @@ public class ClientConfiguration {
 
 	
 	static String brat_annotated_training_data = getCuilessDataDirPath() + "training_clean/";
-	static String brat_annotated_devel_data = getCuilessDataDirPath() + "devel/matt_neu_only"; //TODO replace with adjuciated data from both
+	static String brat_annotated_devel_data = getCuilessDataDirPath() + "devel/mdanila"; //TODO replace with adjuciated data from both
 
 	
 

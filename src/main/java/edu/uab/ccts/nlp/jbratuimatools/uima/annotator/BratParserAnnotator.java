@@ -117,7 +117,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				bratKeyDict.put(key,value);
 			}
 		} else {
-			System.err.println("No annotation view?!");
+			LOG.warn("No annotation view, there may be no CUI-less concepts in this document.");
 		}
 
 		LOG.debug(bratKeyDict.toString());

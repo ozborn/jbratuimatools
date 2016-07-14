@@ -59,7 +59,7 @@ public class SemevalCUIless2BratClient {
 			);
 
 		AggregateBuilder builder = new AggregateBuilder();
-		builder.add(SemEval2015GoldAttributeParserAnnotator.getDescription());
+		builder.add(SemEval2015GoldAttributeParserAnnotator.getTrainingDescription());
 		builder.add(Semeval2CUIlessBRATAnnotator.getDescription());
 		//SimplePipeline.runPipeline(crd, builder.createAggregate());
 

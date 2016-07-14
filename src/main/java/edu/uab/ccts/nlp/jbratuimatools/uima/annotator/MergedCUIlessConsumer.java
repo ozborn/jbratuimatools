@@ -118,7 +118,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 
 
 	/**
-	 * Fetches the BRAT annotated CUI/s, updates CUI-less with out new CUIs
+	 * Fetches the BRAT annotated CUI/s, updates CUI-less with our new CUIs
 	 */
 	private boolean updateAnnotatedCUI(JCas bratview, DiseaseDisorder dd) {
 		boolean matched = false;

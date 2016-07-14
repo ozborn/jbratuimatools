@@ -10,6 +10,8 @@ import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.uimafit.factory.AggregateBuilder;
 
 import com.google.common.collect.HashMultiset;
@@ -41,6 +43,7 @@ public class BRATtoSemEval2015Client {
 	static Hashtable<String,Hashtable<String,HashMultiset<String>>> annotation_results = 
 			new Hashtable<String,Hashtable<String,HashMultiset<String>>>();
 
+	private static final Logger LOG  = LoggerFactory.getLogger(BRATtoSemEval2015Client.class);
 	static String brat_annotation_root = null;
 	static String output_directory = "target"+File.separator+"cuiless"+File.separator;
 	static boolean roundtrip_test = false; //True if testing ability to roundtrip files without cui-less adjustment

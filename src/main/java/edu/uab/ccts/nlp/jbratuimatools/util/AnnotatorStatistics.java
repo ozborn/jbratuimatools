@@ -366,11 +366,12 @@ public class AnnotatorStatistics implements Serializable {
 				String cuis = mapentry.getValue();
 				String[] cs = cuis.split(",");
 				if(BratParserAnnotator.isWellFormedCUI(cs[0])) { doublestdist.add(cuis); }
+				else{ LOG.warn(cs[0]+" is not a well-formed CUI");}
 				//Iterate through all the cuis for this mapping
 				for(int i=0;i<cs.length;i++){
 					String cui = cs[i].trim();
 					if(!BratParserAnnotator.isWellFormedCUI(cui)) {
-						System.out.println(mapentry.getKey()+" has badly formed cui:"+cui);
+						LOG.warn(mapentry.getKey()+" has badly formed cui:"+cui);
 						bad_form_count++;
 						continue;
 					}

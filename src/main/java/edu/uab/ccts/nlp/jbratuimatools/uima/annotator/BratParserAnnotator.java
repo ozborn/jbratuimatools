@@ -256,7 +256,8 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					if(cuis.length==0) { cuis = new String[1]; cuis[0]="MISSED_CUI"; }
 					for(String cui : cuis) {
 						if(!isWellFormedCUI(cui)) {
-							LOG.warn("Ill formed cui "+cui+" at k:"+k);
+							LOG.warn("Ill formed cui \""+cui+"\" annotated by"+annotated.getDocName()+
+							" in "+annotated.getDocName()+" at "+annotated.getBegin());
 							System.err.println("Ill formed CUI:"+cui);
 						}
 						OntologyConcept oc = new OntologyConcept(textView);

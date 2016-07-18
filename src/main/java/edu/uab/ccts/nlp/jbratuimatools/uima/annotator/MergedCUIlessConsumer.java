@@ -7,23 +7,28 @@ import edu.uab.ccts.nlp.shared_task.semeval2015.SemEval2015Constants;
 
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
+import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.analysis_engine.AnalysisEngineProcessException;
 import org.apache.uima.cas.CASException;
+import org.apache.uima.fit.descriptor.ConfigurationParameter;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
 import org.apache.uima.jcas.cas.StringArray;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
+import org.apache.uima.util.Logger;
 import org.cleartk.semeval2015.type.DiseaseDisorder;
-import org.uimafit.component.JCasAnnotator_ImplBase;
-import org.uimafit.factory.AnalysisEngineFactory;
+import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
+import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
 import brat.type.DiscontinousBratAnnotation;
 
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Vector;
 
 /**
@@ -34,23 +39,44 @@ import java.util.Vector;
  *
  */
 public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
-	public static boolean VERBOSE = false;
+	public static final String PARAM_CONSENSUS_LINES="consensusLines";
+	public static final String PARAM_NEG_SEPARATED_CUIS = "negSeparatedCuis";
 
 	// Counts annotation type by origin (semeval, brat or both)
 	int only_brat, only_semeval, both_brat_semeval;
 	int brat_annotation_size, semeval_annotation_size, semeval_cuiless_size;
-	JCas disorderView = null, bratView = null;
+	JCas semevalView = null, bratView = null;
+	Map<String,String> entityConsensusCuis = new Hashtable<String,String>();
+
+	@ConfigurationParameter(
+			name = PARAM_CONSENSUS_LINES,
+			description = "file to read consensus annotations from for double annotated dataset")
+	protected String[] consensusLines = null;
+	
+	@ConfigurationParameter(
+			name = PARAM_NEG_SEPARATED_CUIS,
+			description = "Whether to use consensus CUIs resolved such that negation is included as a separate term")
+	protected boolean negSeparatedCuis = false;
+
+	public void initialize(UimaContext context) throws ResourceInitializationException
+	{
+		super.initialize(context);
+		if(consensusLines!=null) this.getContext().getLogger().log(Level.CONFIG,"Using consensus file:"+consensusLines);
+		else this.getContext().getLogger().log(Level.INFO,"No consensus file used...");
+		if(negSeparatedCuis) this.getContext().getLogger().log(Level.CONFIG,"Using negation separated cuis");
+		else this.getContext().getLogger().log(Level.INFO,"Negation included in cuis");
+	}
 
 	
 	@Override
-	public void process(JCas aJCas) throws AnalysisEngineProcessException
-	{
+	public void process(JCas aJCas) throws AnalysisEngineProcessException {
+	
 		setupViews(aJCas);
 		only_brat=0; only_semeval=0; both_brat_semeval=0;
 		brat_annotation_size=0; semeval_annotation_size=0; semeval_cuiless_size=0;
 
 		String docid = null;
-		for (DocumentID di : JCasUtil.select(disorderView, DocumentID.class)) {
+		for (DocumentID di : JCasUtil.select(semevalView, DocumentID.class)) {
 			docid = di.getDocumentID(); break; 
 		}
 		JCas configView;
@@ -73,8 +99,10 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 				DiscontinousBratAnnotation dba = dbait.next();
 				if(dba.getTypeID()==bratconfig.getIdFromType("Disease")) onlyDisease.add(dba);
 			}
+			
+			if(consensusLines!=null) buildConsensusHash(docid);
 
-			for (DiseaseDisorder ds : JCasUtil.select(disorderView, DiseaseDisorder.class))
+			for (DiseaseDisorder ds : JCasUtil.select(semevalView, DiseaseDisorder.class))
 			{
 				semeval_annotation_size++;
 				//SemEval2015Task2Consumer.associateSpans(disorderView, ds); //May need this to get body CUIs?
@@ -104,11 +132,11 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 	private void setupViews(JCas aJCas) throws AnalysisEngineProcessException {
 		try {
 			bratView = aJCas.getView(BratConstants.TEXT_VIEW);
-			disorderView = aJCas.getView(SemEval2015Constants.GOLD_VIEW);
-			if(!JCasUtil.exists(disorderView, DiseaseDisorder.class)) {
+			semevalView = aJCas.getView(SemEval2015Constants.GOLD_VIEW);
+			if(!JCasUtil.exists(semevalView, DiseaseDisorder.class)) {
 				this.getContext().getLogger().log(Level.SEVERE,
 						"Can not find DiseaseDisorders to check BratAnnotations with in"
-								+disorderView.getViewName());
+								+semevalView.getViewName());
 			}
 		} catch (Exception e) {
 			this.getContext().getLogger().log(Level.SEVERE,"Can not get required view!");
@@ -164,12 +192,57 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 		}
 		return matched;
 	}
+	
+	
+	/**
+	 * Using a tab separated sheet, it builds up a map between key DocumentName-EntityID and the
+	 * CUI Set for that (disease) entity
+	 * @param filledCuis
+	 */
+	private void buildConsensusHash(String docname){
+		Logger logger = this.getContext().getLogger();
+		for(String line : consensusLines) {
+			String negIncludedCuis = null;
+			String negSeparateCuis = null;
+			String[] fields = line.split("\\t");
+			String correctsuffix = docname.replaceAll(".text", ".txt");
+			if(fields[2].endsWith(correctsuffix)){
+				if(fields.length<12) {
+					logger.log(Level.WARNING,fields[3]+" at "+fields[4]+" has only "+fields.length+" fields");
+					continue;
+				}
+				String id = fields[4];
+				if(fields[11]!=null) {
+					negIncludedCuis = fields[11].replaceAll("\"", "");
+					negSeparateCuis = negIncludedCuis;
+				} else logger.log(Level.WARNING,"No negIncluded CUI for:"+line);
+				if(fields.length>=13 && fields[12]!=null) {
+					negSeparateCuis = fields[12].replaceAll("\"", "");
+				}
+				if(negSeparatedCuis) entityConsensusCuis.put(id,negSeparateCuis);
+				else entityConsensusCuis.put(id, negIncludedCuis);
+			}
+		}
+		
+	}
 
 
 
 	public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {
 		return 
-				AnalysisEngineFactory.createPrimitiveDescription(MergedCUIlessConsumer.class);
+				AnalysisEngineFactory.createEngineDescription(MergedCUIlessConsumer.class);
+	}
+
+	public static AnalysisEngineDescription getDescription(String[] lines, boolean negSepCuis) throws ResourceInitializationException {
+		return 
+				//AnalysisEngineFactory.createPrimitiveDescription(MergedCUIlessConsumer.class
+				AnalysisEngineFactory.createEngineDescription(
+						MergedCUIlessConsumer.class
+						,PARAM_CONSENSUS_LINES
+						,lines
+						,PARAM_NEG_SEPARATED_CUIS
+						,negSepCuis
+						);
 	}
 
 

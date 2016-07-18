@@ -45,7 +45,7 @@ import edu.uab.ccts.nlp.umls.tools.UMLSTools;
 public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 	static final String BRAT_FILE_PATH = "BratOutputDirectory";
 	static final String NOTE_TYPE="DISCHARGE_SUMMARY";
-	private String _dirInputpath, _bratOutputPath;
+	private String _bratOutputPath;
 	boolean _removeNonOverlapping=false;
 	private String _edited_doc_text = null;
 	Hashtable<String,String> entities = new Hashtable<String,String>();
@@ -54,9 +54,9 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 	Hashtable<String,String> identifierNoteMap; //Key attribute id, value is the norm
 	static Properties semeval2umls;
 
+
 	final String UmlsConnectionString = BratConstants.UMLS_DB_CONNECT_STRING;
-
-
+	
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		try {
 			super.initialize(aContext);

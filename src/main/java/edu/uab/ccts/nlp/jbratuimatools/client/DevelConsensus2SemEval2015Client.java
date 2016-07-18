@@ -1,8 +1,14 @@
 package edu.uab.ccts.nlp.jbratuimatools.client;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Hashtable;
+import java.util.List;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.collection.CollectionReaderDescription;
@@ -26,40 +32,45 @@ import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCr
 
 
 /**
+ * 
+ * FIXME - could be merged with BRATtoSemEval2015Client
+ * 
  * This should read in the annotated BRAT files with multiple CUIs, and read in the SemEval2015
- * updated (Dec 3, 2014 version) training and test data and overlay the multiple CUI annotations for
- * the CUIless concepts to generate a new output file suitable for use as training data.
+ * updated (Dec 3, 2014 version) devel data and overlay the multiple CUI annotations for
+ * the CUIless concepts to generate a new output file suitable for use as devel/test data.
  * 
- * Basically this generates the final data set for training data, integrating user
- * annotations for CUIless concepts.
+ * Basically this generates the final data set for devel data, integrating:
+ * 1) User BRAT annotations from Matt or Maio for CUIless concepts where they agree
+ * 2) Consensus annotation from Matt and Maio where they initially disagreed
  * 
- * For now it can use the old dataset for the training data, but the updated set for
- * the devel/testing data. This is not that useful though, since it uses raw BRAT data
- * for the development set, not the Development Consensus. To generate that, use
- * DevelConsensus2SemEval2015Client
+ * For the training set CUI-less concepts see BRATtoSemEval2015Client
  * 
  * @author ozborn
  *
  */
-public class BRATtoSemEval2015Client {
+public class DevelConsensus2SemEval2015Client {
 	static Hashtable<String,Hashtable<String,HashMultiset<String>>> annotation_results = 
 			new Hashtable<String,Hashtable<String,HashMultiset<String>>>();
 
-	private static final Logger LOG  = LoggerFactory.getLogger(BRATtoSemEval2015Client.class);
+	private static final Logger LOG  = LoggerFactory.getLogger(DevelConsensus2SemEval2015Client.class);
 	static String brat_annotation_root = null;
 	static String output_directory = "target"+File.separator+"cuiless"+File.separator;
+	static String tab_consensus_filepath=System.getProperty("user.home")+
+				"/code/repo/cuilessdata/analysis/AnnotatorDisagreementV2.txt";
 	static boolean roundtrip_test = false; //True if testing ability to roundtrip files without cui-less adjustment
+	static boolean separate_negations=true;
+	static String[] consensusArray;
 
 	public static void main(String... args)
 	{
-		if(args.length>0 && args[0].equalsIgnoreCase("devel")) {
-			output_directory+="devel";
-			brat_annotation_root = ClientConfiguration.brat_annotated_devel_data;
-		} else { 
-			output_directory+="train";
-			brat_annotation_root = ClientConfiguration.brat_annotated_training_data; 
+		output_directory+="devel/consensus";
+		brat_annotation_root = ClientConfiguration.brat_annotated_devel_data;
+		
+		if(args.length>0) tab_consensus_filepath=args[0];
+		if(args.length>1) {
+			if(args[1].indexOf("include_negated_cuis")!=-1) separate_negations=false;
 		}
-		if(args.length>1 && args[1].equalsIgnoreCase("roundtrip")) roundtrip_test=true;
+		if(args.length>2 && args[2].equalsIgnoreCase("roundtrip")) roundtrip_test=true;
 		File outdir = new File(output_directory); 
 		if(!outdir.exists()){
 			if(!outdir.mkdirs()) {
@@ -67,7 +78,16 @@ public class BRATtoSemEval2015Client {
 				System.exit(0);
 			}
 		}
-		System.out.println("Writing cuiless annotations for:"+brat_annotation_root); System.out.flush();
+		LOG.info("Writing cuiless annotations for:"+brat_annotation_root);
+		
+		
+		try (Stream<String> stream = Files.lines(Paths.get(tab_consensus_filepath))) {
+			List<String> consensusList = stream.filter
+					(line -> line.startsWith("DISAGREE")).collect(Collectors.toList());
+			consensusArray = new String[consensusList.size()];
+			consensusArray = consensusList.toArray(consensusArray);
+			LOG.info("Pulled "+consensusList.size()+" consensus annotations");
+		} catch (IOException ioe) { ioe.printStackTrace(); }
 
 		Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
 				BratConstants.bratExtensions, true);
@@ -89,7 +109,7 @@ public class BRATtoSemEval2015Client {
 				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015OldTrainRoot()));
 				builder.add(SemEval2015GoldAttributeParserAnnotator.getTrainingDescription());
 				builder.add(BratParserAnnotator.getDescription());
-				if(!roundtrip_test) builder.add(MergedCUIlessConsumer.getDescription());
+				if(!roundtrip_test) builder.add(MergedCUIlessConsumer.getDescription(consensusArray,separate_negations));
 				builder.add(SemEval2015Task2Consumer.getCuilessDescription(output_directory));
 
 				for (@SuppressWarnings("unused") JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))

@@ -31,6 +31,7 @@ import org.apache.uima.cas.FeatureStructure;
 import org.apache.uima.fit.util.JCasUtil;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.cas.FSArray;
+import org.apache.uima.jcas.tcas.Annotation;
 import org.cleartk.util.ViewUriUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,6 +52,7 @@ public class AnnotatorStatistics implements Serializable {
 	private static Hashtable<String,Hashtable<String,HashMultiset<String>>> anno_results = null;
 	private static Hashtable<String,String> map_type_hash = null; //Key docname+T+id, value = CUIs string (comma separated)
 	private static Hashtable<String,String> text_type_hash = null; //Key annotator_name+doc_name+entity_id - Value = text
+	private static Hashtable<String,String> bratDBAOffsets = null;
 	private static Hashtable<String,Hashtable<DiscontinousBratAnnotation,Set<String>>> brat_ctakes_failed_cuis;
 	private static Hashtable<String,Hashtable<DiscontinousBratAnnotation,Set<String>>> brat_ctakes_matched_cuis;
 	private static HashSet<String> wrong_vocabulary_cuis = null;
@@ -70,6 +72,7 @@ public class AnnotatorStatistics implements Serializable {
 		anno_results.put(ALL_ANNOTATORS, all);
 		map_type_hash = new Hashtable<String,String>();
 		text_type_hash = new Hashtable<String,String>(); 
+		bratDBAOffsets = new Hashtable<String,String>(); //Key annotator_name+doc_name+entity_id : Value OFfsets
 		wrong_vocabulary_cuis = new HashSet<String>();
 		brat_ctakes_failed_cuis = new Hashtable<String,Hashtable<DiscontinousBratAnnotation,Set<String>>>(); //Key document_name, Value = Hashtable with key DiscontinousBratAnnotation, Values Set of failed to match CUIS
 		brat_ctakes_matched_cuis = new Hashtable<String,Hashtable<DiscontinousBratAnnotation,Set<String>>>(); //Key document_name, Value = Hashtable with key DiscontinousBratAnnotation, Values Set of matching CUIS
@@ -168,6 +171,7 @@ public class AnnotatorStatistics implements Serializable {
 			buildAnnotationHash(annotator_name, text_key, allcuis,anno_results);
 			map_type_hash.put(dba.getDocName()+"T"+dba.getId(), allcuis);
 			text_type_hash.put(annotator_name+":"+dba.getDocName()+":T"+dba.getId(),text_key);
+			bratDBAOffsets.put(annotator_name+":"+dba.getDocName()+":T"+dba.getId(),getOffsets(dba));
 			buildExactResults(dba,allcuis);
 			String relatedcuis = getRelatedCUIs(dba,rels);
 			buildRelatedResults(dba,allcuis,relatedcuis);
@@ -288,6 +292,23 @@ public class AnnotatorStatistics implements Serializable {
 	}
 	
 	
+	private String getOffsets(DiscontinousBratAnnotation dba) {
+		StringBuilder sb = new StringBuilder();
+		FSArray thespans = dba.getSpans();
+		if(thespans!=null) {
+			for(int i=0;i<thespans.size();i++){
+				Annotation anno = (Annotation) thespans.get(i);
+				if(i==thespans.size()-1) sb.append(anno.getBegin()+"-"+anno.getEnd());
+				else sb.append(anno.getBegin()+"-"+anno.getEnd()+";");
+			}
+		} else {
+			System.out.println("Should NOT HAPPEN!");
+			sb.append(dba.getBegin()+"-"+dba.getEnd());
+		}	
+		return sb.toString();
+	}
+	
+	
 	public static String getRelatedCUIs(DiscontinousBratAnnotation dba,
 			Collection<BinaryTextRelation> rels
 		) {
@@ -349,7 +370,6 @@ public class AnnotatorStatistics implements Serializable {
 		}
 		System.out.println("Global Single:"+single_map+" Double:"+double_map+
 				" Triple:"+triple_map+" Quad:"+quad_map+" Total:"+total_count);
-
 	}
 
 
@@ -481,7 +501,6 @@ public class AnnotatorStatistics implements Serializable {
 				theResults.get(annotators[0]);
 		Set<String> refdocs = reftable.keySet();
 		for(String rdoc : refdocs){
-			//System.out.println("Looking at document:"+rdoc);
 			Hashtable<String,String> refents = reftable.get(rdoc);
 			Hashtable<String,String> testents = 
 					theResults.get(annotators[1]).get(rdoc);
@@ -493,7 +512,6 @@ public class AnnotatorStatistics implements Serializable {
 			//Check to see how many documents are missing
 			for(Iterator<String> entiter = refents.keySet().iterator(); entiter.hasNext();){
 				String refentity = entiter.next();
-				//System.out.println("Looking at entity:"+refentity);
 				String refcuis = refents.get(refentity);
 				String testcuis = testents.get(refentity);
 				if(refcuis==null && testcuis==null) continue;
@@ -506,19 +524,25 @@ public class AnnotatorStatistics implements Serializable {
 					continue;
 				}
 
+				String refnames = UMLSTools.fetchBestConceptName(refcuis, BratConstants.UMLS_DB_CONNECT_STRING);
+				String testnames = UMLSTools.fetchBestConceptName(testcuis, BratConstants.UMLS_DB_CONNECT_STRING);
+				String typekey = annotators[0]+":"+rdoc+":"+refentity;
+				String distext = text_type_hash.get(typekey);
+				String filepath = datasetHash.get(rdoc);
+				String printline = "";
+				String myoffsets = bratDBAOffsets.get(typekey);
+
 				if(refcuis.trim().equalsIgnoreCase(testcuis.trim())) {
 					agreements++;
+					printline=printline+"AGREE\t";
 				} else {
-					String refnames = UMLSTools.fetchBestConceptName(refcuis, BratConstants.UMLS_DB_CONNECT_STRING);
-					String testnames = UMLSTools.fetchBestConceptName(testcuis, BratConstants.UMLS_DB_CONNECT_STRING);
 					disagreements++;
-					String typekey = annotators[0]+":"+rdoc+":"+refentity;
-					String distext = text_type_hash.get(typekey);
-					String filepath = datasetHash.get(rdoc);
-					System.out.println("DISAGREE\t"+filepath+"\t"+rdoc+"\t"+distext+"\t"+refentity+"\t"
-							+annotators[0]+"\t"+refcuis+"\t"+refnames+"\t"+
-							annotators[1]+"\t"+testcuis+"\t"+testnames);
+					printline=printline+"DISAGREE\t";
 				}
+				printline=printline+filepath+"\t"+rdoc+"\t"+myoffsets+"\t"+
+						distext+"\t"+refentity+"\t"+annotators[0]+"\t"+refcuis+"\t"
+						+refnames+"\t"+annotators[1]+"\t"+testcuis+"\t"+testnames;
+				System.out.println(printline);
 			}
 		}
 		System.out.println(disagreements+" disagreements");

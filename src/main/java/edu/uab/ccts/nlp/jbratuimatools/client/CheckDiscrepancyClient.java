@@ -24,7 +24,8 @@ import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCr
 
 
 /**
- * Checking for discrepancies, still using old data (FIXME to work for devel which is new format)
+ * Checking for discrepancies with regards to mention text for training (old Semeval) and
+ * dev (new SemEval). Does not print out list of discrepancies between annotators.
  * @author ozborn
  *
  */

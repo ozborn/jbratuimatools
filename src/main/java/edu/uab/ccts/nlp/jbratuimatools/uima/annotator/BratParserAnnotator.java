@@ -137,20 +137,34 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				BratEntity bratent = bratconfig.getEntityByName(entfields[0].trim());
 				dba.setTypeID(bratent.getTypeId());
 				if(tabfields[0].indexOf(";")==-1){
-					dba.setBegin(Integer.parseInt(entfields[1].trim()));
-					dba.setEnd(Integer.parseInt(entfields[2].trim()));
+					LOG.debug("FOr DBA:"+dba.getId()+" in "+dba.getDocName()+
+					" the spans are:"+entfields[1].trim()+" - "+entfields[2].trim());
+					int begin = Integer.parseInt(entfields[1].trim());
+					int end = Integer.parseInt(entfields[2].trim());
+					dba.setBegin(begin);
+					dba.setEnd(end);
+					FSArray thespans = new FSArray(textView,1);
+					Annotation span = new Annotation(textView);
+					span.setBegin(begin);
+					span.setEnd(end);
+					thespans.set(0, span);
+					thespans.addToIndexes();
+					dba.setSpans(thespans);
 				} else {
 					String[] span_fields = tabfields[0].split(" |;");
-					FSArray thespans = new FSArray(textView,span_fields.length-1);
+					LOG.debug("FOr DBA:"+dba.getId()+" in "+dba.getDocName()+" the spans are:");
+					FSArray thespans = new FSArray(textView,(span_fields.length-1)/2);
 					for(int i=1;i<span_fields.length;i=i+2){
 						Annotation span = new Annotation(textView);
 						if(i==1) dba.setBegin(Integer.parseInt(span_fields[i]));
 						span.setBegin(Integer.parseInt(span_fields[i]));
 						int end = Integer.parseInt(span_fields[i+1]);
 						span.setEnd(end);
+						//span.addToIndexes();
 						dba.setEnd(end);
 						thespans.set(i/2,span);
 					}
+					thespans.addToIndexes();
 					dba.setSpans(thespans);
 				}
 				dba.setDiscontinousText(text);

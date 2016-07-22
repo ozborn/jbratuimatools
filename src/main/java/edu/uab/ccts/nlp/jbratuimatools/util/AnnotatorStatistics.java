@@ -292,7 +292,7 @@ public class AnnotatorStatistics implements Serializable {
 	}
 	
 	
-	private String getOffsets(DiscontinousBratAnnotation dba) {
+	public static String getOffsets(DiscontinousBratAnnotation dba) {
 		StringBuilder sb = new StringBuilder();
 		FSArray thespans = dba.getSpans();
 		if(thespans!=null) {

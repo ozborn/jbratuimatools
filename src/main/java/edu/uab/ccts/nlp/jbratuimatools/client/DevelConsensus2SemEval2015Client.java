@@ -2,6 +2,7 @@ package edu.uab.ccts.nlp.jbratuimatools.client;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Collection;
@@ -79,12 +80,14 @@ public class DevelConsensus2SemEval2015Client {
 			}
 		}
 		LOG.info("Writing cuiless annotations for:"+brat_annotation_root);
+		LOG.info("Usng consensus annotation file:"+tab_consensus_filepath);
 		
 		
-		try (Stream<String> stream = Files.lines(Paths.get(tab_consensus_filepath))) {
-			List<String> consensusList = stream.filter
-					//(line -> line.startsWith("DISAGREE")).collect(Collectors.toList());
-					(line -> line.startsWith("UPDATE_DISORDER")).collect(Collectors.toList());
+		try (Stream<String> stream = Files.lines(Paths.get(tab_consensus_filepath),Charset.forName("Cp1252"))) {
+			List<String> consensusList = stream
+					//.filter(line -> line.startsWith("DISAGREE")).collect(Collectors.toList());
+					.filter(line -> line.startsWith("UPDATE_DISORDER"))
+					.collect(Collectors.toList());
 			consensusArray = new String[consensusList.size()];
 			consensusArray = consensusList.toArray(consensusArray);
 			LOG.info("Pulled "+consensusList.size()+" consensus annotations");

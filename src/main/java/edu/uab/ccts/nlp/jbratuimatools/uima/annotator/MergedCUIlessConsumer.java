@@ -121,6 +121,11 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 					+semeval_cuiless_size);
 			this.getContext().getLogger().log(Level.FINE,"Found a annotated brat disease collection of size "+onlyDisease.size());
 			if(semeval_cuiless_size!= onlyDisease.size() || both_brat_semeval!=semeval_cuiless_size){
+				if(semeval_cuiless_size<onlyDisease.size()) {
+					this.getContext().getLogger().log(Level.WARNING,docid+" Original semeval annotation"+
+				    "may have annotated a CUI-less concept with a CUI that was originally CUI-less in our"+
+					"early dataset.");
+				}
 				this.getContext().getLogger().log(Level.WARNING,docid+" has input cuiless:"+
 						semeval_cuiless_size+"  and annotated cuiless:"+onlyDisease.size());
 				this.getContext().getLogger().log(Level.INFO,"Both SemEval and Brat:"+both_brat_semeval);
@@ -162,8 +167,12 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 		String failures = "";
 		for (DiscontinousBratAnnotation brat: JCasUtil.select(bratview, DiscontinousBratAnnotation.class)) {
 			if(brat.getEnd()==dd.getEnd() && brat.getBegin()==dd.getBegin()) {
-				if(brat.getIsNovelEntity()==false) { matched = true; }
+				if(brat.getIsNovelEntity()==false) { 
+					matched = true; 
+					this.getContext().getLogger().log(Level.FINER, "Matched "+dd+" to brat:"+brat); 
+				}
 				else { this.getContext().getLogger().log(Level.WARNING, "Matched novel annotation?!"); }
+
 				FSArray cuis = brat.getOntologyConceptArr();
 				replacement_cui = getConsensusReplaceCuis(docname, conhash, brat);
 				if(replacement_cui!=null) {
@@ -261,7 +270,10 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 		String failures = "";
 		for (DiscontinousBratAnnotation brat: JCasUtil.select(bratview, DiscontinousBratAnnotation.class)) {
 			if(brat.getEnd()==dd.getEnd() && brat.getBegin()==dd.getBegin()) {
-				if(brat.getIsNovelEntity()==false) { matched = true; }
+				if(brat.getIsNovelEntity()==false) { 
+					matched = true; 
+					this.getContext().getLogger().log(Level.FINER, "Matched "+dd+" to brat:"+brat); 
+				}
 				else { this.getContext().getLogger().log(Level.WARNING, "Matched novel annotation?!"); }
 				FSArray cuis = brat.getOntologyConceptArr();
 				replacement_cui = getBratAnnotatedCuis(cuis);

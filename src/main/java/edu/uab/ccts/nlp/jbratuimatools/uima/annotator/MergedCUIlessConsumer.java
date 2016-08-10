@@ -31,6 +31,7 @@ import brat.type.DiscontinousBratAnnotation;
 
 import java.io.IOException;
 import java.net.URL;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
@@ -39,7 +40,6 @@ import java.util.Map;
 import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
-import java.util.regex.Pattern;
 
 /**
  * Updated DiseaseDisorders in default/GOLD_VIEW to use the CUI mappings done by the annotators
@@ -62,7 +62,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			name = PARAM_CONSENSUS_LINES,
 			description = "file to read consensus annotations from for double annotated dataset")
 	protected String[] consensusLines = null;
-	
+
 	@ConfigurationParameter(
 			name = PARAM_NEG_SEPARATED_CUIS,
 			description = "Whether to use consensus CUIs resolved such that negation is included as a separate term")
@@ -83,10 +83,10 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 		} catch (IOException ioe) { throw new ResourceInitializationException(ioe); }
 	}
 
-	
+
 	@Override
 	public void process(JCas aJCas) throws AnalysisEngineProcessException {
-	
+
 		setupViews(aJCas);
 		only_brat=0; only_semeval=0; both_brat_semeval=0;
 		brat_annotation_size=0; semeval_annotation_size=0; semeval_cuiless_size=0;
@@ -115,7 +115,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 				DiscontinousBratAnnotation dba = dbait.next();
 				if(dba.getTypeID()==bratconfig.getIdFromType("Disease")) onlyDisease.add(dba);
 			}
-			
+
 			Map<String,String> docoffsethash = null;
 			if(consensusLines!=null) {
 				docoffsethash = buildFileOffsetMap(docid);
@@ -131,14 +131,14 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 				for(int i=0;i<atts.size();i++){
 					DiseaseDisorderAttribute dda = (DiseaseDisorderAttribute) atts.get(i);
 					cleanutils.getCuisFromDiseaseDisorderAttributes(i,thecuis,semeval2umls,
-					this.getContext().getLogger(),dda);
+							this.getContext().getLogger(),dda);
 				}
 				cuis.addAll(thecuis.values());
-				if(cuis.size()>0) System.out.println(cuis);
+				if(cuis.size()>0) this.getContext().getLogger().log(Level.FINE,"Got "+cuis.size()+" attribute cuis:"+cuis);
 				if(ds.getCuis().get(0).equalsIgnoreCase("CUI-less")) {
 					semeval_cuiless_size++;
 					//updateAnnotatedCUI(bratView,ds);
-					updateWithConsensusCUI(docid,bratView,ds,docoffsethash);
+					updateWithConsensusCUI(docid,bratView,ds,docoffsethash,cuis);
 				}
 			}
 
@@ -148,8 +148,8 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			if(semeval_cuiless_size!= onlyDisease.size() || both_brat_semeval!=semeval_cuiless_size){
 				if(semeval_cuiless_size<onlyDisease.size()) {
 					this.getContext().getLogger().log(Level.WARNING,docid+" Original semeval annotation"+
-				    "may have annotated a CUI-less concept with a CUI that was originally CUI-less in our"+
-					"early dataset.");
+							"may have annotated a CUI-less concept with a CUI that was originally CUI-less in our"+
+							"early dataset.");
 				}
 				this.getContext().getLogger().log(Level.WARNING,docid+" has input cuiless:"+
 						semeval_cuiless_size+"  and annotated cuiless:"+onlyDisease.size());
@@ -178,13 +178,13 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			throw(new AnalysisEngineProcessException(e));
 		}
 	}
-	
-	
+
+
 
 	private boolean updateWithConsensusCUI(String docname,JCas bratview, 
-			DiseaseDisorder dd, Map<String,String>conhash) {
+			DiseaseDisorder dd, Map<String,String>conhash, Set<String> attcuis) {
 		boolean matched = false;
-			String cuiless = "CUI-less";
+		String cuiless = "CUI-less";
 		StringArray cuisa = null;
 		String replacement_cui = null;
 		this.getContext().getLogger().log(Level.FINE,"Trying to find a consensus match for semeval cui-less concept: "
@@ -199,7 +199,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 				else { this.getContext().getLogger().log(Level.WARNING, "Matched novel annotation?!"); }
 
 				FSArray cuis = brat.getOntologyConceptArr();
-				replacement_cui = getConsensusReplaceCuis(docname, conhash, brat);
+				replacement_cui = getConsensusReplaceCuis(docname, conhash, brat,attcuis);
 				if(replacement_cui!=null) {
 					this.getContext().getLogger().log(Level.FINE,"Got consensus CUI:"+replacement_cui);
 					break;
@@ -262,23 +262,44 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 	 * @return
 	 */
 	private String getConsensusReplaceCuis(String docname, Map<String, String> conhash,
-			DiscontinousBratAnnotation brat) {
+			DiscontinousBratAnnotation brat, Set<String> attcuis) {
 		String replacementCui = null;
 		String bratOffSetString = AnnotatorStatistics.getOffsets(brat);
 		this.getContext().getLogger().log(Level.FINE, "In doc:"+docname+
-		" looking through "+conhash.size()+" consensus agreements to find "+bratOffSetString);
+				" looking through "+conhash.size()+" consensus agreements to find "+bratOffSetString);
 		for (Map.Entry<String,String> entry : conhash.entrySet()){
 			String spanstring = entry.getKey().split("=")[1];
 			String condoc = entry.getKey().split("=")[0];
 			this.getContext().getLogger().log(Level.FINE, "docname:"+docname+" condoc:"+condoc+
-			" looking to match "+spanstring+" with "+bratOffSetString);
+					" looking to match "+spanstring+" with "+bratOffSetString);
 			if(condoc.substring(0,condoc.indexOf('.')).equals(docname.substring(0,docname.indexOf('.')))&& spanstring.equals(bratOffSetString)) {
 				replacementCui = entry.getValue();
-				this.getContext().getLogger().log(Level.FINE, "Found replacement CUI "
-				+replacementCui+" from "+spanstring);
+				this.getContext().getLogger().log(Level.INFO, "Found replacement CUI "
+						+replacementCui+" from "+spanstring);
 				break;
 			}
 		}
+		if(replacementCui==null) return null; //No replacement found
+		if(attcuis.size()==0) return replacementCui; //No attributes need to be replaced
+
+		//Must replace attributes mixed in with consensus data
+		System.out.println("Replacing attributes in:"+replacementCui); System.out.flush();
+		String[] concuis = null;
+		HashSet<String> concuishash = new HashSet<String>();
+		if(replacementCui.indexOf(",")==-1) concuishash.add(replacementCui);
+		else {
+			concuis = replacementCui.split(",");
+			concuishash = new HashSet<String>(Arrays.asList(concuis));
+		}
+		System.out.println("atts to get rid of:"+attcuis);
+		System.out.println("Before atts concuishash"+concuishash.toString());
+		concuishash.removeAll(attcuis);
+		System.out.println("After atts concuishash"+concuishash.toString());
+		Iterator<String> it = concuishash.iterator();
+		while(it.hasNext()){
+			replacementCui=it.next()+",";
+		}
+		replacementCui = replacementCui.substring(0, replacementCui.length()-1);
 		return replacementCui;
 	}
 
@@ -326,8 +347,8 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 		}
 		return matched;
 	}
-	
-	
+
+
 	/**
 	 * DELETE ME
 	 * Using a tab separated sheet, it builds up a map between key DocumentName-EntityID and the
@@ -360,10 +381,10 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			}
 		}
 	}
-	
-	
-	
-	
+
+
+
+
 	/**
 	 * Using a tab separated "Action" sheet, it builds up a map between key DocumentName-Offset and the
 	 * CUI Set for that (disease) entity
@@ -400,11 +421,11 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			}
 		}
 		return CUIS2Use;
-		
+
 	}
 
-	
-	
+
+
 	public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {
 		return 
 				AnalysisEngineFactory.createEngineDescription(MergedCUIlessConsumer.class);

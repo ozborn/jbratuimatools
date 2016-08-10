@@ -17,6 +17,7 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
+import org.apache.uima.util.Logger;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.util.JCasUtil;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
@@ -32,6 +33,7 @@ import org.cleartk.util.ViewUriUtil;
 
 import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.jbratuimatools.client.SemevalCUIless2BratClient;
+import edu.uab.ccts.nlp.umls.tools.CleanUtils;
 import edu.uab.ccts.nlp.umls.tools.UMLSTools;
 
 
@@ -206,17 +208,31 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 			String attid = "T"+identifier;
 			String norm = theatt.getNorm();
 			this.getContext().getLogger().log(Level.FINE,"Attid:"+attid+" CoveredText:"+theatt.getCoveredText()+" Norm:"+norm);
+			CleanUtils cleanutil = new CleanUtils();
+			cleanutil.getCuisFromDiseaseDisorderAttributes(identifier,
+					identifierNoteMap,semeval2umls,this.getContext().getLogger(),theatt); 
+			
+			
+			/*
 			boolean b = Pattern.matches("C\\d\\d\\d\\d\\d\\d\\d*",norm.trim());
 			if(norm !=null){
 				if(b) { //Add in body locations, uniquely identified by having a CUI as a norm
 					this.getContext().getLogger().log(Level.FINE,"Found CUI:"+norm);
-					identifierNoteMap.put(attid, norm);
+					if(norm.startsWith("C")) {
+						if(norm.equalsIgnoreCase("cuiless")||norm.equalsIgnoreCase("cui-less")) {
+							identifierNoteMap.put(attid, "CUI-less"); //standardize
+						} else {
+							identifierNoteMap.put(attid, norm);
+						}
+					}
+					else identifierNoteMap.put(attid, "C"+norm); //Handle cases where C is missing
 				} else { //Add in non-body locations
 					String attcui = semeval2umls.getProperty(norm);
 					if(attcui!=null) identifierNoteMap.put(attid, attcui);
 					else this.getContext().getLogger().log(Level.INFO,"No CUI for:"+norm);
 				}
 			}  
+			*/
 			String attrange = theatt.getBegin()+" "+theatt.getEnd();
 			//if(entities.get(attrange)==null) {
 			brat_annotation.append(attid+"\t"+typename+" ");

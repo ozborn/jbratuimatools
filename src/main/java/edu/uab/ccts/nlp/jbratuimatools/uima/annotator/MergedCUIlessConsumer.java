@@ -5,6 +5,8 @@ import edu.uab.ccts.nlp.brat.BratConfigurationImpl;
 import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.jbratuimatools.util.AnnotatorStatistics;
 import edu.uab.ccts.nlp.shared_task.semeval2015.SemEval2015Constants;
+import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015Task2Consumer;
+import edu.uab.ccts.nlp.umls.tools.CleanUtils;
 
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
 import org.apache.ctakes.typesystem.type.structured.DocumentID;
@@ -20,17 +22,24 @@ import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
 import org.apache.uima.util.Logger;
 import org.cleartk.semeval2015.type.DiseaseDisorder;
+import org.cleartk.semeval2015.type.DiseaseDisorderAttribute;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
 import org.uimafit.util.JCasUtil;
 
 import brat.type.DiscontinousBratAnnotation;
 
+import java.io.IOException;
+import java.net.URL;
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
+import java.util.Set;
 import java.util.Vector;
+import java.util.regex.Pattern;
 
 /**
  * Updated DiseaseDisorders in default/GOLD_VIEW to use the CUI mappings done by the annotators
@@ -58,6 +67,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			name = PARAM_NEG_SEPARATED_CUIS,
 			description = "Whether to use consensus CUIs resolved such that negation is included as a separate term")
 	protected boolean negSeparatedCuis = false;
+	static Properties semeval2umls;
 
 	public void initialize(UimaContext context) throws ResourceInitializationException
 	{
@@ -66,6 +76,11 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 		else this.getContext().getLogger().log(Level.INFO,"No consensus file used...");
 		if(negSeparatedCuis) this.getContext().getLogger().log(Level.CONFIG,"Using negation separated cuis");
 		else this.getContext().getLogger().log(Level.INFO,"Negation included in cuis");
+		URL u1 = this.getClass().getResource("/semeval2umls.properties");
+		semeval2umls = new Properties();
+		try {
+			semeval2umls.load(u1.openStream());
+		} catch (IOException ioe) { throw new ResourceInitializationException(ioe); }
 	}
 
 	
@@ -109,7 +124,17 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			for (DiseaseDisorder ds : JCasUtil.select(semevalView, DiseaseDisorder.class))
 			{
 				semeval_annotation_size++;
-				//SemEval2015Task2Consumer.associateSpans(disorderView, ds); //May need this to get body CUIs?
+				FSArray atts = SemEval2015Task2Consumer.associateSpans(semevalView, ds); //May need this to get body CUIs?
+				CleanUtils cleanutils = new CleanUtils();
+				Hashtable<String,String> thecuis = new Hashtable<String,String>();
+				Set<String> cuis = new HashSet<String>();
+				for(int i=0;i<atts.size();i++){
+					DiseaseDisorderAttribute dda = (DiseaseDisorderAttribute) atts.get(i);
+					cleanutils.getCuisFromDiseaseDisorderAttributes(i,thecuis,semeval2umls,
+					this.getContext().getLogger(),dda);
+				}
+				cuis.addAll(thecuis.values());
+				if(cuis.size()>0) System.out.println(cuis);
 				if(ds.getCuis().get(0).equalsIgnoreCase("CUI-less")) {
 					semeval_cuiless_size++;
 					//updateAnnotatedCUI(bratView,ds);
@@ -379,9 +404,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 	}
 
 	
-
-
-
+	
 	public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {
 		return 
 				AnalysisEngineFactory.createEngineDescription(MergedCUIlessConsumer.class);

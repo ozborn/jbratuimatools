@@ -124,20 +124,21 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			for (DiseaseDisorder ds : JCasUtil.select(semevalView, DiseaseDisorder.class))
 			{
 				semeval_annotation_size++;
-				FSArray atts = SemEval2015Task2Consumer.associateSpans(semevalView, ds); //May need this to get body CUIs?
-				CleanUtils cleanutils = new CleanUtils();
-				Hashtable<String,String> thecuis = new Hashtable<String,String>();
-				Set<String> cuis = new HashSet<String>();
-				for(int i=0;i<atts.size();i++){
-					DiseaseDisorderAttribute dda = (DiseaseDisorderAttribute) atts.get(i);
-					System.out.println(docid+" at:"+ds.getBegin()+" - getting cuis from attribute:"+dda.getAttributeType()+ " with norm:"+dda.getNorm());
-					cleanutils.getCuisFromDiseaseDisorderAttributes(i,thecuis,semeval2umls,
-							this.getContext().getLogger(),dda);
-				}
-				cuis.addAll(thecuis.values());
-				if(cuis.size()>0) this.getContext().getLogger().log(Level.FINE,"Got "+cuis.size()+" attribute cuis:"+cuis);
 				if(ds.getCuis().get(0).equalsIgnoreCase("CUI-less")) {
 					semeval_cuiless_size++;
+					FSArray atts = SemEval2015Task2Consumer.associateSpans(semevalView, ds);
+					CleanUtils cleanutils = new CleanUtils();
+					Hashtable<String,String> thecuis = new Hashtable<String,String>();
+					Set<String> cuis = new HashSet<String>();
+					for(int i=0;i<atts.size();i++){
+						DiseaseDisorderAttribute dda = (DiseaseDisorderAttribute) atts.get(i);
+						this.getContext().getLogger().log(Level.FINE,docid+" at:"+ds.getBegin()+"-"+ds.getEnd()+" ; getting cuis from attribute:"+dda.getAttributeType()+ " with norm:"+dda.getNorm());
+						cleanutils.getCuisFromDiseaseDisorderAttributes(i,thecuis,semeval2umls,
+								this.getContext().getLogger(),dda);
+					}
+					cuis.addAll(thecuis.values());
+					if(cuis.size()>0) this.getContext().getLogger().log(Level.FINE,"Got "+cuis.size()+" attribute cuis:"+cuis);
+
 					updateWithConsensusCUI(docid,bratView,ds,docoffsethash,cuis);
 				}
 			}
@@ -279,8 +280,14 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 				break;
 			}
 		}
-		if(replacementCui==null) return null; //No replacement found
-		if(attcuis.size()==0) return replacementCui; //No attributes need to be replaced
+		if(replacementCui==null) {
+			this.getContext().getLogger().log(Level.FINE,"No replacement for this CUI, must be agreement?");
+			return null; //No replacement found
+		}
+		if(attcuis.size()==0) {
+			this.getContext().getLogger().log(Level.FINE,"Att size is zero?! No replacement CUI.");
+			return replacementCui; //No attributes need to be replaced
+		}
 
 		//Must replace attributes mixed in with consensus data
 		String[] concuis = null;
@@ -290,7 +297,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			concuis = replacementCui.split(",");
 			concuishash = new HashSet<String>(Arrays.asList(concuis));
 		}
-		System.out.println("atts to get rid of:"+attcuis);
+		this.getContext().getLogger().log(Level.FINE,"atts to get rid of:"+attcuis);
 		concuishash.removeAll(attcuis);
 		Iterator<String> it = concuishash.iterator();
 		StringBuilder sb = new StringBuilder();
@@ -299,7 +306,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			if(it.hasNext()) sb.append(",");
 		}
 		replacementCui = sb.toString();
-		System.out.println("Replacement CUI 1:"+replacementCui);
+		this.getContext().getLogger().log(Level.FINE,"Conensus Replacement CUI:"+replacementCui);
 		return replacementCui;
 	}
 

@@ -39,8 +39,9 @@ public class CleanUtils {
 					if(norm.equalsIgnoreCase("cuiless")|| norm.equalsIgnoreCase("cui-less")) {
 						dda.setNorm("CUI-less");
 						thecuis.put("T"+index, "CUI-less");
-					}
-					System.err.println("Failed to get a body location cui for:"+norm);
+					} else if(norm.equals("NULL")){
+						//Whole body, just ignore
+					} else System.err.println("Failed to get a body location cui for:"+norm);
 				}
 			}
 		} else if(dda.getAttributeType().equals("Conditional")) {
@@ -49,8 +50,8 @@ public class CleanUtils {
 			if(norm.equalsIgnoreCase("yes"))  thecuis.put("T"+index,"C0087130");
 		} else if(dda.getAttributeType().equals("Generic")) {
 			if(norm.equalsIgnoreCase("yes"))  thecuis.put("T"+index,"C0277545");
-		//} else if(dda.getAttributeType().equals("Negation")) {
-		//	if(norm.equalsIgnoreCase("yes"))  thecuis.put("T"+index,"C0205160");
+		} else if(dda.getAttributeType().equals("Negation")) {
+			if(norm.equalsIgnoreCase("yes"))  thecuis.put("T"+index,"C0205160");
 		} else {
 			String attcui = replacements.getProperty(norm);
 			if(attcui!=null) thecuis.put("T"+index,attcui.trim());

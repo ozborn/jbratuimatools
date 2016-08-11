@@ -7,7 +7,6 @@ import java.net.URL;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Properties;
-import java.util.regex.Pattern;
 
 import org.apache.uima.UimaContext;
 import org.apache.uima.analysis_engine.AnalysisEngineDescription;
@@ -17,7 +16,6 @@ import org.apache.uima.jcas.JCas;
 import org.apache.uima.jcas.tcas.Annotation;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.apache.uima.util.Level;
-import org.apache.uima.util.Logger;
 import org.uimafit.component.JCasAnnotator_ImplBase;
 import org.uimafit.util.JCasUtil;
 import org.apache.ctakes.typesystem.type.textsem.IdentifiedAnnotation;
@@ -58,7 +56,7 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 
 
 	final String UmlsConnectionString = BratConstants.UMLS_DB_CONNECT_STRING;
-	
+
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		try {
 			super.initialize(aContext);
@@ -95,12 +93,12 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 		 */
 		String txtfilename = _bratOutputPath+File.separator+
 				uri.substring(uri.lastIndexOf(File.separator)+1,uri.lastIndexOf("."))
-				+".txt";
+		+".txt";
 		_edited_doc_text = jcas.getDocumentText();
 		StringBuffer sb = dd20142Brat(jcas);
 		String annfilename = _bratOutputPath+File.separator+
 				uri.substring(uri.lastIndexOf(File.separator)+1,uri.lastIndexOf("."))
-				+".ann";
+		+".ann";
 		try {
 			writeBratFile(annfilename,sb);
 			writeBratFile(txtfilename,new StringBuffer(_edited_doc_text));
@@ -211,28 +209,7 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 			CleanUtils cleanutil = new CleanUtils();
 			cleanutil.getCuisFromDiseaseDisorderAttributes(identifier,
 					identifierNoteMap,semeval2umls,this.getContext().getLogger(),theatt); 
-			
-			
-			/*
-			boolean b = Pattern.matches("C\\d\\d\\d\\d\\d\\d\\d*",norm.trim());
-			if(norm !=null){
-				if(b) { //Add in body locations, uniquely identified by having a CUI as a norm
-					this.getContext().getLogger().log(Level.FINE,"Found CUI:"+norm);
-					if(norm.startsWith("C")) {
-						if(norm.equalsIgnoreCase("cuiless")||norm.equalsIgnoreCase("cui-less")) {
-							identifierNoteMap.put(attid, "CUI-less"); //standardize
-						} else {
-							identifierNoteMap.put(attid, norm);
-						}
-					}
-					else identifierNoteMap.put(attid, "C"+norm); //Handle cases where C is missing
-				} else { //Add in non-body locations
-					String attcui = semeval2umls.getProperty(norm);
-					if(attcui!=null) identifierNoteMap.put(attid, attcui);
-					else this.getContext().getLogger().log(Level.INFO,"No CUI for:"+norm);
-				}
-			}  
-			*/
+
 			String attrange = theatt.getBegin()+" "+theatt.getEnd();
 			//if(entities.get(attrange)==null) {
 			brat_annotation.append(attid+"\t"+typename+" ");

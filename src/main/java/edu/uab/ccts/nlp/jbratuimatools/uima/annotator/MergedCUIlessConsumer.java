@@ -132,7 +132,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 					Set<String> cuis = new HashSet<String>();
 					for(int i=0;i<atts.size();i++){
 						DiseaseDisorderAttribute dda = (DiseaseDisorderAttribute) atts.get(i);
-						this.getContext().getLogger().log(Level.FINE,docid+" at:"+ds.getBegin()+"-"+ds.getEnd()+" ; getting cuis from attribute:"+dda.getAttributeType()+ " with norm:"+dda.getNorm());
+						this.getContext().getLogger().log(Level.FINER,docid+" at:"+ds.getBegin()+"-"+ds.getEnd()+" ; getting cuis from attribute:"+dda.getAttributeType()+ " with norm:"+dda.getNorm());
 						cleanutils.getCuisFromDiseaseDisorderAttributes(i,thecuis,semeval2umls,
 								this.getContext().getLogger(),dda);
 					}
@@ -188,7 +188,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 		String cuiless = "CUI-less";
 		StringArray cuisa = null;
 		String replacement_cui = null;
-		this.getContext().getLogger().log(Level.FINE,"Trying to find a consensus match for semeval cui-less concept: "
+		this.getContext().getLogger().log(Level.FINE,"Doc:"+docname+" trying to find a consensus match for semeval cui-less concept: "
 				+dd.getCoveredText()+" start/end "+dd.getBegin()+"/"+dd.getEnd());
 		String failures = "";
 		for (DiscontinousBratAnnotation brat: JCasUtil.select(bratview, DiscontinousBratAnnotation.class)) {
@@ -202,11 +202,13 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 				FSArray cuis = brat.getOntologyConceptArr();
 				replacement_cui = getConsensusReplaceCuis(docname, conhash, brat,attcuis);
 				if(replacement_cui!=null) {
-					this.getContext().getLogger().log(Level.FINE,"Got consensus CUI:"+replacement_cui);
+					this.getContext().getLogger().log(Level.FINE,"Doc:"+docname+" with text:"+
+				    dd.getCoveredText()+" --> Got consensus CUI:"+replacement_cui);
 					break;
 				}
 				replacement_cui = getBratAnnotatedCuis(cuis);
-				this.getContext().getLogger().log(Level.FINE,"Got brat (AGREE) CUI:"+replacement_cui);
+				this.getContext().getLogger().log(Level.FINE,"Doc:"+docname+" with text:"+dd.getCoveredText()+
+				"   --> Got brat (AGREE) CUI:"+replacement_cui);
 				break;
 			} else {
 				failures += "No Match "+brat.getDiscontinousText()+" start/end "+brat.getBegin()+"/"+brat.getEnd()+"\n";
@@ -225,7 +227,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 		if(replacement_cui==null || replacement_cui.isEmpty()) { 
 			cuisa = new StringArray(bratview,1); cuisa.set(0, cuiless); dd.setCuis(cuisa); }
 		else {
-			String multicuis[] = replacement_cui.split(" ");
+			String multicuis[] = replacement_cui.split(",");
 			cuisa = new StringArray(bratview,multicuis.length);
 			for(int i=0;i<multicuis.length;i++) { cuisa.set(i, multicuis[i]); }
 			dd.setCuis(cuisa);
@@ -266,16 +268,16 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			DiscontinousBratAnnotation brat, Set<String> attcuis) {
 		String replacementCui = null;
 		String bratOffSetString = AnnotatorStatistics.getOffsets(brat);
-		this.getContext().getLogger().log(Level.FINE, "In doc:"+docname+
-				" looking through "+conhash.size()+" consensus agreements to find "+bratOffSetString);
+		this.getContext().getLogger().log(Level.FINER, "In doc:("+docname+
+				") looking through "+conhash.size()+" consensus agreements to find "+bratOffSetString);
 		for (Map.Entry<String,String> entry : conhash.entrySet()){
 			String spanstring = entry.getKey().split("=")[1];
 			String condoc = entry.getKey().split("=")[0];
-			this.getContext().getLogger().log(Level.FINE, "docname:"+docname+" condoc:"+condoc+
+			this.getContext().getLogger().log(Level.FINER, "docname:"+docname+" condoc:"+condoc+
 					" looking to match "+spanstring+" with "+bratOffSetString);
 			if(condoc.substring(0,condoc.indexOf('.')).equals(docname.substring(0,docname.indexOf('.')))&& spanstring.equals(bratOffSetString)) {
 				replacementCui = entry.getValue();
-				this.getContext().getLogger().log(Level.INFO, "Found replacement CUI "
+				this.getContext().getLogger().log(Level.FINE, "Doc:"+docname+" found replacement CUI "
 						+replacementCui+" from "+spanstring);
 				break;
 			}
@@ -297,7 +299,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			concuis = replacementCui.split(",");
 			concuishash = new HashSet<String>(Arrays.asList(concuis));
 		}
-		this.getContext().getLogger().log(Level.FINE,"atts to get rid of:"+attcuis);
+		this.getContext().getLogger().log(Level.FINE,"Doc:"+docname+" attributes to get rid of:"+attcuis);
 		concuishash.removeAll(attcuis);
 		Iterator<String> it = concuishash.iterator();
 		StringBuilder sb = new StringBuilder();
@@ -306,7 +308,8 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			if(it.hasNext()) sb.append(",");
 		}
 		replacementCui = sb.toString();
-		this.getContext().getLogger().log(Level.FINE,"Conensus Replacement CUI:"+replacementCui);
+		this.getContext().getLogger().log(Level.FINE,"Doc:("+docname+") Brat Annotation:"+
+		brat.getCoveredText()+" Consensus Replacement CUI:"+replacementCui);
 		return replacementCui;
 	}
 
@@ -336,7 +339,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 					continue;
 				}
 				String id = fields[1]+"="+fields[2];
-				this.getContext().getLogger().log(Level.FINE,"GOt id for hash of:"+id);
+				this.getContext().getLogger().log(Level.FINER,"GOt id for hash of:"+id);
 				if(fields[4]!=null && !fields[4].isEmpty()) { 
 					negIncludedCuis = fields[4].replaceAll("\"", "");
 					negSeparateCuis = negIncludedCuis;

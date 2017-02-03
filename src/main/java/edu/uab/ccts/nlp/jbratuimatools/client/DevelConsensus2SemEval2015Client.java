@@ -57,7 +57,7 @@ public class DevelConsensus2SemEval2015Client {
 	static String brat_annotation_root = null;
 	static String output_directory = "target"+File.separator+"cuiless"+File.separator;
 	static String tab_consensus_filepath=System.getProperty("user.home")+
-				"/code/repo/cuilessdata/analysis/SemEvalCUIlessUpdates.txt";
+				"/code/repo/cuilessdata/analysis/SemEvalCUIlessUpdates2016ab.txt";
 	static boolean roundtrip_test = false; //True if testing ability to roundtrip files without cui-less adjustment
 	static boolean separate_negations=true;
 	static String[] consensusArray;

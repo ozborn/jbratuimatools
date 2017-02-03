@@ -24,7 +24,6 @@ import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCr
 
 
 /**
- * TODO (Incomplete)
  * Calculates annotator agreement in the devel dataset between multiple annotators
  * but currently just 2 annotators.
  * @author ozborn

@@ -89,7 +89,8 @@ public class BRATtoSemEval2015Client {
 				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015OldTrainRoot()));
 				builder.add(SemEval2015GoldAttributeParserAnnotator.getTrainingDescription());
 				builder.add(BratParserAnnotator.getDescription());
-				if(!roundtrip_test) builder.add(MergedCUIlessConsumer.getDescription());
+				String[] noConsensus = {};
+				if(!roundtrip_test) builder.add(MergedCUIlessConsumer.getDescription(noConsensus,false));
 				builder.add(SemEval2015Task2Consumer.getCuilessDescription(output_directory));
 
 				for (@SuppressWarnings("unused") JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))

@@ -60,7 +60,9 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 
 	@ConfigurationParameter(
 			name = PARAM_CONSENSUS_LINES,
-			description = "file to read consensus annotations from for double annotated dataset")
+			description = "file to read consensus annotations from for double annotated dataset",
+			mandatory=false
+			)
 	protected String[] consensusLines = null;
 
 	@ConfigurationParameter(
@@ -126,7 +128,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 				semeval_annotation_size++;
 				if(ds.getCuis().get(0).equalsIgnoreCase("CUI-less")) {
 					semeval_cuiless_size++;
-					FSArray atts = SemEval2015Task2Consumer.associateSpans(semevalView, ds);
+					FSArray atts = SemEval2015Task2Consumer.associateSpans(semevalView, ds,this.getContext().getLogger());
 					CleanUtils cleanutils = new CleanUtils();
 					Hashtable<String,String> thecuis = new Hashtable<String,String>();
 					Set<String> cuis = new HashSet<String>();
@@ -148,12 +150,13 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			this.getContext().getLogger().log(Level.FINE,"Found a annotated brat disease collection of size "+onlyDisease.size());
 			if(semeval_cuiless_size!= onlyDisease.size() || both_brat_semeval!=semeval_cuiless_size){
 				if(semeval_cuiless_size<onlyDisease.size()) {
-					this.getContext().getLogger().log(Level.WARNING,docid+" Original semeval annotation"+
+					this.getContext().getLogger().log(Level.INFO,docid+" Original semeval annotation"+
 							"may have annotated a CUI-less concept with a CUI that was originally CUI-less in our"+
-							"early dataset.");
-				}
-				this.getContext().getLogger().log(Level.WARNING,docid+" has input cuiless:"+
+							" early dataset or annotators added extra BRAT annotations");
+				} else {
+					this.getContext().getLogger().log(Level.WARNING,docid+" has input cuiless:"+
 						semeval_cuiless_size+"  and annotated cuiless:"+onlyDisease.size());
+				}
 				this.getContext().getLogger().log(Level.INFO,"Both SemEval and Brat:"+both_brat_semeval);
 			}
 			if(only_semeval!=0) this.getContext().getLogger().log(Level.INFO,"SemEval Only Size:"+only_semeval);
@@ -267,6 +270,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 	private String getConsensusReplaceCuis(String docname, Map<String, String> conhash,
 			DiscontinousBratAnnotation brat, Set<String> attcuis) {
 		String replacementCui = null;
+		if(consensusLines==null) return replacementCui;
 		String bratOffSetString = AnnotatorStatistics.getOffsets(brat);
 		this.getContext().getLogger().log(Level.FINER, "In doc:("+docname+
 				") looking through "+conhash.size()+" consensus agreements to find "+bratOffSetString);

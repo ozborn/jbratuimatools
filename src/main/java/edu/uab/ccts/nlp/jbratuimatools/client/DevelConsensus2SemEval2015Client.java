@@ -34,8 +34,6 @@ import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCr
 
 /**
  * 
- * FIXME - could be merged with BRATtoSemEval2015Client
- * 
  * This should read in the annotated BRAT files with multiple CUIs, and read in the SemEval2015
  * updated (Dec 3, 2014 version) devel data and overlay the multiple CUI annotations for
  * the CUIless concepts to generate a new output file suitable for use as devel/test data.

@@ -67,10 +67,13 @@ public class BRATtoSemEval2015Client {
 				System.exit(0);
 			}
 		}
-		System.out.println("Writing cuiless annotations for:"+brat_annotation_root); System.out.flush();
+		String notice = "Writing cuiless annotations using:"+brat_annotation_root+
+		" as input to output directory:"+output_directory;
+		System.out.println(notice);System.out.flush();
 
 		Collection<File> inputFiles = FileUtils.listFiles(new File(brat_annotation_root),
 				BratConstants.bratExtensions, true);
+		LOG.info(notice);
 		LOG.info("Got "+inputFiles.size()+" brat input files for converting to SemEval 2015 format...");
 		apply(inputFiles);
 
@@ -86,10 +89,11 @@ public class BRATtoSemEval2015Client {
 						);
 
 				AggregateBuilder builder = new AggregateBuilder();
-				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015OldTrainRoot()));
+				//builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015OldTrainRoot()));
+				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015UpdatedTrainRoot()));
 				builder.add(SemEval2015GoldAttributeParserAnnotator.getTrainingDescription());
 				builder.add(BratParserAnnotator.getDescription());
-				String[] noConsensus = {};
+				String[] noConsensus = null;
 				if(!roundtrip_test) builder.add(MergedCUIlessConsumer.getDescription(noConsensus,false));
 				builder.add(SemEval2015Task2Consumer.getCuilessDescription(output_directory));
 

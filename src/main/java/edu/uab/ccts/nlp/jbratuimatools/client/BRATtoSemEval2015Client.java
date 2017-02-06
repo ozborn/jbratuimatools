@@ -5,14 +5,15 @@ import java.util.Collection;
 import java.util.Hashtable;
 
 import org.apache.commons.io.FileUtils;
+import org.apache.uima.analysis_engine.AnalysisEngineDescription;
 import org.apache.uima.collection.CollectionReaderDescription;
+import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uimafit.factory.AggregateBuilder;
 
 import com.google.common.collect.HashMultiset;
 
@@ -46,24 +47,24 @@ public class BRATtoSemEval2015Client {
 			new Hashtable<String,Hashtable<String,HashMultiset<String>>>();
 
 	private static final Logger LOG  = LoggerFactory.getLogger(BRATtoSemEval2015Client.class);
-	static String brat_annotation_root = null;
-	static String output_directory = "target"+File.separator+"cuiless"+File.separator;
+	static String brat_annotation_root = ClientConfiguration.brat_annotated_training_data;
+	static String output_directory = "target"+File.separator+"cuiless"+
+	File.separator+"train"+File.separator;
 	static boolean roundtrip_test = false; //True if testing ability to roundtrip files without cui-less adjustment
 
 	public static void main(String... args)
 	{
-		if(args.length>0 && args[0].equalsIgnoreCase("devel")) {
-			output_directory+="devel";
-			brat_annotation_root = ClientConfiguration.brat_annotated_devel_data;
+		if(args.length>0 && args[0].equalsIgnoreCase("old")) {
+			output_directory+="old";
 		} else { 
-			output_directory+="train";
-			brat_annotation_root = ClientConfiguration.brat_annotated_training_data; 
+			output_directory+="updated";
 		}
 		if(args.length>1 && args[1].equalsIgnoreCase("roundtrip")) roundtrip_test=true;
 		File outdir = new File(output_directory); 
 		if(!outdir.exists()){
 			if(!outdir.mkdirs()) {
 				System.err.println("Can not create needed output directory");
+				LOG.error("Can not create needed output directory");
 				System.exit(0);
 			}
 		}
@@ -89,13 +90,21 @@ public class BRATtoSemEval2015Client {
 						);
 
 				AggregateBuilder builder = new AggregateBuilder();
-				//builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015OldTrainRoot()));
-				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015UpdatedTrainRoot()));
+				AnalysisEngineDescription aed = null;
+				if(output_directory.endsWith("old")) {
+					aed=SemEval2015ViewCreatorAnnotator.createDescription(
+							ClientConfiguration.getSemeval2015OldTrainRoot(),true);
+				}
+				else if(output_directory.endsWith("updated")) {
+					aed=SemEval2015ViewCreatorAnnotator.createDescription(
+							ClientConfiguration.getSemeval2015UpdatedTrainRoot(),true);
+				}
+				builder.add(aed);
 				builder.add(SemEval2015GoldAttributeParserAnnotator.getTrainingDescription());
 				builder.add(BratParserAnnotator.getDescription());
 				String[] noConsensus = null;
 				if(!roundtrip_test) builder.add(MergedCUIlessConsumer.getDescription(noConsensus,false));
-				builder.add(SemEval2015Task2Consumer.getCuilessDescription(output_directory));
+				builder.add(SemEval2015Task2Consumer.getDescription(output_directory));
 
 				for (@SuppressWarnings("unused") JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))
 				{}

@@ -13,13 +13,13 @@ import java.util.stream.Stream;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.collection.CollectionReaderDescription;
+import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uimafit.factory.AggregateBuilder;
 
 import com.google.common.collect.HashMultiset;
 
@@ -108,11 +108,11 @@ public class DevelConsensus2SemEval2015Client {
 						);
 
 				AggregateBuilder builder = new AggregateBuilder();
-				builder.add(SemEval2015ViewCreatorAnnotator.createAnnotatorDescription(ClientConfiguration.getSemeval2015OldTrainRoot()));
+				builder.add(SemEval2015ViewCreatorAnnotator.createDescription(ClientConfiguration.getSemeval2015UpdatedDevelRoot(),true));
 				builder.add(SemEval2015GoldAttributeParserAnnotator.getTrainingDescription());
 				builder.add(BratParserAnnotator.getDescription());
 				if(!roundtrip_test) builder.add(MergedCUIlessConsumer.getDescription(consensusArray,separate_negations));
-				builder.add(SemEval2015Task2Consumer.getCuilessDescription(output_directory));
+				builder.add(SemEval2015Task2Consumer.getDescription(output_directory));
 
 				for (@SuppressWarnings("unused") JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))
 				{}

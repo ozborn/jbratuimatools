@@ -1,9 +1,17 @@
 package edu.uab.ccts.nlp.jbratuimatools.client;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.IOException;
+import java.io.Reader;
+import java.nio.channels.Channels;
+import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.CharsetDecoder;
+import java.nio.charset.CodingErrorAction;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
+import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Collection;
 import java.util.Hashtable;
@@ -58,6 +66,7 @@ public class DevelConsensus2SemEval2015Client {
 				"/code/repo/cuilessdata/analysis/SemEvalCUIlessUpdates2016ab.txt";
 	static boolean roundtrip_test = false; //True if testing ability to roundtrip files without cui-less adjustment
 	static boolean separate_negations=true;
+	static boolean cuilessOnly = false;
 	static String[] consensusArray;
 
 	public static void main(String... args)
@@ -81,6 +90,31 @@ public class DevelConsensus2SemEval2015Client {
 		LOG.info("Usng consensus annotation file:"+tab_consensus_filepath);
 		
 		
+		/*
+		try (Stream<String> stream = Files.lines(Paths.get(tab_consensus_filepath),Charset.forName("UTF-8"))) {
+			stream  
+					.filter(line -> line.startsWith("UPDATE_DISORDER"))
+					.forEach(System.out::println);
+		} catch (IOException ioe) { ioe.printStackTrace(); }
+		*/
+		/*
+		CharsetDecoder dec=StandardCharsets.UTF_8.newDecoder()
+                .onMalformedInput(CodingErrorAction.REPLACE);
+		Path path=Paths.get(tab_consensus_filepath);
+		List<String> lines;
+		try(Reader r=Channels.newReader(FileChannel.open(path), dec, -1);
+		BufferedReader br=new BufferedReader(r)) {
+				lines=br.lines()
+				//.filter(line -> line.startsWith("UPDATE_DISORDER"))
+              //.filter(s->!s.contains(dec.replacement()))
+              .filter(s -> s.regionMatches(true, 0, "aa", 0, 2))
+              .collect(Collectors.toList());
+			for(String s: lines) System.out.println(s);
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		*/
+
 		try (Stream<String> stream = Files.lines(Paths.get(tab_consensus_filepath),Charset.forName("Cp1252"))) {
 			List<String> consensusList = stream
 					//.filter(line -> line.startsWith("DISAGREE")).collect(Collectors.toList());
@@ -108,7 +142,7 @@ public class DevelConsensus2SemEval2015Client {
 						);
 
 				AggregateBuilder builder = new AggregateBuilder();
-				builder.add(SemEval2015ViewCreatorAnnotator.createDescription(ClientConfiguration.getSemeval2015UpdatedDevelRoot(),true));
+				builder.add(SemEval2015ViewCreatorAnnotator.createDescription(ClientConfiguration.getSemeval2015UpdatedDevelRoot(),cuilessOnly));
 				builder.add(SemEval2015GoldAttributeParserAnnotator.getTrainingDescription());
 				builder.add(BratParserAnnotator.getDescription());
 				if(!roundtrip_test) builder.add(MergedCUIlessConsumer.getDescription(consensusArray,separate_negations));

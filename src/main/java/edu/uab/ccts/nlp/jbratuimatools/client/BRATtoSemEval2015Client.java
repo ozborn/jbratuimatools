@@ -27,17 +27,19 @@ import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCr
 
 
 /**
- * This should read in the annotated BRAT files with multiple CUIs, and read in the SemEval2015
- * updated (Dec 3, 2014 version) training and test data and overlay the multiple CUI annotations for
- * the CUIless concepts to generate a new output file suitable for use as training data.
+ * This reads annotated BRAT files with multiple CUIs, and read 
+ * in the SemEval2015 old or updated (Dec 3, 2014 version) training data and 
+ * overlay the multiple CUI annotations for the CUIless concepts to 
+ * generate a new output file suitable for use as training data. Alternatively
+ * it can generate a training data set with only the original 'CUI-less'
+ * annotations
  * 
  * Basically this generates the final data set for training data, integrating user
  * annotations for CUIless concepts.
  * 
- * For now it can use the old dataset for the training data, but the updated set for
- * the devel/testing data. This is not that useful though, since it uses raw BRAT data
- * for the development set, not the Development Consensus. To generate that, use
- * DevelConsensus2SemEval2015Client
+ * This is NOT used for the double annotated DEV dataset (dataset D) which uses a 
+ * consensus file to resolve conflicts between the annotators.
+ * To generate that, use DevelConsensus2SemEval2015Client
  * 
  * @author ozborn
  *

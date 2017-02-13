@@ -367,7 +367,6 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 
 	public static AnalysisEngineDescription getDescription(String[] lines, boolean negSepCuis) throws ResourceInitializationException {
 		return 
-				//AnalysisEngineFactory.createPrimitiveDescription(MergedCUIlessConsumer.class
 				AnalysisEngineFactory.createEngineDescription(
 						MergedCUIlessConsumer.class
 						,PARAM_CONSENSUS_LINES

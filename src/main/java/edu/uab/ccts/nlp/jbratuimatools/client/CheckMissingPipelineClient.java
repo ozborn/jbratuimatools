@@ -28,6 +28,8 @@ import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015ViewCr
 /**
  * This should check for missing annotations in both the train and devel/testing
  * data sets.
+ * It operates on pre-consensus DEV annotations and is thus not accurate for final
+ * annotations
  * @author ozborn
  *
  */
@@ -36,7 +38,7 @@ public class CheckMissingPipelineClient {
 	private static final Logger LOG  = LoggerFactory.getLogger(CheckMissingPipelineClient.class);
 	static boolean isTraining = true;
 
-	static String brat_annotation_root = ClientConfiguration.cuilessDataDirPath + "devel/devel_updated_v2/";
+	static String brat_annotation_root = ClientConfiguration.cuilessDataDirPath + "devel/devel_updated_v2016ab/";
 
 	static Hashtable<String,Hashtable<String,HashMultiset<String>>> annotation_results = 
 			new Hashtable<String,Hashtable<String,HashMultiset<String>>>();

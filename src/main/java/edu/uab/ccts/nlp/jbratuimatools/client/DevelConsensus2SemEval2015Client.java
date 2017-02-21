@@ -66,7 +66,7 @@ public class DevelConsensus2SemEval2015Client {
 				"/code/repo/cuilessdata/analysis/SemEvalCUIlessUpdates2016ab.txt";
 	static boolean roundtrip_test = false; //True if testing ability to roundtrip files without cui-less adjustment
 	static boolean separate_negations=true;
-	static boolean cuilessOnly = false;
+	static boolean cuilessOnly = true;
 	static String[] consensusArray;
 
 	public static void main(String... args)

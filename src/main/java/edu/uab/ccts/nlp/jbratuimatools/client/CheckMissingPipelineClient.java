@@ -7,6 +7,7 @@ import java.util.Hashtable;
 import org.apache.commons.io.FileUtils;
 import org.apache.ctakes.typesystem.type.relation.BinaryTextRelation;
 import org.apache.uima.collection.CollectionReaderDescription;
+import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.fit.util.JCasUtil;
@@ -14,7 +15,6 @@ import org.apache.uima.jcas.JCas;
 import org.cleartk.util.ViewUriUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.uimafit.factory.AggregateBuilder;
 
 import com.google.common.collect.HashMultiset;
 

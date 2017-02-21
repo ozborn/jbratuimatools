@@ -25,7 +25,7 @@ import org.cleartk.semeval2015.type.DiseaseDisorder;
 import org.cleartk.semeval2015.type.DiseaseDisorderAttribute;
 import org.apache.uima.fit.component.JCasAnnotator_ImplBase;
 import org.apache.uima.fit.factory.AnalysisEngineFactory;
-import org.uimafit.util.JCasUtil;
+import org.apache.uima.fit.util.JCasUtil;
 
 import brat.type.DiscontinousBratAnnotation;
 

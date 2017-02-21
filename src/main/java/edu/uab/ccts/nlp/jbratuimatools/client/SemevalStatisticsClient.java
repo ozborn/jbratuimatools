@@ -7,12 +7,11 @@ import java.util.Collection;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.collection.CollectionReaderDescription;
+import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.apache.uima.util.Level;
-import org.uimafit.factory.AggregateBuilder;
 
 import edu.uab.ccts.nlp.shared_task.semeval2015.SemEval2015Constants;
 import edu.uab.ccts.nlp.shared_task.semeval2015.uima.SemEval2015CollectionReader;
@@ -90,7 +89,7 @@ public class SemevalStatisticsClient {
 			builder.add(SemEval2015AttributeCounter.getDescription(
 					"target"+File.separator+"Semeval2015CountResults",fileName));
 
-			for (JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))
+			for (@SuppressWarnings("unused") JCas jcas : SimplePipeline.iteratePipeline(crd, builder.createAggregateDescription()))
 			{
 				//JCas annView = jcas.getView(BratConstants.ANN_VIEW);
 				//Collection<DiscontinousBratAnnotation> brats = JCasUtil.select(annView, DiscontinousBratAnnotation.class);

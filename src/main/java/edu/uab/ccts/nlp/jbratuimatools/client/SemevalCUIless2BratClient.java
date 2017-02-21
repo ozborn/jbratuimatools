@@ -6,11 +6,11 @@ import java.util.Collection;
 import org.apache.commons.io.FileUtils;
 import org.apache.uima.UIMAException;
 import org.apache.uima.collection.CollectionReaderDescription;
+import org.apache.uima.fit.factory.AggregateBuilder;
 import org.apache.uima.fit.factory.CollectionReaderFactory;
 import org.apache.uima.fit.pipeline.SimplePipeline;
 import org.apache.uima.jcas.JCas;
 import org.apache.uima.resource.ResourceInitializationException;
-import org.uimafit.factory.AggregateBuilder;
 
 import edu.uab.ccts.nlp.jbratuimatools.uima.annotator.Semeval2CUIlessBRATAnnotator;
 import edu.uab.ccts.nlp.shared_task.semeval2015.SemEval2015Constants;

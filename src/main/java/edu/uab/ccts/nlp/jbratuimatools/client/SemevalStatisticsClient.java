@@ -32,6 +32,7 @@ import edu.uab.ccts.nlp.shared_task.semeval2015.uima.annotator.SemEval2015GoldAt
 public class SemevalStatisticsClient {
 	//protected static String resourceDirPath = "/Users/ozborn/code/repo/cuilessdata/devel/consensus_neg_excluded_2016ab/";
 	static String resourceDirPath = "/Users/ozborn/code/repo/cuilessdata/CUILESS/training_fixed_semeval_cuiless_only";
+	static String outputPath = "target"+File.separator+"Semeval2015CountResults"+File.separator;
 	static String fileName=null;
 
 
@@ -45,7 +46,7 @@ public class SemevalStatisticsClient {
 					resourceDirPath);
 		} else resourceDirPath = args[0];
 		if(args[1]==null) {
-			fileName="allCounts.txt";
+			fileName=outputPath+"allCounts.txt";
 		} else fileName=args[1];
 		System.out.println("Using files from resourceDirPath:"+resourceDirPath
 				+"\nOutputing results to:"+fileName);
@@ -63,8 +64,8 @@ public class SemevalStatisticsClient {
 					System.exit(0);
 				}
 			} else { System.out.println(resourceDirPath+" pre-exists, make sure clean..."); }
-			fileName = resourceDirPath+File.separator+fileName;
 			out = new File(fileName);
+			if(out.exists()) out.delete();
 			out.createNewFile();
 			try (Writer allwriter = new FileWriter(fileName)){
 				allwriter.write("DocID|Spans|Disorder|Negation|Subject|Uncertainity|Course|Severity|Conditional|Generic|Body|\n");

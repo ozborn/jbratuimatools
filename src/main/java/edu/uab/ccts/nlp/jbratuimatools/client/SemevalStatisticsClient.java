@@ -68,7 +68,7 @@ public class SemevalStatisticsClient {
 			if(out.exists()) out.delete();
 			out.createNewFile();
 			try (Writer allwriter = new FileWriter(fileName)){
-				allwriter.write("DocID|Spans|Disorder|Negation|Subject|Uncertainity|Course|Severity|Conditional|Generic|Body|\n");
+				allwriter.write("DocID|Spans|Disorder|Negation|Subject|Uncertainty|Course|Severity|Conditional|Generic|Body|Attr Count|CUI Count|\n");
 			}
 		} catch (Exception e) { e.printStackTrace(); }
 		apply(resourceDirPath,semFiles);

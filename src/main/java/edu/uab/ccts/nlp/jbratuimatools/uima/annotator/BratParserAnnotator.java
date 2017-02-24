@@ -29,6 +29,7 @@ import edu.uab.ccts.nlp.brat.BratConfigurationImpl;
 import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.brat.BratEntity;
 import edu.uab.ccts.nlp.shared_task.semeval2015.SemEval2015Constants;
+import edu.uab.ccts.nlp.umls.tools.CleanUtils;
 import brat.type.DiscontinousBratAnnotation;
 
 public class BratParserAnnotator extends JCasAnnotator_ImplBase {
@@ -199,10 +200,15 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				DiscontinousBratAnnotation diseaseObject = uimaNotDiseaseDict.get(notDisEntKey);
 				two.setArgument(diseaseObject);
 				btr.setArg2(two);
+				
+				//Set<String> somecuis = sec.semevalNorm2Cui(diseaseObject.getAttributeType(), norm);
 				if(diseaseObject.getTypeID()==bratconfig.getIdFromType("Negation")) {
 					diseaseSubject.setPolarity(1);
 					addCui2DiscontinousBratAnnotation(textView, diseaseObject,"C0205160");
-				} else if(diseaseObject.getTypeID()==bratconfig.getIdFromType("Uncertainity")) {
+					//Misspelled, should have used Constant earlier...
+				} else if(diseaseObject.getTypeID()==bratconfig.getIdFromType("Uncertainity")
+					//	|| diseaseObject.getTypeID()==bratconfig.getIdFromType(SemEval2015Constants.UNCERTAINTY_RELATION)
+						) {
 					diseaseSubject.setUncertainty(1);
 					addCui2DiscontinousBratAnnotation(textView, diseaseObject,"C0087130");
 				} else if(diseaseObject.getTypeID()==bratconfig.getIdFromType("Conditional")) {
@@ -213,6 +219,8 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					diseaseSubject.setGeneric(true);	
 					addCui2DiscontinousBratAnnotation(textView, diseaseObject,"C0277545");
 				}
+				
+				
 				btr.addToIndexes(textView);
 			} 
 		}
@@ -269,7 +277,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					int k=0;
 					if(cuis.length==0) { cuis = new String[1]; cuis[0]="MISSED_CUI"; }
 					for(String cui : cuis) {
-						if(!isWellFormedCUI(cui)) {
+						if(!CleanUtils.isWellFormedCUI(cui)) {
 							LOG.warn("Ill formed cui \""+cui+"\" annotated by"+annotated.getDocName()+
 							" in "+annotated.getDocName()+" at "+annotated.getBegin());
 							System.err.println("Ill formed CUI:"+cui);
@@ -358,7 +366,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				String[] chunks = line.split("\\|");
 				if(chunks[2].equals("CUI-less")){
 					if(prev_chunks!=null && (
-							(!prev_chunks[2].equals("CUI-less")) &&
+							(!prev_chunks[2].equals(SemEval2015Constants.CUILESS)) &&
 							(!prev_chunks[1].equals(chunks[1])))) {
 					}
 					semeval_cuiless_count++;
@@ -396,11 +404,6 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 
 	public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {
 		return AnalysisEngineFactory.createEngineDescription(BratParserAnnotator.class);
-	}
-
-	public static boolean isWellFormedCUI(String cui) {
-		if(cui.startsWith("C") && cui.length()==8) return true;
-		return false;
 	}
 
 }

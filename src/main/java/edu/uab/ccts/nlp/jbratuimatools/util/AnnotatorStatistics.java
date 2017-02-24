@@ -19,7 +19,7 @@ import com.google.common.collect.Multisets;
 
 import edu.uab.ccts.nlp.brat.BratConfiguration;
 import edu.uab.ccts.nlp.brat.BratConstants;
-import edu.uab.ccts.nlp.jbratuimatools.uima.annotator.BratParserAnnotator;
+import edu.uab.ccts.nlp.umls.tools.CleanUtils;
 import edu.uab.ccts.nlp.umls.tools.UMLSTools;
 
 import org.apache.ctakes.typesystem.type.refsem.OntologyConcept;
@@ -385,12 +385,12 @@ public class AnnotatorStatistics implements Serializable {
 			for(Map.Entry<String,String> mapentry : map_type_hash.entrySet()) {
 				String cuis = mapentry.getValue();
 				String[] cs = cuis.split(",");
-				if(BratParserAnnotator.isWellFormedCUI(cs[0])) { doublestdist.add(cuis); }
+				if(CleanUtils.isWellFormedCUI(cs[0])) { doublestdist.add(cuis); }
 				else{ LOG.warn(cs[0]+" is not a well-formed CUI");}
 				//Iterate through all the cuis for this mapping
 				for(int i=0;i<cs.length;i++){
 					String cui = cs[i].trim();
-					if(!BratParserAnnotator.isWellFormedCUI(cui)) {
+					if(!CleanUtils.isWellFormedCUI(cui)) {
 						LOG.warn(mapentry.getKey()+" has badly formed cui:"+cui);
 						bad_form_count++;
 						continue;

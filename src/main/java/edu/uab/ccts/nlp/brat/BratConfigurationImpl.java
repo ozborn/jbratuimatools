@@ -9,7 +9,9 @@ import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Set;
 
+import org.apache.uima.UIMAFramework;
 import org.apache.uima.resource.ResourceInitializationException;
+import org.apache.uima.util.Level;
 
 public class BratConfigurationImpl implements BratConfiguration {
 
@@ -77,7 +79,7 @@ public class BratConfigurationImpl implements BratConfiguration {
 	        			}
 	        			String message = "Created entity "+bei.getName();
 	        			if(bei.getParent()!=null) message+=" with parent "+bei.getParent().getName();
-	        			//System.out.println(message);
+	        			UIMAFramework.getLogger().log(Level.FINER,message);
         				stack.push(bei); //Now we are end of queue
         				lastdepth = depth;
 		        	} else if(curmode == Mode.RELATIONS) {

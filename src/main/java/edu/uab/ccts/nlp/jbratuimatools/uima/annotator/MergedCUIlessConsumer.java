@@ -29,15 +29,12 @@ import org.apache.uima.fit.util.JCasUtil;
 
 import brat.type.DiscontinousBratAnnotation;
 
-import java.io.IOException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.Vector;
 
@@ -69,7 +66,6 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 			name = PARAM_NEG_SEPARATED_CUIS,
 			description = "Whether to use consensus CUIs resolved such that negation is included as a separate term")
 	protected boolean negSeparatedCuis = false;
-	static Properties semeval2umls;
 
 	public void initialize(UimaContext context) throws ResourceInitializationException
 	{
@@ -78,11 +74,6 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 		else this.getContext().getLogger().log(Level.INFO,"No consensus file used...");
 		if(negSeparatedCuis) this.getContext().getLogger().log(Level.CONFIG,"Using negation separated cuis");
 		else this.getContext().getLogger().log(Level.INFO,"Negation included in cuis");
-		URL u1 = this.getClass().getResource("/semeval2umls.properties");
-		semeval2umls = new Properties();
-		try {
-			semeval2umls.load(u1.openStream());
-		} catch (IOException ioe) { throw new ResourceInitializationException(ioe); }
 	}
 
 
@@ -135,8 +126,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 					for(int i=0;i<atts.size();i++){
 						DiseaseDisorderAttribute dda = (DiseaseDisorderAttribute) atts.get(i);
 						this.getContext().getLogger().log(Level.FINER,docid+" at:"+ds.getBegin()+"-"+ds.getEnd()+" ; getting cuis from attribute:"+dda.getAttributeType()+ " with norm:"+dda.getNorm());
-						cleanutils.getCuisFromDiseaseDisorderAttributes(i,thecuis,semeval2umls,
-								this.getContext().getLogger(),dda);
+						cleanutils.getCuisFromDiseaseDisorderAttributes(i,thecuis,dda);
 					}
 					cuis.addAll(thecuis.values());
 					if(cuis.size()>0) this.getContext().getLogger().log(Level.FINE,"Got "+cuis.size()+" attribute cuis:"+cuis);
@@ -188,7 +178,6 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 	private boolean updateWithConsensusCUI(String docname,JCas bratview, 
 			DiseaseDisorder dd, Map<String,String>conhash, Set<String> attcuis) {
 		boolean matched = false;
-		String cuiless = "CUI-less";
 		StringArray cuisa = null;
 		String replacement_cui = null;
 		this.getContext().getLogger().log(Level.FINE,"Doc:"+docname+" trying to find a consensus match for semeval cui-less concept: "
@@ -228,7 +217,7 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 					docid+" - failed to find a match for:"+dd.getCoveredText()+" in:\n"+failures);
 		} else { both_brat_semeval++; } 
 		if(replacement_cui==null || replacement_cui.isEmpty()) { 
-			cuisa = new StringArray(bratview,1); cuisa.set(0, cuiless); dd.setCuis(cuisa); }
+			cuisa = new StringArray(bratview,1); cuisa.set(0, SemEval2015Constants.CUILESS); dd.setCuis(cuisa); }
 		else {
 			String multicuis[] = replacement_cui.split(",");
 			cuisa = new StringArray(bratview,multicuis.length);

@@ -12,6 +12,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<jcasgen.version>2.10.1</jcasgen.version>
 	</properties>
 
 	<dependencies>
@@ -50,7 +51,7 @@
 						<typeSystemInclude>src/main/resources/brat/TypeSystem.xml</typeSystemInclude>
 					</typeSystemIncludes>
 				</configuration>
-				<version>2.4.2</version>
+				<version>${jcasgen.version}</version>
 				<executions>
 					<execution>
 						<goals>

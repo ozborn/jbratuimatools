@@ -78,8 +78,8 @@ public class CleanUtils {
 
 
 	public static boolean isWellFormedCUI(String cuistring) {
-		if(Pattern.matches("C\\d\\d\\d\\d\\d\\d\\d*",cuistring) ||
-		   cuistring.equals(SemEval2015Constants.CUILESS)) return true;
+		if(Pattern.matches("C\\d\\d\\d\\d\\d\\d\\d*",cuistring)) return true;
+		if(cuistring.trim().equals(SemEval2015Constants.CUILESS)) return true;
 		return false;
 	}
 }  

@@ -41,7 +41,6 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 	TreeMap<String,String> bratKeyDict = null; //Key Txx (entity id), Value Entity Row
 	Hashtable<String,DiscontinousBratAnnotation> uimaDiseaseDict  = null; //Key Txxx, Value brat diseases
 	Hashtable<String,DiscontinousBratAnnotation> uimaNotDiseaseDict  = null; //Key Txxx, Value brat non-disease
-	boolean verbose = true; 
 	boolean print_problem_files_only = true;
 
 
@@ -121,7 +120,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 			LOG.warn("No annotation view, there may be no CUI-less concepts in "+docname);
 		}
 
-		LOG.debug(bratKeyDict.toString());
+		LOG.debug("bratKeyDict:"+bratKeyDict.toString());
 
 
 		//Get all our entities (diseases) first
@@ -139,7 +138,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				dba.setTypeID(bratent.getTypeId());
 				if(tabfields[0].indexOf(";")==-1){
 					LOG.debug("FOr DBA:"+dba.getId()+" in "+dba.getDocName()+
-					" the spans are:"+entfields[1].trim()+" - "+entfields[2].trim());
+							" the spans are:"+entfields[1].trim()+" - "+entfields[2].trim());
 					int begin = Integer.parseInt(entfields[1].trim());
 					int end = Integer.parseInt(entfields[2].trim());
 					dba.setBegin(begin);
@@ -153,18 +152,21 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					dba.setSpans(thespans);
 				} else {
 					String[] span_fields = tabfields[0].split(" |;");
-					LOG.debug("FOr DBA:"+dba.getId()+" in "+dba.getDocName()+" the spans are:");
+					StringBuilder multispanmessage = new StringBuilder(
+							"For DBA:"+dba.getId()+" in "+dba.getDocName()+" the spans are:");
 					FSArray thespans = new FSArray(textView,(span_fields.length-1)/2);
 					for(int i=1;i<span_fields.length;i=i+2){
 						Annotation span = new Annotation(textView);
-						if(i==1) dba.setBegin(Integer.parseInt(span_fields[i]));
-						span.setBegin(Integer.parseInt(span_fields[i]));
+						int begin = Integer.parseInt(span_fields[i]);
+						if(i==1) dba.setBegin(begin);
+						span.setBegin(begin);
 						int end = Integer.parseInt(span_fields[i+1]);
 						span.setEnd(end);
-						//span.addToIndexes();
+						multispanmessage.append(begin+":"+end+"\t");
 						dba.setEnd(end);
 						thespans.set(i/2,span);
 					}
+					LOG.debug(multispanmessage.toString());
 					thespans.addToIndexes();
 					dba.setSpans(thespans);
 				}
@@ -177,7 +179,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		}
 		brat_cuiless_count=uimaDiseaseDict.size();
 		LOG.debug(docname+" has uimaDiseaseDict size of "+
-				uimaDiseaseDict.size()+" and non-disease size of:"+uimaNotDiseaseDict.size()); //T15 is in there, T44, T13
+				uimaDiseaseDict.size()+" and non-disease size of:"+uimaNotDiseaseDict.size());
 		LOG.debug(docname+" uimaDiseaseDict entities:"+uimaDiseaseDict.keySet());
 		LOG.debug(docname+" NonDiseaseEntities:"+uimaNotDiseaseDict.keySet());
 
@@ -200,14 +202,14 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				DiscontinousBratAnnotation diseaseObject = uimaNotDiseaseDict.get(notDisEntKey);
 				two.setArgument(diseaseObject);
 				btr.setArg2(two);
-				
+
 				//Set<String> somecuis = sec.semevalNorm2Cui(diseaseObject.getAttributeType(), norm);
 				if(diseaseObject.getTypeID()==bratconfig.getIdFromType("Negation")) {
 					diseaseSubject.setPolarity(1);
 					addCui2DiscontinousBratAnnotation(textView, diseaseObject,"C0205160");
 					//Misspelled, should have used Constant earlier...
 				} else if(diseaseObject.getTypeID()==bratconfig.getIdFromType("Uncertainity")
-					//	|| diseaseObject.getTypeID()==bratconfig.getIdFromType(SemEval2015Constants.UNCERTAINTY_RELATION)
+						//	|| diseaseObject.getTypeID()==bratconfig.getIdFromType(SemEval2015Constants.UNCERTAINTY_RELATION)
 						) {
 					diseaseSubject.setUncertainty(1);
 					addCui2DiscontinousBratAnnotation(textView, diseaseObject,"C0087130");
@@ -219,8 +221,6 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					diseaseSubject.setGeneric(true);	
 					addCui2DiscontinousBratAnnotation(textView, diseaseObject,"C0277545");
 				}
-				
-				
 				btr.addToIndexes(textView);
 			} 
 		}
@@ -229,7 +229,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		//Determine if we have an annatator added Disease Annotation
 		int last_pre_existing_disease_start = 0; //-1 indicates no more pre-existing diseases
 		for(String key : bratKeyDict.keySet()){
-			if(key.trim().startsWith("T")) { 
+			if(key.trim().startsWith("T")) {
 				//Check to identify novel annotated stuff
 				DiscontinousBratAnnotation dis = uimaDiseaseDict.get(key.trim());
 				int cur = Integer.parseInt(bratKeyDict.get(key).split("\t")[0].split(" ")[1]);
@@ -253,7 +253,9 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		for(String key : bratKeyDict.keySet()){
 			if(key.startsWith("#")) {
 				String[] tabfields = bratKeyDict.get(key).split("\t");
+				LOG.debug("Tab fields are:"+tabfields[0]+tabfields[1]);
 				String[] span_fields = tabfields[0].split(" ");
+				LOG.debug("Span fields are:"+span_fields[0]+span_fields[1]);
 				//Retrieve Entity
 				DiscontinousBratAnnotation annotated = uimaDiseaseDict.get(span_fields[1]);
 				DiscontinousBratAnnotation notdisease = uimaNotDiseaseDict.get(span_fields[1]);
@@ -279,7 +281,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					for(String cui : cuis) {
 						if(!CleanUtils.isWellFormedCUI(cui)) {
 							LOG.warn("Ill formed cui \""+cui+"\" annotated by"+annotated.getDocName()+
-							" in "+annotated.getDocName()+" at "+annotated.getBegin());
+									" in "+annotated.getDocName()+" at "+annotated.getBegin());
 							System.err.println("Ill formed CUI:"+cui);
 						}
 						OntologyConcept oc = new OntologyConcept(textView);
@@ -290,10 +292,12 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 					}
 					ontarray.addToIndexes(textView);
 					if(ontarray!=null) annotated.setOntologyConceptArr(ontarray);
+					LOG.debug("Added annotated disease:"+annotated.getDiscontinousText()+" to indexes");
 					annotated.addToIndexes(textView);
 					uimaDiseaseDict.remove(span_fields[1]);
 					brat_annotated_count++;
 				} else {
+					LOG.debug("Not adding annotated disease to indexes with span field "+span_fields[1]);
 					//Pull in pre-populated annotations of bodylocation, severity and course
 					// and subject (FIXME - can not find)
 					if(notdisease!=null) {
@@ -344,6 +348,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				extra_summary,help_summary,datasetname);
 	}
 
+
 	private void addCui2DiscontinousBratAnnotation(JCas textView, 
 			DiscontinousBratAnnotation diseaseSubject, String cui) {
 		FSArray ontarray = new FSArray(textView,1);
@@ -355,6 +360,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 		diseaseSubject.setOntologyConceptArr(ontarray);
 	}
 
+	
 	private int getSemEvalCUIlessCount(JCas jcas, int semeval_cuiless_count,
 			JCas semevalPipeView) {
 		try {
@@ -364,7 +370,7 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 			String[] prev_chunks = null;
 			for(String line : pipelines) {
 				String[] chunks = line.split("\\|");
-				if(chunks[2].equals("CUI-less")){
+				if(chunks[2].equals(SemEval2015Constants.CUILESS)){
 					if(prev_chunks!=null && (
 							(!prev_chunks[2].equals(SemEval2015Constants.CUILESS)) &&
 							(!prev_chunks[1].equals(chunks[1])))) {
@@ -392,14 +398,12 @@ public class BratParserAnnotator extends JCasAnnotator_ImplBase {
 				brat_cuiless_count+"\t"+brat_annotated_count+"\t"+unannotated_count+
 				"\t"+extra_annotations+"\t"+help_cui_count+"\t"+datasetname+"\t"+docname+
 				"\t"+unannotated_summary+"\t"+extra_summary+"\t"+help_summary+"\n");
-		if(verbose) {
-			if(print_problem_files_only) {
-				if( (unannotated_count>0) || extra_annotations>0) {
-					System.out.println(tableline);
-					return;
-				}
-			} else System.out.println(tableline);
-		}
+		if(print_problem_files_only) {
+			if( (unannotated_count>0) || extra_annotations>0) {
+				System.out.println(tableline);
+				return;
+			}
+		} else System.out.println(tableline);
 	}
 
 	public static AnalysisEngineDescription getDescription() throws ResourceInitializationException {

@@ -184,6 +184,8 @@ public class MergedCUIlessConsumer extends JCasAnnotator_ImplBase {
 				+dd.getCoveredText()+" start/end "+dd.getBegin()+"/"+dd.getEnd());
 		String failures = "";
 		for (DiscontinousBratAnnotation brat: JCasUtil.select(bratview, DiscontinousBratAnnotation.class)) {
+			this.getContext().getLogger().log(Level.FINEST, "Looking at BRAT annotation:"+
+			brat.getBegin()+" to "+brat.getEnd()+ " covering "+brat.getCoveredText()); 
 			if(brat.getEnd()==dd.getEnd() && brat.getBegin()==dd.getBegin()) {
 				if(brat.getIsNovelEntity()==false) { 
 					matched = true; 

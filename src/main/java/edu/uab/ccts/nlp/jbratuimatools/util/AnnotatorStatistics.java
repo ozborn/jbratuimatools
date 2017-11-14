@@ -1,6 +1,10 @@
 package edu.uab.ccts.nlp.jbratuimatools.util;
 
 import java.io.Serializable;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -547,6 +551,55 @@ public class AnnotatorStatistics implements Serializable {
 		}
 		System.out.println(disagreements+" disagreements");
 		return agreements/(agreements+disagreements);
+	}
+	
+	
+	/**
+	 * For the input CUI, get a set of ancestral UMLS SNOMED Atomic Elements from MRHIER
+	 * @param cui
+	 * @return
+	 */
+	private Set<String> getCuiSnomedAncestors(String cui, String jdbcconnect) {
+		Set<String> allauis = new HashSet<String>();
+		String query ="SELECT PTR FROM MRHIER WHERE CUI=?";
+		try (Connection con = DriverManager.getConnection(jdbcconnect);
+			 PreparedStatement ps = con.prepareStatement(query);
+			 ResultSet rs = ps.executeQuery()	
+				) {
+			while(rs.next()) {
+				String ptr = rs.getString(1);
+				String[] ancestors = ptr.split(".");
+				allauis.addAll(Arrays.asList(ancestors));
+			}
+		} catch (Exception e) { e.printStackTrace(); }
+		return allauis;
+	}
+	
+	/**
+	 * For the input set of AUIS, get a set of CUIs corresponding to the set
+	 * @param cui
+	 * @return
+	 */
+	private Set<String> getCuisFromSnomedAuis(Set<String> auis, String jdbcconnect) {
+		Set<String> allcuis = new HashSet<String>();
+		String query ="SELECT DISTINCT CUI FROM MRCONSO WHERE AUI IN";
+		StringBuilder sb = new StringBuilder("(");
+		for(Iterator<String> it = auis.iterator();it.hasNext();) {
+			sb.append(it.next());
+			if(it.hasNext())sb.append(",");
+		}
+		sb.append(")");
+		try (Connection con = DriverManager.getConnection(jdbcconnect);
+			 PreparedStatement ps = con.prepareStatement(query);
+			 ResultSet rs = ps.executeQuery()	
+				) {
+			while(rs.next()) {
+				String cui = rs.getString(1);
+				allcuis.add(cui);
+			}
+			
+		} catch (Exception e) { e.printStackTrace();}
+		return allcuis;
 	}
 	
 	

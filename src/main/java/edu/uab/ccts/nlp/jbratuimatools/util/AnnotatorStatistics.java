@@ -559,18 +559,20 @@ public class AnnotatorStatistics implements Serializable {
 	 * @param cui
 	 * @return
 	 */
-	private Set<String> getCuiSnomedAncestors(String cui, String jdbcconnect) {
+	public Set<String> getCuiSnomedAncestors(String cui, String jdbcconnect) {
 		Set<String> allauis = new HashSet<String>();
 		String query ="SELECT PTR FROM MRHIER WHERE CUI=?";
 		try (Connection con = DriverManager.getConnection(jdbcconnect);
-			 PreparedStatement ps = con.prepareStatement(query);
-			 ResultSet rs = ps.executeQuery()	
-				) {
-			while(rs.next()) {
-				String ptr = rs.getString(1);
-				String[] ancestors = ptr.split(".");
-				allauis.addAll(Arrays.asList(ancestors));
-			}
+				PreparedStatement ps = con.prepareStatement(query);
+				){
+			ps.setString(1, cui);
+			try(ResultSet rs = ps.executeQuery()){
+				while(rs.next()) {
+					String ptr = rs.getString(1);
+					String[] ancestors = ptr.split("\\.");
+					allauis.addAll(Arrays.asList(ancestors));
+				}
+			} catch (Exception rse) { rse.printStackTrace(); }
 		} catch (Exception e) { e.printStackTrace(); }
 		return allauis;
 	}
@@ -580,15 +582,18 @@ public class AnnotatorStatistics implements Serializable {
 	 * @param cui
 	 * @return
 	 */
-	private Set<String> getCuisFromSnomedAuis(Set<String> auis, String jdbcconnect) {
+	public Set<String> getCuisFromSnomedAuis(Set<String> auis, String jdbcconnect) {
 		Set<String> allcuis = new HashSet<String>();
 		String query ="SELECT DISTINCT CUI FROM MRCONSO WHERE AUI IN";
 		StringBuilder sb = new StringBuilder("(");
 		for(Iterator<String> it = auis.iterator();it.hasNext();) {
+			sb.append("\'");
 			sb.append(it.next());
+			sb.append("\'");
 			if(it.hasNext())sb.append(",");
 		}
 		sb.append(")");
+		query+=sb.toString();
 		try (Connection con = DriverManager.getConnection(jdbcconnect);
 			 PreparedStatement ps = con.prepareStatement(query);
 			 ResultSet rs = ps.executeQuery()	

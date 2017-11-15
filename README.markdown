@@ -10,7 +10,19 @@ It includes functionality to:
 INSTALL
 Unfortunately this currently requires oracle ojdbc7.jar to function to get the ideal concept name from UMLS, so ojdbc7.jar must be downloaded and can then be installed as folllows using maven:
 
+```
 mvn install:install-file -Dfile=/home/ozborn/Downloads/ojdbc7.jar -DgroupId=com.oracle -DartifactId=ojdbc7 -Dversion=12.1.0.1 -Dpackaging=jar
+```
+
+Then install:
+```
+mvn install -DskipTests
+```
+
+The failsafe integrations must be skipped if there is no umls jdbc connection string provided in src/test/integrationTest.properties in this format:
+```
+umlsJdbcString=jdbc:oracle:thin:umls_user/umls_password@host:1521:sid
+```
 
 
 ECLIPSE INSTALL AND BUILD

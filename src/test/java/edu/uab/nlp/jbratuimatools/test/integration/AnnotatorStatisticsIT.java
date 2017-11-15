@@ -25,12 +25,14 @@ public class AnnotatorStatisticsIT {
 
 	@Test
 	public void testGetCuiSnomedAncestors() {
+		if(props==null||props.isEmpty()) fail("No UMLS database specified in src/test/resources/integrationTest.properties to test against...");
 		Set<String> test = as.getCuiSnomedAncestors("C0011847",props.getProperty("umlsJdbcString"));	
 		assertTrue(test.size()>1); //Two types of diabetes
 	}
 
 	@Test
 	public void testGetCuisFromSnomedAuis() {
+		if(props==null||props.isEmpty()) fail("No UMLS database specified in src/test/resources/integrationTest.properties to test against...");
 		Set<String> auis = as.getCuiSnomedAncestors("C0011847",props.getProperty("umlsJdbcString"));
 		System.out.println("All Diabetes AUIs "+auis);
 		Set<String> cuis = as.getCuisFromSnomedAuis(auis,props.getProperty("umlsJdbcString"));

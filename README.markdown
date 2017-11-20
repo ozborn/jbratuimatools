@@ -19,7 +19,7 @@ Then install:
 mvn install -DskipTests
 ```
 
-The failsafe integrations must be skipped if there is no umls jdbc connection string provided in src/test/integrationTest.properties in this format:
+The failsafe integrations must be skipped if there is no umls jdbc connection string provided in src/main/umlsDB.properties in this format:
 ```
 umlsJdbcString=jdbc:oracle:thin:umls_user/umls_password@host:1521:sid
 ```

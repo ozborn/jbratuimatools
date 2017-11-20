@@ -1,5 +1,6 @@
 package edu.uab.ccts.nlp.jbratuimatools.util;
 
+import java.io.FileInputStream;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -14,6 +15,7 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -49,6 +51,7 @@ public class AnnotatorStatistics implements Serializable {
 	public static final String ALL_ANNOTATORS = "ALL_ANNOTATORS";
 	private static final long serialVersionUID = 1L;
 	BratConfiguration bratconfig = null;
+	Properties databaseProperties = new Properties();
 
 	//Contains key annotator name, value Hashtable with key discontinous
 	//text and value HashMultiset containing elements that are strings
@@ -64,6 +67,10 @@ public class AnnotatorStatistics implements Serializable {
 	= new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
 	static Hashtable<String,Hashtable<String,Hashtable<String,String>>> related_cui_results
 	= new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
+	static Hashtable<String,Hashtable<String,Hashtable<String,Set<String>>>> ancestor_related_cui_results
+	= new Hashtable<String,Hashtable<String,Hashtable<String,Set<String>>>>();
+	static Hashtable<String,Hashtable<String,Hashtable<String,Set<String>>>> ancestor_exact_cui_results
+	= new Hashtable<String,Hashtable<String,Hashtable<String,Set<String>>>>();
 	private static Hashtable<String,String> datasetHash = new Hashtable<String,String>();//Key filename, String dataset
 
 	public Hashtable<String, Hashtable<String, HashMultiset<String>>> getAnnotatorStats() {
@@ -85,6 +92,11 @@ public class AnnotatorStatistics implements Serializable {
 		//identifier (Txx) and value comma separated CUIs
 		exact_results = new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
 		related_cui_results = new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
+		ancestor_related_cui_results = new Hashtable<String,Hashtable<String,Hashtable<String,Set<String>>>>();
+		ancestor_exact_cui_results = new Hashtable<String,Hashtable<String,Hashtable<String,Set<String>>>>();
+		try(FileInputStream in = new FileInputStream("src/test/resources/integrationTest.properties")){
+			databaseProperties.load(in);
+		} catch (Exception e) { e.printStackTrace(); }
 	}
 
 
@@ -176,9 +188,11 @@ public class AnnotatorStatistics implements Serializable {
 			map_type_hash.put(dba.getDocName()+"T"+dba.getId(), allcuis);
 			text_type_hash.put(annotator_name+":"+dba.getDocName()+":T"+dba.getId(),text_key);
 			bratDBAOffsets.put(annotator_name+":"+dba.getDocName()+":T"+dba.getId(),getOffsets(dba));
-			buildExactResults(dba,allcuis);
+			Set<String> diseaseLeafCuis = buildExactResults(dba,allcuis);
+			ancestor_exact_cui_results = buildAncestorResults(dba,diseaseLeafCuis,ancestor_exact_cui_results);
 			String relatedcuis = getRelatedCUIs(dba,rels);
-			buildRelatedResults(dba,allcuis,relatedcuis);
+			Set<String> leafcuis= buildRelatedResults(dba,allcuis,relatedcuis);
+			ancestor_related_cui_results = buildAncestorResults(dba,leafcuis,ancestor_related_cui_results);
 		}
 	}
 
@@ -187,8 +201,10 @@ public class AnnotatorStatistics implements Serializable {
 	  Related Results contains key annotator name, value Hashtable with
 	  key document_id and value Hashtable with key entity 
 	  identifier (Txx) and value comma separated CUIs related to the disease and all related CUIs
+	  
+	  @returns String of comma-separated related CUIS, both disease CUIs and related CUIs (body location,negation, etc...)
 	 */
-	private void buildRelatedResults(DiscontinousBratAnnotation dba, String allcuis,
+	private Set<String> buildRelatedResults(DiscontinousBratAnnotation dba, String allcuis,
 		String related_cuis){
 		Hashtable<String,Hashtable<String,String>> docid_hash = related_cui_results.get(dba.getAnnotatorName());
 		if(docid_hash==null) docid_hash = new Hashtable<String,Hashtable<String,String>>();
@@ -210,13 +226,14 @@ public class AnnotatorStatistics implements Serializable {
 		entid_hash.put("T"+dba.getId(), mergedstring.toString());
 		docid_hash.put(dba.getDocName(), entid_hash);
 		related_cui_results.put(dba.getAnnotatorName(), docid_hash);
+		return nodupsDisease;
 	}
 
 
 	//Exact Results contains key annotator name, value Hashtable with
 	//key document_id and value Hashtable with key entity 
 	//identifier (Txx) and value comma separated CUIs
-	private void buildExactResults(DiscontinousBratAnnotation dba, String allcuis){
+	private Set<String>  buildExactResults(DiscontinousBratAnnotation dba, String allcuis){
 		Hashtable<String,Hashtable<String,String>> docid_hash = exact_results.get(dba.getAnnotatorName());
 		if(docid_hash==null) docid_hash = new Hashtable<String,Hashtable<String,String>>();
 		Hashtable<String,String> entid_hash = docid_hash.get(dba.getDocName());
@@ -224,8 +241,36 @@ public class AnnotatorStatistics implements Serializable {
 		entid_hash.put("T"+dba.getId(), allcuis);
 		docid_hash.put(dba.getDocName(), entid_hash);
 		exact_results.put(dba.getAnnotatorName(), docid_hash);
+		HashSet<String> nodupsDisease = new HashSet<String>(Arrays.asList(allcuis.split(",")));
+		return nodupsDisease;
 	}
 
+
+	//Ancestor Results contains key annotator name, value Hashtable with
+	//key document_id and value Hashtable with key entity 
+	//identifier (Txx) and value comma separated CUIs
+	private Hashtable<String,Hashtable<String,Hashtable<String,Set<String>>>> 
+	buildAncestorResults(DiscontinousBratAnnotation dba, Set<String> leafCuis,
+			Hashtable<String,Hashtable<String,Hashtable<String,Set<String>>>> rstore
+			){
+		Hashtable<String,Hashtable<String,Set<String>>> docid_hash = rstore.get(dba.getAnnotatorName());
+		if(docid_hash==null) docid_hash = new Hashtable<String,Hashtable<String,Set<String>>>();
+		Hashtable<String,Set<String>> entid_hash = docid_hash.get(dba.getDocName());
+		if(entid_hash==null) entid_hash = new Hashtable<String,Set<String>>();
+		//Convert leaf to ancestor CUIs
+		HashSet<String> ancestorAuis = new HashSet<String>();
+		for(String cui : leafCuis) {
+			ancestorAuis.addAll(getCuiSnomedAncestors(cui,databaseProperties.getProperty("umlsJdbcString")));
+		}
+		Set<String> ancestorCuis = new HashSet<String>();
+		if(ancestorAuis.isEmpty()) {
+			System.err.println("No AUIs in "+leafCuis);
+		} else ancestorCuis = getCuisFromSnomedAuis(ancestorAuis,databaseProperties.getProperty("umlsJdbcString"));
+		entid_hash.put("T"+dba.getId(), ancestorCuis);
+		docid_hash.put(dba.getDocName(), entid_hash);
+		rstore.put(dba.getAnnotatorName(), docid_hash);
+		return rstore;
+	}
 
 
 	/**
@@ -403,7 +448,7 @@ public class AnnotatorStatistics implements Serializable {
 					HashMultiset<String> exist = dist.get(cui);
 					if(exist==null){
 						exist = HashMultiset.create();
-						String[] cuiinfo = UMLSTools.fetchCUIInfo(cui, BratConstants.UMLS_DB_CONNECT_STRING);
+						String[] cuiinfo = UMLSTools.fetchCUIInfo(cui, UMLSTools.getUmlsConnectionString());
 						cuistypehash.put(cui,cuiinfo[2]);
 						if(cuiinfo[3].indexOf("SNOMEDCT")==-1) {
 							System.out.println(mapentry.getKey()+" has non-SNOMED-CT CUI "+cui+" from ontology "+cuiinfo[3]);
@@ -475,7 +520,7 @@ public class AnnotatorStatistics implements Serializable {
 					discrepancies.append(text+"\t"+test.size());
 					for (String s : test.elementSet()) {
 						String bname = null;
-						bname = UMLSTools.fetchBestConceptName(s, BratConstants.UMLS_DB_CONNECT_STRING);
+						bname = UMLSTools.fetchBestConceptName(s, UMLSTools.getUmlsConnectionString());
 						discrepancies.append("\t"+bname);
 						discrepancies.append("\t"+s);
 						discrepancies.append("\t"+test.count(s));
@@ -494,10 +539,18 @@ public class AnnotatorStatistics implements Serializable {
 	 * Counts the agreements between annotators
 	 * @return
 	 */
-	public double calculateAgreement(boolean exact_agreement){
+	public double calculateAgreement(String agreementType){
 		double agreements = 0.0, disagreements = 0.0;
 		Hashtable<String,Hashtable<String,Hashtable<String,String>>> theResults;
-		if(exact_agreement) theResults = exact_results; else theResults=related_cui_results;
+		if(agreementType.equalsIgnoreCase("exact")) {
+			theResults = exact_results;
+		}
+		else if(agreementType.equalsIgnoreCase("related")) {
+			theResults=related_cui_results;
+		} else {
+			System.err.println("Agreement type not exact or related");
+			return 0.0;
+		}
 		Object[] annotators = theResults.keySet().toArray();
 		System.out.println("Reference annotator:"+annotators[0]); System.out.flush();
 
@@ -528,8 +581,8 @@ public class AnnotatorStatistics implements Serializable {
 					continue;
 				}
 
-				String refnames = UMLSTools.fetchBestConceptName(refcuis, BratConstants.UMLS_DB_CONNECT_STRING);
-				String testnames = UMLSTools.fetchBestConceptName(testcuis, BratConstants.UMLS_DB_CONNECT_STRING);
+				String refnames = UMLSTools.fetchBestConceptName(refcuis, UMLSTools.getUmlsConnectionString());
+				String testnames = UMLSTools.fetchBestConceptName(testcuis, UMLSTools.getUmlsConnectionString());
 				String typekey = annotators[0]+":"+rdoc+":"+refentity;
 				String distext = text_type_hash.get(typekey);
 				String filepath = datasetHash.get(rdoc);
@@ -554,6 +607,94 @@ public class AnnotatorStatistics implements Serializable {
 	}
 	
 	
+	public double calculateAncestorAgreement(String agreementType){
+		double proportional_agreement = 0.0;
+		int agreement_comparison_count=0;
+		Hashtable<String,Hashtable<String,Hashtable<String,Set<String>>>> theResults;
+		
+		if(agreementType.equalsIgnoreCase("exact")) {
+			theResults = ancestor_exact_cui_results;
+		}
+		else if(agreementType.equalsIgnoreCase("related")) {
+			theResults=ancestor_related_cui_results;
+		} else {
+			System.err.println("Agreement type not specified");
+			return 0.0;
+		}
+		Object[] annotators = theResults.keySet().toArray();
+		System.out.println("Reference annotator:"+annotators[0]); System.out.flush();
+		Hashtable<String,Hashtable<String,Set<String>>> reftable = 
+				theResults.get(annotators[0]);
+		Set<String> refdocs = reftable.keySet();
+		for(String rdoc : refdocs){
+			Hashtable<String,Set<String>> refents = reftable.get(rdoc);
+			Hashtable<String,Set<String>> testents = 
+					theResults.get(annotators[1]).get(rdoc);
+			if(testents==null) {
+				System.err.println(annotators[1]+" did not complete "+rdoc);
+				continue;
+			}
+			//Iterate through each entity in the document
+			//Check to see how many documents are missing
+			for(Iterator<String> entiter = refents.keySet().iterator(); entiter.hasNext();){
+				String refentity = entiter.next();
+				Set<String> refcuis = refents.get(refentity);
+				Set<String> testcuis = testents.get(refentity);
+				if(refcuis==null && testcuis==null) continue;
+				if(refcuis!=null && testcuis==null) {
+					System.err.println(annotators[1]+" has null value for "+refentity+" in "+rdoc);
+					continue;
+				}
+				if(refcuis==null && testcuis!=null) {
+					System.err.println(annotators[0]+" has null value for "+refentity+" in "+rdoc);
+					continue;
+				}
+
+				String typekey = annotators[0]+":"+rdoc+":"+refentity;
+				String distext = text_type_hash.get(typekey);
+				String filepath = datasetHash.get(rdoc);
+				String printline = "";
+				String myoffsets = bratDBAOffsets.get(typekey);
+				String refnames = "ConceptNameRetrievalFailure";
+				String error_string=filepath+"\t"+myoffsets+"\t"+distext+"\t"+refentity;
+
+				try {
+					refnames = UMLSTools.fetchBestConceptName(refcuis, UMLSTools.getUmlsConnectionString());
+				} catch (Exception e) { 
+					System.err.println("No best name for ref:"+error_string);
+					e.printStackTrace(); 
+				}
+				String testnames = "ConceptNameRetrievalFailure";
+				try {
+					testnames = UMLSTools.fetchBestConceptName(testcuis, UMLSTools.getUmlsConnectionString());
+				} catch (Exception e) { 
+					System.err.println("No best name for test of ref:"+error_string);
+					e.printStackTrace(); 
+				}
+			
+				//Compute Intersection between test and reference
+				if(refcuis.size()==0) {
+					System.err.println("No CUIS for ref "+error_string);
+					continue;
+				}
+				agreement_comparison_count++;
+				Set<String> intersect = new HashSet<String>(refcuis);
+				printline="INITIAL SET SIZE: REF="+refcuis.size()+" TEST="+testcuis.size();
+				intersect.retainAll(testcuis);
+				double agreement = (double)intersect.size()/(double)refcuis.size();
+				proportional_agreement+=agreement;
+				printline+="AGREE PROPORTION ("+intersect.size()+"/"+refcuis.size()+")("+agreement+")\t";
+				printline=printline+filepath+"\t"+rdoc+"\t"+myoffsets+"\t"+
+						distext+"\t"+refentity+"\t"+annotators[0]+"\t"+refcuis+"\t"
+						+refnames+"\t"+annotators[1]+"\t"+testcuis+"\t"+testnames;
+				System.out.println(printline);
+			}
+		}
+		return proportional_agreement/agreement_comparison_count;
+		
+	}
+	
+	
 	/**
 	 * For the input CUI, get a set of ancestral UMLS SNOMED Atomic Elements from MRHIER
 	 * @param cui
@@ -561,6 +702,10 @@ public class AnnotatorStatistics implements Serializable {
 	 */
 	public Set<String> getCuiSnomedAncestors(String cui, String jdbcconnect) {
 		Set<String> allauis = new HashSet<String>();
+		if(cui.trim().equalsIgnoreCase("CUI-less")) {
+			allauis.add("A0000000"); //Not used in UMLS 2016AB, probably not used at all
+			return allauis;
+		}
 		String query ="SELECT PTR FROM MRHIER WHERE CUI=?";
 		try (Connection con = DriverManager.getConnection(jdbcconnect);
 				PreparedStatement ps = con.prepareStatement(query);
@@ -574,6 +719,21 @@ public class AnnotatorStatistics implements Serializable {
 				}
 			} catch (Exception rse) { rse.printStackTrace(); }
 		} catch (Exception e) { e.printStackTrace(); }
+		if(allauis.isEmpty()) {
+			query ="SELECT AUI FROM MRCONSO WHERE CUI=? AND SAB LIKE 'SNOMEDCT_US_%'";
+			try (Connection con = DriverManager.getConnection(jdbcconnect);
+					PreparedStatement ps = con.prepareStatement(query);
+					){
+				ps.setString(1, cui);
+				try(ResultSet rs = ps.executeQuery()){
+					while(rs.next()) {
+						String aui = rs.getString(1);
+						allauis.add(aui);
+						break;
+					}
+				} catch (Exception rse) { rse.printStackTrace(); }
+			} catch (Exception e) { e.printStackTrace(); }
+		}
 		return allauis;
 	}
 	
@@ -584,6 +744,10 @@ public class AnnotatorStatistics implements Serializable {
 	 */
 	public Set<String> getCuisFromSnomedAuis(Set<String> auis, String jdbcconnect) {
 		Set<String> allcuis = new HashSet<String>();
+		if(auis.size()==1 && auis.iterator().next().equalsIgnoreCase("A0000000")) {
+			allcuis.add("Cui-less");
+			return allcuis;
+		}
 		String query ="SELECT DISTINCT CUI FROM MRCONSO WHERE AUI IN";
 		StringBuilder sb = new StringBuilder("(");
 		for(Iterator<String> it = auis.iterator();it.hasNext();) {
@@ -632,7 +796,7 @@ public class AnnotatorStatistics implements Serializable {
 				String[] cuiarray = s.split(",");
 				if(cuiarray.length<2) continue;
 				String bname = null;
-				bname = UMLSTools.fetchBestConceptName(s, BratConstants.UMLS_DB_CONNECT_STRING);
+				bname = UMLSTools.fetchBestConceptName(s, UMLSTools.getUmlsConnectionString());
 				if(bname.indexOf("||")==-1) continue;
 				String[] pieces = bname.split("\\|\\|");
 				StringBuffer key = new StringBuffer();

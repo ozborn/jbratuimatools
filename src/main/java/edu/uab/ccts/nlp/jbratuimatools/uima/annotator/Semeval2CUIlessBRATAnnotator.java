@@ -27,7 +27,6 @@ import org.cleartk.semeval2015.type.DiseaseDisorderAttribute;
 import org.cleartk.semeval2015.type.DisorderSpan;
 import org.cleartk.util.ViewUriUtil;
 
-import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.jbratuimatools.client.SemevalCUIless2BratClient;
 import edu.uab.ccts.nlp.umls.tools.CleanUtils;
 import edu.uab.ccts.nlp.umls.tools.UMLSTools;
@@ -53,7 +52,7 @@ public class Semeval2CUIlessBRATAnnotator extends JCasAnnotator_ImplBase{
 	CleanUtils cleanutil = null;
 
 
-	final String UmlsConnectionString = BratConstants.UMLS_DB_CONNECT_STRING;
+	final String UmlsConnectionString = UMLSTools.getUmlsConnectionString();
 
 	public void initialize(UimaContext aContext) throws ResourceInitializationException {
 		try {

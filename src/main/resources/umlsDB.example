@@ -1,0 +1,1 @@
+umlsJdbcString=jdbc:oracle:thin:umls_user/umls_password@your.umls.database.host:1521:SID

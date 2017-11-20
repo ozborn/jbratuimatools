@@ -2,5 +2,5 @@ target/*
 .settings/*
 /target/
 .classpath
-integrationTest.properties
 log/*.log
+src/main/resources/umlsDB.properties*

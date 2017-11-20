@@ -84,9 +84,10 @@ public class HierarchicalAnnotatorAgreementClient {
 			annotatorstats.add(brats,rels,filepath); 
 		}
 		annotatorstats.print();
+		String agreement_type_measured="related";
 		System.out.println("Annotator stats:"+annotatorstats.getAnnotatorStats());
-		System.out.println(annotatorstats.calculateAgreement(true)+" exact annotator agreement");
-		System.out.println(annotatorstats.calculateAgreement(false)+" related annotator agreement");
+		System.out.println(annotatorstats.calculateAncestorAgreement(agreement_type_measured)+
+		" "+agreement_type_measured+" ancestor annotator agreement");
 		System.out.println(annotatorstats.getDiscrepancies());
 		
 		

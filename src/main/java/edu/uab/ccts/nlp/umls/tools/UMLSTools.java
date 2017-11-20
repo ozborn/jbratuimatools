@@ -1,10 +1,15 @@
 package edu.uab.ccts.nlp.umls.tools;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.Properties;
+import java.util.Set;
 
 import oracle.jdbc.OracleResultSet;
 
@@ -22,6 +27,7 @@ public class UMLSTools {
 	"/sql/oracle/select_stypes_sab.sql";
 	static String query_sql, query_stypes_sql;
 	static Connection con;
+	static Properties umlsProps = new Properties();
 	
 	static {
 		URL url1 = UMLSTools.class.getClass().getResource(query_file_path);
@@ -34,11 +40,19 @@ public class UMLSTools {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+		try(FileInputStream in = new FileInputStream("src/main/resources/umlsDB.properties")){
+			umlsProps.load(in);
+		} catch (Exception e) { e.printStackTrace(); }
+		System.out.println("umlsJdbcString="+umlsProps.getProperty("umlsJdbcString"));
 	}
 	
 	
 	public UMLSTools(String connection_string) throws Exception {
 		con = DriverManager.getConnection(connection_string);
+	}
+	
+	public static String getUmlsConnectionString(){
+		return umlsProps.getProperty("umlsJdbcString");
 	}
 	
 	
@@ -74,7 +88,37 @@ public class UMLSTools {
 		
 	}
 
-	
+		
+	/**
+	 * Returns the best concept name as defined by UMLS precedence for an input
+	 * CUI
+	 * @param cui
+	 * @return String 
+	 */
+	public static String fetchBestConceptName(Set<String> cuis, String connection_string) {
+		String goodname="";
+		try (Connection con = DriverManager.getConnection(connection_string);
+			PreparedStatement st = con.prepareStatement(query_sql)){
+			ArrayList<String> thecuis = new ArrayList<String>(cuis);
+			for(Iterator<String> it = thecuis.iterator();it.hasNext();){
+				String cui = it.next();
+				st.setString(1,cui);
+				st.setString(2,cui);
+				OracleResultSet resultset = (OracleResultSet) st.executeQuery();
+				if(resultset.next()) {
+					String abbrevs = resultset.getString(3);
+					goodname = resultset.getString(2)+"("+abbrevs+")";
+					if(it.hasNext()) goodname += "||";
+				}
+				resultset.close();
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return goodname;
+		
+	}
+
 		
 	/**
 	 * Returns the best concept name as defined by UMLS precedence for an input

@@ -86,8 +86,8 @@ public class AnnotatorAgreementClient {
 		}
 		annotatorstats.print();
 		System.out.println("Annotator stats:"+annotatorstats.getAnnotatorStats());
-		System.out.println(annotatorstats.calculateAgreement(true)+" exact annotator agreement");
-		System.out.println(annotatorstats.calculateAgreement(false)+" related annotator agreement");
+		System.out.println(annotatorstats.calculateAgreement("exact")+" exact annotator agreement");
+		System.out.println(annotatorstats.calculateAgreement("related")+" related annotator agreement");
 		System.out.println(annotatorstats.getDiscrepancies());
 		
 		

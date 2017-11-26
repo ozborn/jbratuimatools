@@ -1,6 +1,5 @@
 package edu.uab.ccts.nlp.jbratuimatools.util;
 
-import java.io.FileInputStream;
 import java.io.Serializable;
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -15,7 +14,6 @@ import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import java.util.TreeSet;
 
@@ -24,7 +22,6 @@ import com.google.common.collect.Multiset;
 import com.google.common.collect.Multisets;
 
 import edu.uab.ccts.nlp.brat.BratConfiguration;
-import edu.uab.ccts.nlp.brat.BratConstants;
 import edu.uab.ccts.nlp.umls.tools.CleanUtils;
 import edu.uab.ccts.nlp.umls.tools.UMLSTools;
 
@@ -51,7 +48,6 @@ public class AnnotatorStatistics implements Serializable {
 	public static final String ALL_ANNOTATORS = "ALL_ANNOTATORS";
 	private static final long serialVersionUID = 1L;
 	BratConfiguration bratconfig = null;
-	Properties databaseProperties = new Properties();
 
 	//Contains key annotator name, value Hashtable with key discontinous
 	//text and value HashMultiset containing elements that are strings
@@ -94,9 +90,6 @@ public class AnnotatorStatistics implements Serializable {
 		related_cui_results = new Hashtable<String,Hashtable<String,Hashtable<String,String>>>();
 		ancestor_related_cui_results = new Hashtable<String,Hashtable<String,Hashtable<String,Set<String>>>>();
 		ancestor_exact_cui_results = new Hashtable<String,Hashtable<String,Hashtable<String,Set<String>>>>();
-		try(FileInputStream in = new FileInputStream("src/test/resources/integrationTest.properties")){
-			databaseProperties.load(in);
-		} catch (Exception e) { e.printStackTrace(); }
 	}
 
 
@@ -260,12 +253,13 @@ public class AnnotatorStatistics implements Serializable {
 		//Convert leaf to ancestor CUIs
 		HashSet<String> ancestorAuis = new HashSet<String>();
 		for(String cui : leafCuis) {
-			ancestorAuis.addAll(getCuiSnomedAncestors(cui,databaseProperties.getProperty("umlsJdbcString")));
+			ancestorAuis.addAll(getCuiSnomedAncestors(cui,UMLSTools.getUmlsConnectionString()));
 		}
 		Set<String> ancestorCuis = new HashSet<String>();
 		if(ancestorAuis.isEmpty()) {
 			System.err.println("No AUIs in "+leafCuis);
-		} else ancestorCuis = getCuisFromSnomedAuis(ancestorAuis,databaseProperties.getProperty("umlsJdbcString"));
+		} else ancestorCuis = getCuisFromSnomedAuis(ancestorAuis,UMLSTools.getUmlsConnectionString());
+		ancestorCuis.addAll(leafCuis);
 		entid_hash.put("T"+dba.getId(), ancestorCuis);
 		docid_hash.put(dba.getDocName(), entid_hash);
 		rstore.put(dba.getAnnotatorName(), docid_hash);
@@ -678,10 +672,14 @@ public class AnnotatorStatistics implements Serializable {
 					continue;
 				}
 				agreement_comparison_count++;
+				Set<String> union = new HashSet<String>(refcuis);
+				union.addAll(testcuis);
+				double allAncestorCount=(double) union.size();
 				Set<String> intersect = new HashSet<String>(refcuis);
 				printline="INITIAL SET SIZE: REF="+refcuis.size()+" TEST="+testcuis.size();
 				intersect.retainAll(testcuis);
-				double agreement = (double)intersect.size()/(double)refcuis.size();
+				//double agreement = (double)intersect.size()/(double)refcuis.size();
+				double agreement = (double)intersect.size()/allAncestorCount;
 				proportional_agreement+=agreement;
 				printline+="AGREE PROPORTION ("+intersect.size()+"/"+refcuis.size()+")("+agreement+")\t";
 				printline=printline+filepath+"\t"+rdoc+"\t"+myoffsets+"\t"+

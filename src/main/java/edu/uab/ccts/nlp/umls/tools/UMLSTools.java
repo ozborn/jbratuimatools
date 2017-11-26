@@ -107,7 +107,7 @@ public class UMLSTools {
 				OracleResultSet resultset = (OracleResultSet) st.executeQuery();
 				if(resultset.next()) {
 					String abbrevs = resultset.getString(3);
-					goodname = resultset.getString(2)+"("+abbrevs+")";
+					goodname += resultset.getString(2)+"("+abbrevs+")";
 					if(it.hasNext()) goodname += "||";
 				}
 				resultset.close();
